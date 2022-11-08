@@ -13,13 +13,15 @@ defmodule LiveViewNative do
   def start_simulator!(platform_id, opts \\ []) do
     platform = platform!(platform_id)
 
-    LiveViewNativePlatform.Platform.start_simulator(platform, opts)
+    LiveViewNativePlatform.start_simulator(platform, opts)
   end
 
-  def platform(platform_id) when is_atom(platform_id) and not is_nil(platform_id), do: platform("#{platform_id}")
+  def platform(platform_id) when is_atom(platform_id) and not is_nil(platform_id),
+    do: platform("#{platform_id}")
+
   def platform(platform_id) when is_binary(platform_id) do
     case Map.get(@env_platforms, platform_id) do
-      {%{} = platform_struct, _platform_meta} ->
+      {%{} = platform_struct, _platform_context} ->
         {:ok, platform_struct}
 
       _ ->
@@ -33,9 +35,13 @@ defmodule LiveViewNative do
         platform
 
       :error ->
-        platform_ids = @env_platforms |> Map.keys() |> Enum.map(&(":#{&1}")) |> Enum.join(", ")
-        error_message_no_platform = gettext("No LiveView Native platform for %{key}", key: inspect(platform_id))
-        error_message_valid_platforms_hint = gettext("The valid platforms are: %{keys}", keys: platform_ids)
+        platform_ids = @env_platforms |> Map.keys() |> Enum.map(&":#{&1}") |> Enum.join(", ")
+
+        error_message_no_platform =
+          gettext("No LiveView Native platform for %{key}", key: inspect(platform_id))
+
+        error_message_valid_platforms_hint =
+          gettext("The valid platforms are: %{keys}", keys: platform_ids)
 
         raise error_message_no_platform <> ". " <> error_message_valid_platforms_hint
     end

@@ -12,7 +12,7 @@ defmodule LiveViewNative.Server do
 
   @impl true
   def init(state) do
-    IO.inspect state
+    IO.inspect(state)
     {:ok, state}
   end
 
@@ -46,7 +46,9 @@ defmodule LiveViewNative.Server do
           {key, app_target}
 
         nil ->
-          Logger.warn("no configuration found for otp_app :#{otp_app} and module #{inspect(target_mod)}")
+          Logger.warn(
+            "no configuration found for otp_app :#{otp_app} and module #{inspect(target_mod)}"
+          )
 
           {key, struct(target_mod, %{})}
       end

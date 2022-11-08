@@ -6,19 +6,15 @@ defmodule LiveViewNative.LiveSession do
 
   def on_mount(:live_view_native, _params, _session, socket) do
     with %{"_platform" => platform_id} <- get_connect_params(socket),
-         {platform_struct, platform_meta} <- Map.get(LiveViewNative.platforms(), platform_id)
-    do
-      {:cont, assign(socket,
-        modifiers: struct(platform_meta.modifiers_mod, %{}),
-        native_platform: platform_struct,
-        native_platform_meta: platform_meta
-      )}
+         platforms <- LiveViewNative.platforms(),
+         %LiveViewNativePlatform.Context{} = platform_context <- Map.get(platforms, platform_id) do
+      {:cont, assign(socket, native: platform_context)}
     else
       _ ->
-        platform_struct = %LiveViewNative.Platforms.Web{}
-        platform_meta = LiveViewNativePlatform.Platform.platform_meta(platform_struct)
+        platform_config = %LiveViewNative.Platforms.Web{}
+        platform_context = LiveViewNativePlatform.context(platform_config)
 
-        {:cont, assign(socket, native_platform: platform_struct, native_platform_meta: platform_meta)}
+        {:cont, assign(socket, native: platform_context)}
     end
   end
 end

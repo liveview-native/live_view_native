@@ -11,7 +11,7 @@ defmodule LiveViewNative.Application do
       # Start the Telemetry supervisor
       LiveViewNativeWeb.Telemetry,
       # Start the PubSub system
-      {Phoenix.PubSub, name: LiveViewNative.PubSub},
+      {Phoenix.PubSub, name: LiveViewNative.PubSub}
       # Start a worker by calling: LiveViewNative.Worker.start_link(arg)
       # {LiveViewNative.Worker, arg}
     ]
