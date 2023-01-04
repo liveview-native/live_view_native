@@ -2,7 +2,7 @@ defmodule LiveViewNative.Platforms do
   @default_platforms [LiveViewNative.Platforms.Web]
 
   @env_platforms :live_view_native
-                 |> Application.get_env(:platforms, [])
+                 |> Application.compile_env(:platforms, [])
                  |> Enum.concat(@default_platforms)
                  |> Enum.map(fn platform_mod ->
                    platform_config = Application.get_env(:live_view_native, platform_mod)
