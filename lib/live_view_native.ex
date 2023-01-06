@@ -11,9 +11,9 @@ defmodule LiveViewNative do
   @env_platforms LiveViewNative.Platforms.env_platforms()
 
   def start_simulator!(platform_id, opts \\ []) do
-    platform = platform!(platform_id)
+    %LiveViewNativePlatform.Context{platform_config: platform_config} = platform!(platform_id)
 
-    LiveViewNativePlatform.start_simulator(platform, opts)
+    LiveViewNativePlatform.start_simulator(platform_config, opts)
   end
 
   def platform(platform_id) when is_atom(platform_id) and not is_nil(platform_id),
@@ -21,7 +21,7 @@ defmodule LiveViewNative do
 
   def platform(platform_id) when is_binary(platform_id) do
     case Map.get(@env_platforms, platform_id) do
-      {%{} = platform_struct, _platform_context} ->
+      %{} = platform_struct ->
         {:ok, platform_struct}
 
       _ ->

@@ -1,4 +1,11 @@
 defmodule LiveViewNative.Platforms do
+  @moduledoc """
+  Provides configuration constants about all platforms supported by an
+  application that uses LiveView Native. This module is a dependency
+  of various LiveView Native systems, such as `LiveViewNative.LiveSession`
+  which is responsible for determining which platform (web, iOS, etc.) a
+  session originates from.
+  """
   @default_platforms [LiveViewNative.Platforms.Web]
 
   @env_platforms :live_view_native
