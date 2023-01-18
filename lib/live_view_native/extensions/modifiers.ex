@@ -16,21 +16,40 @@ defmodule LiveViewNative.Extensions.Modifiers do
     platform_modifiers = opts[:platform_modifiers]
 
     quote bind_quoted: [platform_modifiers: platform_modifiers] do
-      if platform_modifiers do
-        platform_modifiers_as_struct = struct(platform_modifiers, %{})
+      defp map_property(element, {idx, acc}) when is_list(element) do
+        [element | _] = element
+        {
+          idx + 1,
+          acc ++ [{elem(element, 0), elem(element, 1)}]
+        }
+      end
+      defp map_property(element, {idx, acc}), do: {idx + 1, acc ++ [element]}
 
-        for {modifier_key, _val} <- Map.from_struct(platform_modifiers_as_struct) do
-          def unquote(:"#{modifier_key}")(ctx, params \\ %{}, opts \\ []) do
-            modifiers = ctx.modifiers
-            modifier_value = Map.get(modifiers, unquote(modifier_key)) || %{}
-            modifier_changes = Enum.into(params, %{})
-            updated_modifier_value = Map.merge(modifier_value, modifier_changes)
+      defp build_modifiers({:|>, _, children}, acc) do
+        Enum.reduce(children, acc, &build_modifiers/2) ++ acc
+      end
+      defp build_modifiers({name, _, props}, acc) do
+        props = props |> Enum.reduce({0, []}, &map_property/2) |> elem(1)
+        [{:%{}, [], [type: name] ++ props} | acc]
+      end
 
-            updated_modifiers =
-              Map.put(modifiers, unquote(modifier_key), updated_modifier_value)
+      @doc """
+      Generates the `modifier=""` attribute from the passed arguments.
 
-            Map.put(ctx, :modifiers, updated_modifiers)
-          end
+      The modifiers are expected to be in a pipe:
+
+      ```ex
+      modify padding(all: 16)
+        |> font(:large_title)
+        |> navigation_title(title: "My App")
+      ```
+      """
+      defmacro modify(modifier_stack) do
+        built = build_modifiers(modifier_stack, [])
+        quote do
+          {:ok, result} = unquote(built) |> Jason.encode
+          dbg result
+          %{ modifiers: result }
         end
       end
     end
