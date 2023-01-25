@@ -466,6 +466,7 @@ defmodule LiveViewNative.Engine do
   defp handle_token(
     {:tag_open, ":" <> _, _attrs, _} = token,
     %{tags: [{:tag_open, <<first, _::binary>> = parent_name, _, _} | _]} = state
+  # Opposite clause to `validate_slot!/3`, ensures the parent element is _not_ a component
   ) when not (first in ?A..?Z) and first != ?. do
     # Translate into namespaced element `parent:slot_name`
     token = put_elem(token, 1, parent_name <> elem(token, 1))
@@ -475,6 +476,7 @@ defmodule LiveViewNative.Engine do
   defp handle_token(
     {:tag_close, ":" <> _, _tag_close_meta} = token,
     %{tags: [_, {:tag_open, <<first, _::binary>> = parent_name, _, _} | _]} = state
+  # Opposite clause to `validate_slot!/3`, ensures the parent element is _not_ a component
   ) when not (first in ?A..?Z) and first != ?. do
     # Translate into namespaced element `parent:slot_name`
     token = put_elem(token, 1, parent_name <> elem(token, 1))
