@@ -26,8 +26,7 @@ defmodule LiveViewNative.Extensions.Modifiers do
             modifier_changes = Enum.into(params, %{})
             updated_modifier_value = Map.merge(modifier_value, modifier_changes)
 
-            updated_modifiers =
-              Map.put(modifiers, unquote(modifier_key), updated_modifier_value)
+            updated_modifiers = Map.put(modifiers, unquote(modifier_key), updated_modifier_value)
 
             Map.put(ctx, :modifiers, updated_modifiers)
           end

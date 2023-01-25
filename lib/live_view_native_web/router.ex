@@ -3,7 +3,6 @@ defmodule LiveViewNativeWeb.Router do
 
   if Mix.env() == :dev do
     scope "/live-view-native" do
-      live "/status", LiveViewNativeWeb.StatusLive
     end
   end
 end
