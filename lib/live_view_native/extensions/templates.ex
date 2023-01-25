@@ -14,18 +14,35 @@ defmodule LiveViewNative.Extensions.Templates do
   is generated which renders the template using that template engine.
   """
   defmacro __using__(opts \\ []) do
+    caller = opts[:caller]
+    platform_module = opts[:platform_module]
     template_basename = opts[:template_basename]
     template_directory = opts[:template_directory]
     template_extension = opts[:template_extension]
-    template_engine = opts[:template_engine] || Phoenix.LiveView.HTMLEngine
+    template_engine = opts[:template_engine] || LiveViewNative.Engine
 
-    quote bind_quoted: [template_basename: template_basename, template_directory: template_directory, template_extension: template_extension, template_engine: template_engine] do
+    quote bind_quoted: [
+            caller: caller,
+            platform_module: platform_module,
+            template_basename: template_basename,
+            template_directory: template_directory,
+            template_extension: template_extension,
+            template_engine: template_engine
+          ] do
       template_path = Path.join(template_directory, template_basename) <> template_extension
 
       if is_binary(template_path) and File.exists?(template_path) do
         require EEx
 
-        EEx.function_from_file(:def, :render, template_path, [:assigns], engine: template_engine)
+        EEx.function_from_file(
+          :def,
+          :render,
+          template_path,
+          [:assigns],
+          caller: caller,
+          engine: template_engine,
+          source: File.read!(template_path)
+        )
       end
     end
   end
