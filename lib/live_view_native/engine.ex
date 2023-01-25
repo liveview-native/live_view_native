@@ -464,7 +464,7 @@ defmodule LiveViewNative.Engine do
   # Slot (for HTML element)
 
   defp handle_token(
-    {:tag_open, ":" <> slot_name, _attrs, tag_meta} = token,
+    {:tag_open, ":" <> _, _attrs, _} = token,
     %{tags: [{:tag_open, <<first, _::binary>> = parent_name, _, _} | _]} = state
   ) when not (first in ?A..?Z) and first != ?. do
     # Translate into namespaced element `parent:slot_name`
@@ -473,8 +473,8 @@ defmodule LiveViewNative.Engine do
   end
 
   defp handle_token(
-    {:tag_close, ":" <> slot_name = tag_name, _tag_close_meta} = token,
-    %{tags: [{:tag_open, open_slot_name, _, _}, {:tag_open, <<first, _::binary>> = parent_name, _, _} | _]} = state
+    {:tag_close, ":" <> _, _tag_close_meta} = token,
+    %{tags: [_, {:tag_open, <<first, _::binary>> = parent_name, _, _} | _]} = state
   ) when not (first in ?A..?Z) and first != ?. do
     # Translate into namespaced element `parent:slot_name`
     token = put_elem(token, 1, parent_name <> elem(token, 1))
