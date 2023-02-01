@@ -14,7 +14,9 @@ defmodule LiveViewNative.Extensions do
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
         defmodule :"#{platform_module}" do
-          use LiveViewNative.Extensions.Modifiers, platform_modifiers: platform_context.modifiers
+          use LiveViewNative.Extensions.Modifiers,
+            custom_modifiers: platform_context.custom_modifiers,
+            platform_modifiers: platform_context.platform_modifiers
 
           use LiveViewNative.Extensions.Templates,
             caller: caller,

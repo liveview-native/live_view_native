@@ -13,23 +13,18 @@ defmodule LiveViewNative.Extensions.Modifiers do
   context as part of `LiveViewNative.Extensions.Render`.
   """
   defmacro __using__(opts \\ []) do
-    platform_modifiers = opts[:platform_modifiers]
+    custom_modifiers = opts[:custom_modifiers] || []
+    platform_modifiers = opts[:platform_modifiers] || []
 
-    quote bind_quoted: [platform_modifiers: platform_modifiers] do
-      if platform_modifiers do
-        platform_modifiers_as_struct = struct(platform_modifiers, %{})
+    quote bind_quoted: [custom_modifiers: custom_modifiers, platform_modifiers: platform_modifiers] do
+      all_modifiers = Keyword.merge(platform_modifiers, custom_modifiers)
 
-        for {modifier_key, _val} <- Map.from_struct(platform_modifiers_as_struct) do
-          def unquote(:"#{modifier_key}")(ctx, params \\ %{}, opts \\ []) do
-            modifiers = ctx.modifiers
-            modifier_value = Map.get(modifiers, unquote(modifier_key)) || %{}
-            modifier_changes = Enum.into(params, %{})
-            updated_modifier_value = Map.merge(modifier_value, modifier_changes)
+      for {modifier_key, modifier_module} <- all_modifiers do
+        def unquote(:"#{modifier_key}")(ctx, params \\ %{}) do
+          modifiers = ctx.modifiers
+          modifier = apply(unquote(modifier_module), :modifier, [params])
 
-            updated_modifiers = Map.put(modifiers, unquote(modifier_key), updated_modifier_value)
-
-            Map.put(ctx, :modifiers, updated_modifiers)
-          end
+          Map.put(ctx, :modifiers, LiveViewNativePlatform.Modifiers.append(modifiers, modifier))
         end
       end
     end
