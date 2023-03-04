@@ -13,6 +13,13 @@ defmodule LiveViewNative.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
       consolidate_protocols: Mix.env() != :test
     ]
   end
@@ -43,7 +50,8 @@ defmodule LiveViewNative.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:live_view_native_platform, git: "https://github.com/liveviewnative/live_view_native_platform.git", branch: "tag-engine"}
+      {:live_view_native_platform, git: "https://github.com/liveviewnative/live_view_native_platform.git", branch: "tag-engine"},
+      {:excoveralls, "~> 0.10", only: :test},
     ]
   end
 

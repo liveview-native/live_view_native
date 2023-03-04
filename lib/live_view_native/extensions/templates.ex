@@ -13,22 +13,14 @@ defmodule LiveViewNative.Extensions.Templates do
   is generated which renders the template using that template engine.
   """
   defmacro __using__(opts \\ []) do
-    caller = opts[:caller]
-    eex_engine = opts[:eex_engine]
-    platform_module = opts[:platform_module]
-    tag_handler = opts[:tag_handler]
-    template_basename = opts[:template_basename]
-    template_directory = opts[:template_directory]
-    template_extension = opts[:template_extension]
-
     quote bind_quoted: [
-            caller: caller,
-            eex_engine: eex_engine,
-            platform_module: platform_module,
-            tag_handler: tag_handler,
-            template_basename: template_basename,
-            template_directory: template_directory,
-            template_extension: template_extension,
+            caller: opts[:caller],
+            eex_engine: opts[:eex_engine],
+            platform_module: opts[:platform_module],
+            tag_handler: opts[:tag_handler],
+            template_basename: opts[:template_basename],
+            template_directory: opts[:template_directory],
+            template_extension: opts[:template_extension],
           ] do
       template_path = Path.join(template_directory, template_basename) <> template_extension
 

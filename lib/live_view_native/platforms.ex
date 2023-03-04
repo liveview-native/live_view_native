@@ -12,19 +12,33 @@ defmodule LiveViewNative.Platforms do
                  |> Application.compile_env(:platforms, [])
                  |> Enum.concat(@default_platforms)
                  |> Enum.map(fn platform_mod ->
-                   platform_config = Application.compile_env(:live_view_native, platform_mod)
+                   platform_config = Application.compile_env(:live_view_native, platform_mod, [])
+                   platform_params = Enum.into(platform_config, %{})
 
-                   platform_params =
-                     if is_list(platform_config), do: Enum.into(platform_config, %{}), else: %{}
-
-                   platform_config = struct!(platform_mod, platform_params)
-                   platform_context = LiveViewNativePlatform.context(platform_config)
-                   platform_id = platform_context.platform_id
-
-                   {"#{platform_id}",
-                    Map.put(platform_context, :platform_config, platform_config)}
+                   {platform_mod, platform_params}
                  end)
                  |> Enum.into(%{})
 
-  def env_platforms, do: @env_platforms
+  def env_platforms do
+    @env_platforms
+    |> Enum.map(&expand_env_platform/1)
+    |> Enum.into(%{})
+  end
+
+  def env_platform(platform_id) do
+    env_platforms()
+    |> Map.get(platform_id)
+  end
+
+  ###
+
+  defp expand_env_platform({platform_mod, %{} = platform_params}) do
+    platform_config = struct!(platform_mod, platform_params)
+    platform_context =
+      platform_config
+      |> LiveViewNativePlatform.context()
+      |> Map.put(:platform_config, platform_config)
+
+    {"#{platform_context.platform_id}", platform_context}
+  end
 end

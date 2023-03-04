@@ -33,8 +33,10 @@ defmodule LiveViewNative.JSONCoercableTest do
     assert coerce_to(Atom, false) == false
     assert coerce_to(Atom, nil) == nil
     assert coerce_to(String, "world") == "world"
+    assert coerce_to(BitString, "world") == "world"
     assert coerce_to(Integer, 123) == 123
     assert coerce_to(Float, 42.0) == 42.0
+    assert coerce_to(Float, 42) == 42.0
     assert coerce_to(Map, %{"foo" => 123}) == %{"foo" => 123}
     assert coerce_to(List, ["hello"]) == ["hello"]
   end
@@ -54,5 +56,17 @@ defmodule LiveViewNative.JSONCoercableTest do
              point: %Point{x: 3, y: 4},
              string: "hello"
            }
+  end
+
+  test "it raises when to_json/1 isn't implemented" do
+    assert_raise(Protocol.UndefinedError, fn ->
+      JSONCoercable.to_json(%URI{})
+    end)
+  end
+
+  test "it raises when from_json/1 isn't implemented" do
+    assert_raise(Protocol.UndefinedError, fn ->
+      JSONCoercable.from_json(%URI{})
+    end)
   end
 end
