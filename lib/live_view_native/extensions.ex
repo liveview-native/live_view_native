@@ -20,12 +20,12 @@ defmodule LiveViewNative.Extensions do
 
           use LiveViewNative.Extensions.Templates,
             caller: caller,
+            eex_engine: platform_context.eex_engine,
             platform_module: platform_module,
+            tag_handler: platform_context.tag_handler,
             template_basename: Path.basename(__ENV__.file) |> String.split(".") |> List.first(),
             template_directory: Path.dirname(__ENV__.file),
-            template_engine: platform_context.template_engine,
-            template_extension: platform_context.template_extension || ".#{platform_id}.heex",
-            template_path: template_path
+            template_extension: platform_context.template_extension || ".#{platform_id}.heex"
         end
       end
 

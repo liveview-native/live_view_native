@@ -4,8 +4,8 @@ defmodule LiveViewNative.Platforms.Web do
   defimpl LiveViewNativePlatform do
     def context(_struct) do
       %LiveViewNativePlatform.Context{
+        tag_handler: Phoenix.LiveView.HTMLEngine,
         platform_id: :web,
-        template_engine: Phoenix.LiveView.HTMLEngine,
         template_extension: ".html.heex",
         template_namespace: Web
       }

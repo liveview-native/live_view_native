@@ -12,7 +12,7 @@ defmodule LiveViewNative.Platforms do
                  |> Application.compile_env(:platforms, [])
                  |> Enum.concat(@default_platforms)
                  |> Enum.map(fn platform_mod ->
-                   platform_config = Application.get_env(:live_view_native, platform_mod)
+                   platform_config = Application.compile_env(:live_view_native, platform_mod)
 
                    platform_params =
                      if is_list(platform_config), do: Enum.into(platform_config, %{}), else: %{}

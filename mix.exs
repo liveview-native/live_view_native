@@ -36,17 +36,18 @@ defmodule LiveViewNative.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.10"},
+      {:phoenix, "~> 1.7"},
+      {:phoenix_view, "~> 2.0"},
+      {:phoenix_live_view, git: "https://github.com/phoenixframework/phoenix_live_view.git", ref: "d9cacd59f065d75fc0d980cb71f70e3bb40d4e95", override: true},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:phoenix_live_view, "~> 0.18.7"},
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:live_view_native_platform, "~> 0.0.4"}
+      {:live_view_native_platform, git: "https://github.com/liveviewnative/live_view_native_platform.git", branch: "tag-engine"}
     ]
   end
 
