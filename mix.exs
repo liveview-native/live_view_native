@@ -22,8 +22,7 @@ defmodule LiveViewNative.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {LiveViewNative.Application, []},
-      extra_applications: [:logger, :runtime_tools, :live_view_native_platform]
+      extra_applications: [:logger, :live_view_native_platform]
     ]
   end
 
@@ -39,9 +38,6 @@ defmodule LiveViewNative.MixProject do
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_view, git: "https://github.com/phoenixframework/phoenix_live_view.git", ref: "d9cacd59f065d75fc0d980cb71f70e3bb40d4e95", override: true},
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:floki, ">= 0.30.0", only: :test},
