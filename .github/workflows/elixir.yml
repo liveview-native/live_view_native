@@ -9,19 +9,20 @@ on:
 permissions:
   contents: read
 
+env:
+  MIX_ENV: test
+
 jobs:
   build:
-
     name: Build and test
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
     - name: Set up Elixir
       uses: erlef/setup-beam@988e02bfe678367a02564f65ca2e37726dc0268f
       with:
-        elixir-version: '1.12.3' # Define the elixir version [required]
-        otp-version: '24.1' # Define the OTP version [required]
+        elixir-version: '1.14.2' # Define the elixir version [required]
+        otp-version: '25.0' # Define the OTP version [required]
     - name: Restore dependencies cache
       uses: actions/cache@v3
       with:
