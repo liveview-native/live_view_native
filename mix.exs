@@ -13,6 +13,13 @@ defmodule LiveViewNative.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
       consolidate_protocols: Mix.env() != :test
     ]
   end
@@ -22,8 +29,7 @@ defmodule LiveViewNative.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {LiveViewNative.Application, []},
-      extra_applications: [:logger, :runtime_tools, :live_view_native_platform]
+      extra_applications: [:logger, :live_view_native_platform]
     ]
   end
 
@@ -36,17 +42,16 @@ defmodule LiveViewNative.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.10"},
-      {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.18"},
+      {:phoenix, "~> 1.7"},
+      {:phoenix_view, "~> 2.0"},
+      {:phoenix_live_view, git: "https://github.com/phoenixframework/phoenix_live_view.git", ref: "d9cacd59f065d75fc0d980cb71f70e3bb40d4e95", override: true},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:phoenix_live_view, "~> 0.18.7"},
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:live_view_native_platform, "~> 0.0.4"}
+      {:live_view_native_platform, git: "https://github.com/liveviewnative/live_view_native_platform.git", branch: "tag-engine"},
+      {:excoveralls, "~> 0.10", only: :test},
     ]
   end
 

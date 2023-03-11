@@ -6,9 +6,7 @@ defmodule LiveViewNative do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
-  import LiveViewNativeWeb.Gettext
-
-  @env_platforms LiveViewNative.Platforms.env_platforms()
+  import LiveViewNative.Platforms, only: [env_platform: 1, env_platforms: 0]
 
   def start_simulator!(platform_id, opts \\ []) do
     %LiveViewNativePlatform.Context{platform_config: platform_config} = platform!(platform_id)
@@ -20,7 +18,7 @@ defmodule LiveViewNative do
     do: platform("#{platform_id}")
 
   def platform(platform_id) when is_binary(platform_id) do
-    case Map.get(@env_platforms, platform_id) do
+    case env_platform(platform_id) do
       %{} = platform_struct ->
         {:ok, platform_struct}
 
@@ -35,17 +33,17 @@ defmodule LiveViewNative do
         platform
 
       :error ->
-        platform_ids = @env_platforms |> Map.keys() |> Enum.map(&":#{&1}") |> Enum.join(", ")
+        platform_ids = env_platforms() |> Map.keys() |> Enum.map(&":#{&1}") |> Enum.join(", ")
 
         error_message_no_platform =
-          gettext("No LiveView Native platform for %{key}", key: inspect(platform_id))
+          "No LiveView Native platform for #{inspect(platform_id)}"
 
         error_message_valid_platforms_hint =
-          gettext("The valid platforms are: %{keys}", keys: platform_ids)
+          "The valid platforms are: #{platform_ids}"
 
         raise error_message_no_platform <> ". " <> error_message_valid_platforms_hint
     end
   end
 
-  def platforms, do: @env_platforms
+  def platforms, do: env_platforms()
 end

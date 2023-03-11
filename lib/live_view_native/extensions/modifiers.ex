@@ -13,10 +13,10 @@ defmodule LiveViewNative.Extensions.Modifiers do
   context as part of `LiveViewNative.Extensions.Render`.
   """
   defmacro __using__(opts \\ []) do
-    custom_modifiers = opts[:custom_modifiers] || []
-    platform_modifiers = opts[:platform_modifiers] || []
-
-    quote bind_quoted: [custom_modifiers: custom_modifiers, platform_modifiers: platform_modifiers] do
+    quote bind_quoted: [
+      custom_modifiers: opts[:custom_modifiers],
+      platform_modifiers: opts[:platform_modifiers]
+    ] do
       all_modifiers = Keyword.merge(platform_modifiers, custom_modifiers)
 
       for {modifier_key, modifier_module} <- all_modifiers do

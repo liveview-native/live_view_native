@@ -7,21 +7,13 @@
 # General application configuration
 import Config
 
-# Configures the endpoint
-config :live_view_native, LiveViewNativeWeb.Endpoint,
-  url: [host: "localhost"],
-  render_errors: [view: LiveViewNativeWeb.ErrorView, accepts: ~w(json), layout: false],
-  pubsub_server: LiveViewNative.PubSub,
-  live_view: [signing_salt: "PTV7nsit"]
+if config_env() == :test do
+  # Define platform support for LiveView Native
+  config :live_view_native,
+    platforms: [
+      LiveViewNative.TestPlatform
+    ]
 
-# Configures Elixir's Logger
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
-
-# Use Jason for JSON parsing in Phoenix
-config :phoenix, :json_library, Jason
-
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
-import_config "#{config_env()}.exs"
+  config :live_view_native, LiveViewNative.TestPlatform,
+    testing_notes: "everything is ok"
+end

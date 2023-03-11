@@ -7,25 +7,23 @@ defmodule LiveViewNative.Extensions do
   respectively.
   """
   defmacro __using__(_opts \\ []) do
-    caller = Macro.escape(__CALLER__)
-
-    quote bind_quoted: [caller: caller] do
+    quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
         defmodule :"#{platform_module}" do
           use LiveViewNative.Extensions.Modifiers,
-            custom_modifiers: platform_context.custom_modifiers,
-            platform_modifiers: platform_context.platform_modifiers
+            custom_modifiers: platform_context.custom_modifiers || [],
+            platform_modifiers: platform_context.platform_modifiers || []
 
           use LiveViewNative.Extensions.Templates,
             caller: caller,
+            eex_engine: platform_context.eex_engine,
             platform_module: platform_module,
+            tag_handler: platform_context.tag_handler,
             template_basename: Path.basename(__ENV__.file) |> String.split(".") |> List.first(),
             template_directory: Path.dirname(__ENV__.file),
-            template_engine: platform_context.template_engine,
-            template_extension: platform_context.template_extension || ".#{platform_id}.heex",
-            template_path: template_path
+            template_extension: platform_context.template_extension || ".#{platform_id}.heex"
         end
       end
 
