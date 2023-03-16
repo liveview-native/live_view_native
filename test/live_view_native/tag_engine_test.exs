@@ -23,6 +23,10 @@ defmodule LiveViewNative.TagEngineTest do
     test "it returns all other tagas as they are" do
       assert TagEngine.classify_type("test") == {:tag, "test"}
     end
+
+    test "it returns a tag when name is a capitalized string without a dot" do
+      assert TagEngine.classify_type("Foo") == {:tag, "Foo"}
+    end
   end
 
   describe "void?/1" do
