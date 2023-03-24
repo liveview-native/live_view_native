@@ -50,7 +50,7 @@ defmodule LiveViewNative.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:live_view_native_platform, git: "https://github.com/liveviewnative/live_view_native_platform.git", branch: "tag-engine"},
+      {:live_view_native_platform, git: "https://github.com/liveview-native/live_view_native_platform.git", branch: "tag-engine"},
       {:excoveralls, "~> 0.10", only: :test},
     ]
   end
@@ -67,7 +67,7 @@ defmodule LiveViewNative.MixProject do
     ]
   end
 
-  @source_url "https://github.com/liveviewnative/live_view_native"
+  @source_url "https://github.com/liveview-native/live_view_native"
 
   # Hex package configuration
   defp package do
