@@ -35,11 +35,9 @@ defmodule LiveViewNative do
       :error ->
         platform_ids = env_platforms() |> Map.keys() |> Enum.map(&":#{&1}") |> Enum.join(", ")
 
-        error_message_no_platform =
-          "No LiveView Native platform for #{inspect(platform_id)}"
+        error_message_no_platform = "No LiveView Native platform for #{inspect(platform_id)}"
 
-        error_message_valid_platforms_hint =
-          "The valid platforms are: #{platform_ids}"
+        error_message_valid_platforms_hint = "The valid platforms are: #{platform_ids}"
 
         raise error_message_no_platform <> ". " <> error_message_valid_platforms_hint
     end

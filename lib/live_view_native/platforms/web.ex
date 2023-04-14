@@ -3,12 +3,12 @@ defmodule LiveViewNative.Platforms.Web do
 
   defimpl LiveViewNativePlatform do
     def context(_struct) do
-      %LiveViewNativePlatform.Context{
+      LiveViewNativePlatform.Context.define(:web,
         tag_handler: Phoenix.LiveView.HTMLEngine,
-        platform_id: :web,
         template_extension: ".html.heex",
-        template_namespace: Web
-      }
+        template_namespace: LiveViewNativeWeb,
+        otp_app: :live_view_native
+      )
     end
 
     def start_simulator(_struct, _opts \\ []) do

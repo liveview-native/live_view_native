@@ -16,9 +16,10 @@ defmodule LiveViewNativeTest do
 
       assert platform_struct
       assert platform_struct.platform_id == :_live_view_native_test_internal
+
       assert platform_struct.platform_config == %LiveViewNative.TestPlatform{
-        testing_notes: "everything is ok"
-      }
+               testing_notes: "everything is ok"
+             }
     end
 
     test "when platform_id is a binary" do
