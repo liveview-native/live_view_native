@@ -34,6 +34,7 @@ defmodule LiveViewNative.Platforms do
 
   defp expand_env_platform({platform_mod, %{} = platform_params}) do
     platform_config = struct!(platform_mod, platform_params)
+
     platform_context =
       platform_config
       |> LiveViewNativePlatform.context()

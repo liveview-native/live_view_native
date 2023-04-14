@@ -20,7 +20,7 @@ defmodule LiveViewNative.Extensions.Templates do
             tag_handler: opts[:tag_handler],
             template_basename: opts[:template_basename],
             template_directory: opts[:template_directory],
-            template_extension: opts[:template_extension],
+            template_extension: opts[:template_extension]
           ] do
       template_path = Path.join(template_directory, template_basename) <> template_extension
 

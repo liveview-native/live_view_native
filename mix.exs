@@ -4,7 +4,7 @@ defmodule LiveViewNative.MixProject do
   def project do
     [
       app: :live_view_native,
-      version: "0.0.5",
+      version: "0.0.6",
       elixir: "~> 1.12",
       description: "Native platform implementations of the Phoenix LiveView protocol",
       package: package(),
@@ -50,7 +50,7 @@ defmodule LiveViewNative.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:live_view_native_platform, "~> 0.0.5"},
+      {:live_view_native_platform, "~> 0.0.6"},
       {:excoveralls, "~> 0.10", only: :test}
     ]
   end

@@ -9,7 +9,8 @@ defmodule LiveViewNative.TagEngineTest do
     end
 
     test "it returns an error tuple when name is :inner_block" do
-      assert TagEngine.classify_type(":inner_block") == {:error, "the slot name :inner_block is reserved"}
+      assert TagEngine.classify_type(":inner_block") ==
+               {:error, "the slot name :inner_block is reserved"}
     end
 
     test "it returns a remote component tuple when name is a capitalized string (module name with function)" do

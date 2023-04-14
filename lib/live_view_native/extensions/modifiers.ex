@@ -14,9 +14,9 @@ defmodule LiveViewNative.Extensions.Modifiers do
   """
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
-      custom_modifiers: opts[:custom_modifiers],
-      platform_modifiers: opts[:platform_modifiers]
-    ] do
+            custom_modifiers: opts[:custom_modifiers],
+            platform_modifiers: opts[:platform_modifiers]
+          ] do
       all_modifiers = Keyword.merge(platform_modifiers, custom_modifiers)
 
       for {modifier_key, modifier_module} <- all_modifiers do
@@ -24,7 +24,15 @@ defmodule LiveViewNative.Extensions.Modifiers do
           modifiers = ctx.modifiers
           modifier = apply(unquote(modifier_module), :modifier, [params])
 
-          Map.put(ctx, :modifiers, LiveViewNativePlatform.Modifiers.append(modifiers, modifier))
+          if modifiers do
+            Map.put(
+              ctx,
+              :modifiers,
+              LiveViewNativePlatform.ModifiersStack.append(modifiers, modifier)
+            )
+          else
+            ctx
+          end
         end
       end
     end

@@ -15,7 +15,12 @@ defmodule LiveViewNative.LiveViewTest do
     web_result = TestLiveView.render(%{native: web_context})
     test_result = TestLiveView.render(%{native: test_context})
 
-    assert web_result.static == ["<div>\n  <span>This is an HTML template</span>\n  <input>\n</div>"]
-    assert test_result.static == ["<div>\n  <span>This is not an HTML template</span>\n  <input>\n    <faketag>(not actually HTML)</faketag>\n  </input>\n</div>"]
+    assert web_result.static == [
+             "<div>\n  <span>This is an HTML template</span>\n  <input>\n</div>"
+           ]
+
+    assert test_result.static == [
+             "<div>\n  <span>This is not an HTML template</span>\n  <input>\n    <faketag>(not actually HTML)</faketag>\n  </input>\n</div>"
+           ]
   end
 end
