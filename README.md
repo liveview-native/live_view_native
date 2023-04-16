@@ -37,7 +37,7 @@ end
 This allows us to define a specific template for each platform:
 
 ```html
-<!-- hello_live.html.heex -->
+<% # hello_live.html.heex %>
 <div id="hello-web">
   <div class="text-slate-800 bg-slate-50 h-screen w-screen grid grid-cols-1 gap-1 content-center items-center text-center">
     <div class="font-semibold mb-1">Hello from the web!</div>
@@ -46,7 +46,7 @@ This allows us to define a specific template for each platform:
 ```
 
 ```html
-<!-- hello_live.ios.heex -->
+<% # hello_live.ios.heex %>
 <VStack id="hello-ios">
   <HStack modifiers={@native |> padding(all: 5)}>
     <Text>Hello from SwiftUI!</Text>
@@ -70,8 +70,8 @@ For example, if you want to support rendering LiveViews in SwiftUI, add its plat
 ```elixir
 def deps do
   [
-    {:live_view_native, "~> 0.0.5"},
-    {:live_view_native_swift_ui, "~> 0.0.5"}
+    {:live_view_native, "~> 0.0.6"},
+    {:live_view_native_swift_ui, "~> 0.0.6"}
   ]
 end
 ```
