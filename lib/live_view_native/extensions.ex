@@ -25,9 +25,15 @@ defmodule LiveViewNative.Extensions do
             template_directory: Path.dirname(__ENV__.file),
             template_extension: platform_context.template_extension || ".#{platform_id}.heex"
         end
+
+        use LiveViewNative.Extensions.Modifiers,
+          custom_modifiers: platform_context.custom_modifiers || [],
+          platform_modifiers: platform_context.platform_modifiers || [],
+          platform_module: platform_module
       end
 
       use LiveViewNative.Extensions.Render
+      use LiveViewNative.Extensions.InlineRender
     end
   end
 end

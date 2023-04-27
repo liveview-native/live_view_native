@@ -15,24 +15,31 @@ defmodule LiveViewNative.Extensions.Modifiers do
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
             custom_modifiers: opts[:custom_modifiers],
-            platform_modifiers: opts[:platform_modifiers]
+            platform_modifiers: opts[:platform_modifiers],
+            platform_module: opts[:platform_module]
           ] do
       all_modifiers = Keyword.merge(platform_modifiers, custom_modifiers)
 
-      for {modifier_key, modifier_module} <- all_modifiers do
-        def unquote(:"#{modifier_key}")(ctx, params \\ %{}) do
-          modifiers = ctx.modifiers
-          modifier = apply(unquote(modifier_module), :modifier, [params])
+      if is_nil(platform_module) do
+        for {modifier_key, modifier_module} <- all_modifiers do
+          def unquote(:"#{modifier_key}")(ctx, params \\ %{}) do
+            modifiers = ctx.modifiers
+            modifier = apply(unquote(modifier_module), :modifier, [params])
 
-          if modifiers do
-            Map.put(
-              ctx,
-              :modifiers,
-              LiveViewNativePlatform.ModifiersStack.append(modifiers, modifier)
-            )
-          else
-            ctx
+            if modifiers do
+              Map.put(
+                ctx,
+                :modifiers,
+                LiveViewNativePlatform.ModifiersStack.append(modifiers, modifier)
+              )
+            else
+              ctx
+            end
           end
+        end
+      else
+        for {modifier_key, modifier_module} <- all_modifiers do
+          defdelegate unquote(:"#{modifier_key}")(ctx, params), to: platform_module
         end
       end
     end
