@@ -1,6 +1,31 @@
 defmodule LiveViewNative.Extensions.InlineRender do
   @moduledoc """
+  LiveView Native extension that enables inline-rendering of templates for LiveView
+  Native platforms within a LiveView or Live Component. Using this macro causes
+  a module to inherit a `Z/2` sigil that can be used to render templates inline
+  by suffixing it with the platform's `platform_id`:
 
+  ```elixir
+  defmodule ScratchboardWeb.SigilTestLive do
+    use Phoenix.LiveView
+    use LiveViewNative.LiveView
+
+    @impl true
+    def render(%{platform_id: :ios} = assigns) do
+      ~Z\"\"\"
+      <Text modifiers={@native |> foreground_style(primary: {:color, :mint})}>
+        Hello from iOS!
+      </Text>
+      \"\"\"ios
+    end
+
+    def render(assigns) do
+      ~H\"\"\"
+      <div>Hello from the web!</div>
+      \"\"\"
+    end
+  end
+  ```
   """
   defmacro __using__(_opts \\ []) do
     quote bind_quoted: [] do
