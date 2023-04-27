@@ -39,7 +39,9 @@ defmodule LiveViewNative.Extensions.Modifiers do
         end
       else
         for {modifier_key, modifier_module} <- all_modifiers do
-          defdelegate unquote(:"#{modifier_key}")(ctx, params), to: platform_module
+          def unquote(:"#{modifier_key}")(ctx, params) do
+            apply(unquote(platform_module), unquote(:"#{modifier_key}"), [ctx, params])
+          end
         end
       end
     end
