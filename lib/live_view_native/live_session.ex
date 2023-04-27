@@ -9,13 +9,22 @@ defmodule LiveViewNative.LiveSession do
     with %{"_platform" => platform_id} <- get_connect_params(socket),
          platforms <- LiveViewNative.platforms(),
          %LiveViewNativePlatform.Context{} = platform_context <- Map.get(platforms, platform_id) do
-      {:cont, assign(socket, :native, platform_context)}
+      socket =
+        socket
+        |> assign(:native, platform_context)
+        |> assign(:platform_id, platform_context.platform_id)
+
+      {:cont, socket}
     else
       _result ->
         platform_config = %LiveViewNative.Platforms.Web{}
         platform_context = LiveViewNativePlatform.context(platform_config)
+        socket =
+          socket
+          |> assign(:native, platform_context)
+          |> assign(:platform_id, platform_context.platform_id)
 
-        {:cont, assign(socket, :native, platform_context)}
+        {:cont, socket}
     end
   end
 end
