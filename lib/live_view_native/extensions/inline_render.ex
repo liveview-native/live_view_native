@@ -6,12 +6,12 @@ defmodule LiveViewNative.Extensions.InlineRender do
   by suffixing it with the platform's `platform_id`:
 
   ```elixir
-  defmodule ScratchboardWeb.SigilTestLive do
+  defmodule MyAppWeb.HelloLive do
     use Phoenix.LiveView
     use LiveViewNative.LiveView
 
     @impl true
-    def render(%{platform_id: :ios} = assigns) do
+    def render(%{platform_id: :swiftui} = assigns) do
       ~Z\"\"\"
       <Text modifiers={@native |> foreground_style(primary: {:color, :mint})}>
         Hello from iOS!

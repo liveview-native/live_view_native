@@ -7,7 +7,7 @@ defmodule LiveViewNative.LiveSessionTest do
   describe "on_mount/4" do
     test "assigns a @native assign with the correct platform configuration" do
       socket = %Socket{
-        private: %{connect_params: %{"_platform" => "_live_view_native_test_internal"}},
+        private: %{connect_params: %{"_platform" => "lvntest"}},
         transport_pid: self()
       }
 
@@ -16,7 +16,7 @@ defmodule LiveViewNative.LiveSessionTest do
       assert updated_socket.assigns
       assert updated_socket.assigns.native
       assert updated_socket.assigns.native.__struct__ == LiveViewNativePlatform.Context
-      assert updated_socket.assigns.native.platform_id == :_live_view_native_test_internal
+      assert updated_socket.assigns.native.platform_id == :lvntest
 
       assert updated_socket.assigns.native.platform_config == %LiveViewNative.TestPlatform{
                testing_notes: "everything is ok"

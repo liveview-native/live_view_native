@@ -7,15 +7,15 @@ defmodule LiveViewNativeTest do
     assert platforms
     assert is_map(platforms)
     assert platforms["web"]
-    assert platforms["_live_view_native_test_internal"]
+    assert platforms["lvntest"]
   end
 
   describe "platform/1" do
     test "when platform_id is a non-nil atom" do
-      {:ok, platform_struct} = LiveViewNative.platform(:_live_view_native_test_internal)
+      {:ok, platform_struct} = LiveViewNative.platform(:lvntest)
 
       assert platform_struct
-      assert platform_struct.platform_id == :_live_view_native_test_internal
+      assert platform_struct.platform_id == :lvntest
 
       assert platform_struct.platform_config == %LiveViewNative.TestPlatform{
                testing_notes: "everything is ok"
@@ -50,7 +50,7 @@ defmodule LiveViewNativeTest do
   describe "start_simulator!/1" do
     test "it starts a simulator for the given platform" do
       web_result = LiveViewNative.start_simulator!(:web)
-      test_result = LiveViewNative.start_simulator!(:_live_view_native_test_internal)
+      test_result = LiveViewNative.start_simulator!(:lvntest)
 
       assert web_result == {:ok, :skipped}
       assert test_result == {:ok, "start_simulator/2 was called from LiveViewNative.TestPlatform"}

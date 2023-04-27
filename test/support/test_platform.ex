@@ -3,7 +3,7 @@ defmodule LiveViewNative.TestPlatform do
 
   defimpl LiveViewNativePlatform do
     def context(_struct) do
-      LiveViewNativePlatform.Context.define(:_live_view_native_test_internal,
+      LiveViewNativePlatform.Context.define(:lvntest,
         template_extension: ".test.heex",
         template_namespace: Test,
         otp_app: :live_view_native
