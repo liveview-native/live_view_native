@@ -6,9 +6,9 @@ defmodule LiveViewNative.LiveSession do
   import Phoenix.Component, only: [assign: 3]
 
   def on_mount(:live_view_native, _params, _session, socket) do
-    with %{"_platform" => platform_id} <- get_connect_params(socket),
-         platforms <- LiveViewNative.platforms(),
-         %LiveViewNativePlatform.Context{} = platform_context <- Map.get(platforms, platform_id) do
+    with %{} = connect_params <- get_connect_params(socket),
+         %LiveViewNativePlatform.Context{} = platform_context <- get_platform_context(connect_params)
+    do
       socket =
         socket
         |> assign(:native, platform_context)
@@ -27,4 +27,30 @@ defmodule LiveViewNative.LiveSession do
         {:cont, socket}
     end
   end
+
+  ###
+
+  defp get_platform_context(%{"_platform" => platform_id} = connect_params) do
+    platforms = LiveViewNative.platforms()
+
+    with %LiveViewNativePlatform.Context{} = context <- Map.get(platforms, platform_id) do
+      platform_metadata =  get_platform_metadata(connect_params)
+
+      struct(context, platform_metadata)
+    end
+  end
+
+  defp get_platform_context(_connect_params), do: nil
+
+  defp get_platform_metadata(%{"_platform_metadata" => platform_metadata}) when is_binary(platform_metadata) do
+    case Jason.decode(platform_metadata) do
+      {:ok, %{} = metadata} ->
+        metadata
+
+      {:error, _} ->
+        %{}
+    end
+  end
+
+  defp get_platform_metadata(_connect_params), do: %{}
 end
