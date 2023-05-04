@@ -10,7 +10,7 @@ To use LiveView Native, add it to your list of dependencies in `mix.exs`.
 
 ```elixir
 def deps do
-  [{:live_view_native, "~> 0.0.6"}]
+  [{:live_view_native, "~> 0.0.7"}]
 end
 ```
 
@@ -70,8 +70,8 @@ For example, if you want to support rendering LiveViews in SwiftUI, add its plat
 ```elixir
 def deps do
   [
-    {:live_view_native, "~> 0.0.6"},
-    {:live_view_native_swift_ui, "~> 0.0.6"}
+    {:live_view_native, "~> 0.0.7"},
+    {:live_view_native_swift_ui, "~> 0.0.7"}
   ]
 end
 ```
