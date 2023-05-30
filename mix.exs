@@ -5,7 +5,7 @@ defmodule LiveViewNative.MixProject do
     [
       app: :live_view_native,
       version: "0.0.7",
-      elixir: "~> 1.12",
+      elixir: "~> 1.15.0-rc.1",
       description: "Native platform implementations of the Phoenix LiveView protocol",
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),

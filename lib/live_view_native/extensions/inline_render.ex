@@ -31,9 +31,9 @@ defmodule LiveViewNative.Extensions.InlineRender do
     quote bind_quoted: [] do
       require EEx
 
-      defmacro sigil_Z({:<<>>, meta, [expr]}, modifiers) do
+      defmacro sigil_LVN({:<<>>, meta, [expr]}, modifiers) do
         unless Macro.Env.has_var?(__CALLER__, {:assigns, nil}) do
-          raise "~Z requires a variable named \"assigns\" to exist and be set to a map"
+          raise "~LVN requires a variable named \"assigns\" to exist and be set to a map"
         end
 
         with %{} = platforms <- LiveViewNative.platforms(),
@@ -51,6 +51,14 @@ defmodule LiveViewNative.Extensions.InlineRender do
           ]
 
           EEx.compile_string(expr, options)
+        end
+      end
+
+      defmacro sigil_Z({:<<>>, meta, [expr]}, modifiers) do
+        IO.warn("sigil_Z/2 is deprecated. Please use sigil_LVN/2 instead.")
+
+        quote do
+          LiveViewNative.Extensions.InlineRender.sigil_LVN({:<<>>, unquote(meta), [unquote(expr)]}, unquote(modifiers))
         end
       end
     end
