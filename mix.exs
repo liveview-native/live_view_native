@@ -4,7 +4,7 @@ defmodule LiveViewNative.MixProject do
   def project do
     [
       app: :live_view_native,
-      version: "0.0.7",
+      version: "0.0.8-rc.0",
       elixir: "~> 1.15.0-rc.1",
       description: "Native platform implementations of the Phoenix LiveView protocol",
       package: package(),
@@ -14,12 +14,6 @@ defmodule LiveViewNative.MixProject do
       aliases: aliases(),
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      ],
       consolidate_protocols: Mix.env() != :test
     ]
   end
@@ -51,9 +45,8 @@ defmodule LiveViewNative.MixProject do
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:live_view_native_platform, "~> 0.0.7-rc.0"},
-      {:excoveralls, "~> 0.10", only: :test},
       # See https://elixirforum.com/t/elixir-v1-15-0-rc-0-released/56019/3
-      {:ssl_verify_fun, ">= 0.0.0", manager: :rebar3, override: true}
+      {:ssl_verify_fun, ">= 0.0.0", manager: :rebar3}
     ]
   end
 
