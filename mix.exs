@@ -5,7 +5,7 @@ defmodule LiveViewNative.MixProject do
     [
       app: :live_view_native,
       version: "0.0.7",
-      elixir: "~> 1.12",
+      elixir: "~> 1.15.0-rc.1",
       description: "Native platform implementations of the Phoenix LiveView protocol",
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -50,8 +50,10 @@ defmodule LiveViewNative.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:live_view_native_platform, "~> 0.0.6"},
-      {:excoveralls, "~> 0.10", only: :test}
+      {:live_view_native_platform, "~> 0.0.7-rc.0"},
+      {:excoveralls, "~> 0.10", only: :test},
+      # See https://elixirforum.com/t/elixir-v1-15-0-rc-0-released/56019/3
+      {:ssl_verify_fun, ">= 0.0.0", manager: :rebar3, override: true}
     ]
   end
 

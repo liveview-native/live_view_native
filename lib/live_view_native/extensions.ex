@@ -30,6 +30,10 @@ defmodule LiveViewNative.Extensions do
           custom_modifiers: platform_context.custom_modifiers || [],
           platform_modifiers: platform_context.platform_modifiers || [],
           platform_module: platform_module
+
+        use LiveViewNative.Extensions.RenderMacro,
+          platform_id: platform_id,
+          render_macro: platform_context.render_macro
       end
 
       use LiveViewNative.Extensions.Render
