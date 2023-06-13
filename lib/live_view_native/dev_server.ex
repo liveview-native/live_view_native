@@ -1,4 +1,9 @@
 defmodule LiveViewNative.DevServer do
+  @moduledoc """
+  A GenServer that provides additional services in development environments.
+  It supports multicast addressing over UDP to provide visibility between
+  LiveView Native development servers and clients running on the same network.
+  """
   use GenServer
   require Logger
 
