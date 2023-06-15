@@ -14,6 +14,7 @@ defmodule LiveViewNative.Extensions do
         defmodule :"#{platform_module}" do
           use LiveViewNative.Extensions.Modifiers,
             custom_modifiers: platform_context.custom_modifiers || [],
+            modifiers_struct: platform_context.modifiers_struct,
             platform_modifiers: platform_context.platform_modifiers || []
 
           use LiveViewNative.Extensions.Templates,
@@ -28,6 +29,7 @@ defmodule LiveViewNative.Extensions do
 
         use LiveViewNative.Extensions.Modifiers,
           custom_modifiers: platform_context.custom_modifiers || [],
+          modifiers_struct: platform_context.modifiers_struct,
           platform_modifiers: platform_context.platform_modifiers || [],
           platform_module: platform_module
 
