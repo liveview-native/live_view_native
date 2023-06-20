@@ -72,9 +72,9 @@ defmodule LiveViewNative.Extensions.Modifiers do
   defined by the platform library that provides the modifier function being called. In all
   cases, it is a module that implements the following protocols:
 
-  - `LiveViewNativePlatform.ModifiersStack`
-  - `Jason.Encoder`
-  - `Phoenix.HTML.Safe`
+    * `LiveViewNativePlatform.ModifiersStack`
+    * `Jason.Encoder`
+    * `Phoenix.HTML.Safe`
 
   These implementations are used for appending modifiers, encoding them as JSON and rendering
   them as HTML attributes respectively. For platforms that don't provide a modifier builder
@@ -82,9 +82,12 @@ defmodule LiveViewNative.Extensions.Modifiers do
   """
   alias LiveViewNativePlatform.ModifiersStack
 
+  @max_constructor_arity 21
+
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
             custom_modifiers: opts[:custom_modifiers],
+            max_constructor_arity: @max_constructor_arity,
             modifiers_struct: opts[:modifiers_struct],
             platform_modifiers: opts[:platform_modifiers],
             platform_module: opts[:platform_module]
@@ -101,123 +104,45 @@ defmodule LiveViewNative.Extensions.Modifiers do
           def unquote(:"#{modifier_key}")({:_apply_mod, {mod_args, mod_builder, opts}}) do
             mod_builder = mod_builder || struct(unquote(modifiers_struct), %{})
             raw_params = Keyword.get(opts, :raw_params)
-            params = if raw_params, do: raw_params, else: apply(unquote(modifier_module), :params, mod_args)
+
+            params =
+              if raw_params,
+                do: raw_params,
+                else: apply(unquote(modifier_module), :params, mod_args)
+
             modifier = apply(unquote(modifier_module), :modifier, [params])
 
             ModifiersStack.append(mod_builder, modifier)
           end
 
           if Keyword.has_key?(modifier_module.__info__(:functions), :params) do
-            # `params/0` for modifier `f` produces:
-            # `f/1` - taking a context struct
-            # `f/1` - taking a modifier builder
-            # `f/0` - taking no arguments
-            if Kernel.function_exported?(modifier_module, :params, 0) do
-              def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[], mod, []}})
+            for n <- 0..max_constructor_arity do
+              # `params/n` for modifier `f` produces:
+              # `f/(n + 1)` - taking a context struct
+              # `f/(n + 1)` - taking a modifier builder
+              # `f/n` - taking no arguments
+              if Kernel.function_exported?(modifier_module, :params, n) do
+                args = Macro.generate_arguments(n, nil)
 
-              def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[], mod, []}})
+                def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}, unquote_splicing(args)),
+                  do: unquote(:"#{modifier_key}")({:_apply_mod, {[unquote_splicing(args)], mod, []}})
 
-              def unquote(:"#{modifier_key}")(), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[], nil, []}})
-            end
+                def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod, unquote_splicing(args)),
+                  do: unquote(:"#{modifier_key}")({:_apply_mod, {[unquote_splicing(args)], mod, []}})
 
-            # `params/1` for modifier `f` produces:
-            # `f/2` - taking a context struct and `a`
-            # `f/2` - taking a modifier builder and `a`
-            # `f/1` - taking `a`
-            if Kernel.function_exported?(modifier_module, :params, 1) do
-              def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}, a), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a], mod, []}})
-
-              def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod, a), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a], mod, []}})
-
-              def unquote(:"#{modifier_key}")(a), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a], nil, []}})
-            end
-
-            # `params/2` for modifier `f` produces:
-            # `f/3` - taking a context struct, `a` and `b`
-            # `f/3` - taking a modifier builder, `a` and `b`
-            # `f/2` - taking `a` and `b`
-            if Kernel.function_exported?(modifier_module, :params, 2) do
-              def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}, a, b), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b], mod, []}})
-
-              def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod, a, b), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b], mod, []}})
-
-              def unquote(:"#{modifier_key}")(a, b), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b], nil, []}})
-            end
-
-            # `params/3` for modifier `f` produces:
-            # `f/4` - taking a context struct, `a`, `b,` and `c`
-            # `f/4` - taking a modifier builder, `a`, `b,` and `c`
-            # `f/3` - taking `a`, `b,` and `c`
-            if Kernel.function_exported?(modifier_module, :params, 3) do
-              def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}, a, b, c), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c], mod, []}})
-
-              def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod, a, b, c), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c], mod, []}})
-
-              def unquote(:"#{modifier_key}")(a, b, c), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c], nil, []}})
-            end
-
-            # `params/4` for modifier `f` produces:
-            # `f/5` - taking a context struct, `a`, `b,`, `c` and `d`
-            # `f/5` - taking a modifier builder, `a`, `b,`, `c` and `d`
-            # `f/4` - taking `a`, `b,`, `c` and `d`
-            if Kernel.function_exported?(modifier_module, :params, 4) do
-              def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}, a, b, c, d), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d], mod, []}})
-
-              def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod, a, b, c, d), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d], mod, []}})
-
-              def unquote(:"#{modifier_key}")(a, b, c, d), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d], nil, []}})
-            end
-
-            # `params/5` for modifier `f` produces:
-            # `f/6` - taking a context struct, `a`, `b,`, `c`, `d` and `e`
-            # `f/6` - taking a modifier builder, `a`, `b,`, `c`, `d` and `e`
-            # `f/5` - taking `a`, `b,`, `c`, `d` and `e`
-            if Kernel.function_exported?(modifier_module, :params, 5) do
-              def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}, a, b, c, d, e), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d, e], mod, []}})
-
-              def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod, a, b, c, d, e), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d, e], mod, []}})
-
-              def unquote(:"#{modifier_key}")(a, b, c, d, e), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d, e], nil, []}})
-            end
-
-            # `params/6` for modifier `f` produces:
-            # `f/7` - taking a context struct, `a`, `b,`, `c`, `d`, `e` and `f`
-            # `f/7` - taking a modifier builder, `a`, `b,`, `c`, `d`, `e` and `f`
-            # `f/6` - taking `a`, `b,`, `c`, `d`, `e` and `f`
-            if Kernel.function_exported?(modifier_module, :params, 6) do
-              def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}, a, b, c, d, e, f), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d, e, f], mod, []}})
-
-              def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod, a, b, c, d, e), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d, e, f], mod, []}})
-
-              def unquote(:"#{modifier_key}")(a, b, c, d, e), do:
-                unquote(:"#{modifier_key}")({:_apply_mod, {[a, b, c, d, e, f], nil, []}})
+                def unquote(:"#{modifier_key}")(unquote_splicing(args)),
+                  do: unquote(:"#{modifier_key}")({:_apply_mod, {[unquote_splicing(args)], nil, []}})
+              end
             end
           else
             # If no `params` callback is exported by the modifier module, only include one and two arity
             # versions that optionally take a platform or modifier builder struct and always an option list,
             # map or modifier struct. Zero arity modifier functions are also included for modifiers without
             # schema fields.
-            def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: modifiers}, params) do
+            def unquote(:"#{modifier_key}")(
+                  %LiveViewNativePlatform.Context{modifiers: modifiers},
+                  params
+                ) do
               mod = struct(unquote(modifiers_struct), Map.from_struct(modifiers))
 
               unquote(:"#{modifier_key}")(mod, params)
@@ -248,29 +173,12 @@ defmodule LiveViewNative.Extensions.Modifiers do
         # this case, we only need to generate modifier functions that delegate to the ones defined
         # on the platform module:
         for {modifier_key, modifier_module} <- all_modifiers do
-          if Kernel.function_exported?(platform_module, :"#{modifier_key}", 0) do
-            defdelegate unquote(:"#{modifier_key}")(), to: platform_module
-          end
-          if Kernel.function_exported?(platform_module, :"#{modifier_key}", 1) do
-            defdelegate unquote(:"#{modifier_key}")(a), to: platform_module
-          end
-          if Kernel.function_exported?(platform_module, :"#{modifier_key}", 2) do
-            defdelegate unquote(:"#{modifier_key}")(a, b), to: platform_module
-          end
-          if Kernel.function_exported?(platform_module, :"#{modifier_key}", 3) do
-            defdelegate unquote(:"#{modifier_key}")(a, b, c), to: platform_module
-          end
-          if Kernel.function_exported?(platform_module, :"#{modifier_key}", 4) do
-            defdelegate unquote(:"#{modifier_key}")(a, b, c, d), to: platform_module
-          end
-          if Kernel.function_exported?(platform_module, :"#{modifier_key}", 5) do
-            defdelegate unquote(:"#{modifier_key}")(a, b, c, d, e), to: platform_module
-          end
-          if Kernel.function_exported?(platform_module, :"#{modifier_key}", 6) do
-            defdelegate unquote(:"#{modifier_key}")(a, b, c, d, e, f), to: platform_module
-          end
-          if Kernel.function_exported?(platform_module, :"#{modifier_key}", 7) do
-            defdelegate unquote(:"#{modifier_key}")(a, b, c, d, e, f, g), to: platform_module
+          for n <- 0..max_constructor_arity do
+            args = Macro.generate_arguments(n, nil)
+
+            if Kernel.function_exported?(platform_module, :"#{modifier_key}", n) do
+              defdelegate unquote(:"#{modifier_key}")(unquote_splicing(args)), to: platform_module
+            end
           end
         end
       end
