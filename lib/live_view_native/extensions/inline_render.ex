@@ -2,7 +2,7 @@ defmodule LiveViewNative.Extensions.InlineRender do
   @moduledoc """
   LiveView Native extension that enables inline-rendering of templates for LiveView
   Native platforms within a LiveView or Live Component. Using this macro causes
-  a module to inherit a `Z/2` sigil that can be used to render templates inline
+  a module to inherit a `LVN/2` sigil that can be used to render templates inline
   by suffixing it with the platform's `platform_id`:
 
   ```elixir
@@ -12,11 +12,11 @@ defmodule LiveViewNative.Extensions.InlineRender do
 
     @impl true
     def render(%{platform_id: :swiftui} = assigns) do
-      ~Z\"\"\"
+      ~LVN\"\"\"
       <Text modifiers={@native |> foreground_style(primary: {:color, :mint})}>
         Hello from iOS!
       </Text>
-      \"\"\"ios
+      \"\"\"swiftui
     end
 
     def render(assigns) do
@@ -51,14 +51,6 @@ defmodule LiveViewNative.Extensions.InlineRender do
           ]
 
           EEx.compile_string(expr, options)
-        end
-      end
-
-      defmacro sigil_Z({:<<>>, meta, [expr]}, modifiers) do
-        IO.warn("sigil_Z/2 is deprecated. Please use sigil_LVN/2 instead.")
-
-        quote do
-          LiveViewNative.Extensions.InlineRender.sigil_LVN({:<<>>, unquote(meta), [unquote(expr)]}, unquote(modifiers))
         end
       end
     end
