@@ -4,8 +4,8 @@ defmodule LiveViewNative.MixProject do
   def project do
     [
       app: :live_view_native,
-      version: "0.0.8-rc.0",
-      elixir: "~> 1.15.0-rc.1",
+      version: "0.0.8",
+      elixir: "~> 1.15",
       description: "Native platform implementations of the Phoenix LiveView protocol",
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -45,7 +45,7 @@ defmodule LiveViewNative.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
-      {:live_view_native_platform, "~> 0.0.7-rc.1"}
+      {:live_view_native_platform, "~> 0.0.7"}
     ]
   end
 
