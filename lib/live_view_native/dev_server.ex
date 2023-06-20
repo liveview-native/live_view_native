@@ -92,10 +92,12 @@ defmodule LiveViewNative.DevServer do
   defp endpoint_modules(modules) do
     modules
     |> Enum.filter(fn mod ->
-      case mod.module_info(:attributes)[:behaviour] do
-        [_ | _] = behaviours ->
-          Enum.member?(behaviours, Phoenix.Endpoint)
-
+      with mod when not is_nil(mod) <- mod,
+           attributes when not is_nil(attributes) <- mod.module_info(:attributes),
+           [_ | _] = behaviours <- attributes[:behaviour]
+      do
+        Enum.member?(behaviours, Phoenix.Endpoint)
+      else
         _ ->
           false
       end
