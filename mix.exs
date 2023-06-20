@@ -23,6 +23,7 @@ defmodule LiveViewNative.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
+      mod: {LiveViewNative.Application, []},
       extra_applications: [:logger, :live_view_native_platform]
     ]
   end
