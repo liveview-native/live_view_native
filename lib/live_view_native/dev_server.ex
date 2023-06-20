@@ -38,7 +38,7 @@ defmodule LiveViewNative.DevServer do
     {:noreply, state}
   end
 
-  def handle_info({:udp, _port, ip, _port_number, _message}, state) do
+  def handle_info({:udp, _port, _ip, _port_number, _message}, state) do
     {:noreply, state}
   end
 
