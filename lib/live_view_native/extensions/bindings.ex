@@ -19,9 +19,7 @@ defmodule LiveViewNative.Extensions.Bindings do
       end
 
       def handle_event("_native_bindings", values, socket) do
-        dbg values
         assigns = load_native_bindings(values, __native_bindings__())
-        dbg assigns
 
         {:noreply, assign(socket, assigns)}
       end
