@@ -19,7 +19,9 @@ defmodule LiveViewNative.Extensions.Bindings do
       end
 
       def handle_event("_native_bindings", values, socket) do
+        dbg values
         assigns = load_native_bindings(values, __native_bindings__())
+        dbg assigns
 
         {:noreply, assign(socket, assigns)}
       end
@@ -46,11 +48,15 @@ defmodule LiveViewNative.Extensions.Bindings do
   end
 
   def load_native_bindings(values, bindings) do
-    types = Map.new(bindings, fn {name, {type, _opts}} -> {name, type} end)
     Enum.map(values, fn {key, value} ->
       key = String.to_existing_atom(key)
-      type = Map.get(types, key)
-      {key, Ecto.Type.load(type, value)}
+      {type, opts} = Map.get(bindings, key)
+      case Ecto.Type.load(type, value) do
+        {:ok, value} ->
+          {key, value}
+        _ ->
+          {key, Keyword.get(opts, :default)}
+      end
     end)
   end
 

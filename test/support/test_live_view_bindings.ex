@@ -14,9 +14,9 @@ defmodule LiveViewNative.CustomBindingType do
   use Ecto.Type
   def type, do: :map
 
-  def load(map), do: struct(__MODULE__, for {key, value} <- map, into: %{} do
+  def load(map), do: {:ok, struct(__MODULE__, for {key, value} <- map, into: %{} do
     {String.to_existing_atom(key), value}
-  end)
+  end)}
   def dump(_), do: :error
 
   def cast({a, b}), do: {:ok, %__MODULE__{ a: a, b: b }}
@@ -27,7 +27,7 @@ defmodule LiveViewNative.CustomStringBindingType do
   use Ecto.Type
   def type, do: :string
 
-  def load(string), do: string
+  def load(string), do: {:ok, string}
   def dump(_), do: :error
 
   def cast(value) when is_bitstring(value), do: {:ok, value}
