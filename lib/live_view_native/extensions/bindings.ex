@@ -19,16 +19,7 @@ defmodule LiveViewNative.Extensions.Bindings do
       end
 
       def handle_event("_native_bindings", values, socket) do
-        assigns = Enum.reduce(values, %{}, fn {name, json_value}, acc ->
-          name = String.to_existing_atom(name)
-
-          case Map.get(__native_bindings__(), name) do
-            nil ->
-              acc
-            {type, default} ->
-              Map.put(acc, name, json_value)
-          end
-        end)
+        assigns = load_native_bindings(values, __native_bindings__())
 
         {:noreply, assign(socket, assigns)}
       end
@@ -47,12 +38,25 @@ defmodule LiveViewNative.Extensions.Bindings do
     end
   end
 
+  def cast_native_bindings(map, bindings) do
+    data = Enum.into(map, %{})
+    types = Map.new(bindings, fn {name, {type, _opts}} -> {name, type} end)
+    changeset = cast({data, types}, data, Map.keys(data))
+    Map.merge(data, changeset.changes)
+  end
+
+  def load_native_bindings(values, bindings) do
+    types = Map.new(bindings, fn {name, {type, _opts}} -> {name, type} end)
+    Enum.map(values, fn {key, value} ->
+      key = String.to_existing_atom(key)
+      type = Map.get(types, key)
+      {key, Ecto.Type.load(type, value)}
+    end)
+  end
+
   defmacro assign_native_bindings(socket, map, opts \\ []) do
     quote bind_quoted: [socket: socket, map: map, opts: opts] do
-      data = Enum.into(map, %{})
-      types = Map.new(__native_bindings__(), fn {name, {type, _opts}} -> {name, type} end)
-      changeset = cast({data, types}, data, Map.keys(data))
-      data = Map.merge(data, changeset.changes)
+      data = cast_native_bindings(map, __native_bindings__())
 
       animation = case Keyword.get(opts, :animation) do
         nil ->
