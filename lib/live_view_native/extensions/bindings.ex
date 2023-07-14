@@ -13,7 +13,10 @@ defmodule LiveViewNative.Extensions.Bindings do
       on_mount {__MODULE__, :_set_native_binding_defaults}
 
       def on_mount(:_set_native_binding_defaults, _params, _session, socket) do
-        defaults = Enum.map(__native_bindings__(), fn {name, {_type, opts}} -> {name, Keyword.get(opts, :default)} end)
+        defaults =
+          Enum.map(__native_bindings__(), fn {name, {_type, opts}} ->
+            {name, Keyword.get(opts, :default)}
+          end)
 
         {:cont, assign_native_bindings(socket, defaults)}
       end
@@ -49,9 +52,11 @@ defmodule LiveViewNative.Extensions.Bindings do
     Enum.map(values, fn {key, value} ->
       key = String.to_existing_atom(key)
       {type, opts} = Map.get(bindings, key)
+
       case Ecto.Type.load(type, value) do
         {:ok, value} ->
           {key, value}
+
         _ ->
           {key, Keyword.get(opts, :default)}
       end
@@ -62,23 +67,34 @@ defmodule LiveViewNative.Extensions.Bindings do
     quote bind_quoted: [socket: socket, map: map, opts: opts] do
       data = cast_native_bindings(map, __native_bindings__())
 
-      animation = case Keyword.get(opts, :animation) do
-        nil ->
-          nil
-        type when is_atom(type) ->
-          %{ type: type, properties: %{}, modifiers: [] }
-        {type, [ {k, _} | _ ] = properties} when is_atom(type) and is_atom(k) ->
-          %{ type: type, properties: Enum.into(properties, %{}), modifiers: [] }
-        {type, [ {k, _} | _ ] = properties, modifiers} when is_atom(type) and is_atom(k) and is_list(modifiers) ->
-          {:ok, %{ type: type, properties: Enum.into(properties, %{}), modifiers: Enum.map(modifiers, fn
-            {type, properties} ->
-              %{ type: type, properties: Enum.into(properties, %{}) }
-          end) }}
-      end
+      animation =
+        case Keyword.get(opts, :animation) do
+          nil ->
+            nil
+
+          type when is_atom(type) ->
+            %{type: type, properties: %{}, modifiers: []}
+
+          {type, [{k, _} | _] = properties} when is_atom(type) and is_atom(k) ->
+            %{type: type, properties: Enum.into(properties, %{}), modifiers: []}
+
+          {type, [{k, _} | _] = properties, modifiers}
+          when is_atom(type) and is_atom(k) and is_list(modifiers) ->
+            {:ok,
+             %{
+               type: type,
+               properties: Enum.into(properties, %{}),
+               modifiers:
+                 Enum.map(modifiers, fn
+                   {type, properties} ->
+                     %{type: type, properties: Enum.into(properties, %{})}
+                 end)
+             }}
+        end
 
       socket
-        |> assign(map)
-        |> push_event("_native_bindings", %{ data: data, animation: animation })
+      |> assign(map)
+      |> push_event("_native_bindings", %{data: data, animation: animation})
     end
   end
 end

@@ -7,10 +7,14 @@ defmodule LiveViewNative.DevServer do
   use GenServer
   require Logger
 
-  @broadcast_interval 1_000 # Broadcast to available clients every second
-  @listen_port 0 # Use any available port
-  @multicast_group_ip {239, 2, 3, 4} # TODO: Make this configurable
-  @publish_port 49_002 # TODO: Make this configurable
+  # Broadcast to available clients every second
+  @broadcast_interval 1_000
+  # Use any available port
+  @listen_port 0
+  # TODO: Make this configurable
+  @multicast_group_ip {239, 2, 3, 4}
+  # TODO: Make this configurable
+  @publish_port 49_002
   @otp_app_name Application.compile_env(:live_view_native, :otp_app, nil)
   @udp_options [
     :binary,
@@ -52,7 +56,8 @@ defmodule LiveViewNative.DevServer do
 
   defp broadcast_endpoints(socket) do
     all_endpoints()
-    |> List.first() # TODO: Broadcast all endpoints
+    # TODO: Broadcast all endpoints
+    |> List.first()
     |> Jason.encode()
     |> case do
       {:ok, payload} ->
@@ -66,8 +71,7 @@ defmodule LiveViewNative.DevServer do
   defp all_endpoints do
     with spec <- Application.spec(@otp_app_name),
          modules <- spec[:modules] || [],
-         endpoint_modules <- endpoint_modules(modules)
-    do
+         endpoint_modules <- endpoint_modules(modules) do
       endpoint_modules
       |> Enum.map(&endpoint_config/1)
       |> Enum.filter(& &1)
@@ -94,8 +98,7 @@ defmodule LiveViewNative.DevServer do
     |> Enum.filter(fn mod ->
       with mod when not is_nil(mod) <- mod,
            attributes when not is_nil(attributes) <- mod.module_info(:attributes),
-           [_ | _] = behaviours <- attributes[:behaviour]
-      do
+           [_ | _] = behaviours <- attributes[:behaviour] do
         Enum.member?(behaviours, Phoenix.Endpoint)
       else
         _ ->

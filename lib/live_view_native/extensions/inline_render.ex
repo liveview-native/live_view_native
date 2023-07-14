@@ -38,8 +38,7 @@ defmodule LiveViewNative.Extensions.InlineRender do
 
         with %{} = platforms <- LiveViewNative.platforms(),
              %LiveViewNativePlatform.Context{} = context <- Map.get(platforms, "#{modifiers}"),
-             platform_module <- Module.concat(__ENV__.module, context.template_namespace)
-        do
+             platform_module <- Module.concat(__ENV__.module, context.template_namespace) do
           options = [
             engine: Phoenix.LiveView.TagEngine,
             file: __CALLER__.file,

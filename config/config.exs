@@ -14,6 +14,5 @@ if config_env() == :test do
       LiveViewNative.TestPlatform
     ]
 
-  config :live_view_native, LiveViewNative.TestPlatform,
-    testing_notes: "everything is ok"
+  config :live_view_native, LiveViewNative.TestPlatform, testing_notes: "everything is ok"
 end

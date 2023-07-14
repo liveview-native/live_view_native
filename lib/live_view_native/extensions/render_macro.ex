@@ -4,9 +4,9 @@ defmodule LiveViewNative.Extensions.RenderMacro do
   """
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
-      render_macro: opts[:render_macro],
-      platform_id: opts[:platform_id]
-    ] do
+            render_macro: opts[:render_macro],
+            platform_id: opts[:platform_id]
+          ] do
       require EEx
 
       defmacro unquote(:"#{render_macro}")({:<<>>, meta, [expr]}, _modifiers) do
@@ -15,9 +15,9 @@ defmodule LiveViewNative.Extensions.RenderMacro do
         end
 
         with %{} = platforms <- LiveViewNative.platforms(),
-             %LiveViewNativePlatform.Context{} = context <- Map.get(platforms, unquote(platform_id)),
-             platform_module <- Module.concat(__ENV__.module, context.template_namespace)
-        do
+             %LiveViewNativePlatform.Context{} = context <-
+               Map.get(platforms, unquote(platform_id)),
+             platform_module <- Module.concat(__ENV__.module, context.template_namespace) do
           options = [
             engine: Phoenix.LiveView.TagEngine,
             file: __CALLER__.file,

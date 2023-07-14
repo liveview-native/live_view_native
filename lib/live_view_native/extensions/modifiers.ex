@@ -124,14 +124,29 @@ defmodule LiveViewNative.Extensions.Modifiers do
               if Kernel.function_exported?(modifier_module, :params, n) do
                 args = Macro.generate_arguments(n, nil)
 
-                def unquote(:"#{modifier_key}")(%LiveViewNativePlatform.Context{modifiers: mod}, unquote_splicing(args)),
-                  do: unquote(:"#{modifier_key}")({:_apply_mod, {[unquote_splicing(args)], mod, []}})
+                def unquote(:"#{modifier_key}")(
+                      %LiveViewNativePlatform.Context{modifiers: mod},
+                      unquote_splicing(args)
+                    ),
+                    do:
+                      unquote(:"#{modifier_key}")(
+                        {:_apply_mod, {[unquote_splicing(args)], mod, []}}
+                      )
 
-                def unquote(:"#{modifier_key}")(%unquote(modifiers_struct){} = mod, unquote_splicing(args)),
-                  do: unquote(:"#{modifier_key}")({:_apply_mod, {[unquote_splicing(args)], mod, []}})
+                def unquote(:"#{modifier_key}")(
+                      %unquote(modifiers_struct){} = mod,
+                      unquote_splicing(args)
+                    ),
+                    do:
+                      unquote(:"#{modifier_key}")(
+                        {:_apply_mod, {[unquote_splicing(args)], mod, []}}
+                      )
 
                 def unquote(:"#{modifier_key}")(unquote_splicing(args)),
-                  do: unquote(:"#{modifier_key}")({:_apply_mod, {[unquote_splicing(args)], nil, []}})
+                  do:
+                    unquote(:"#{modifier_key}")(
+                      {:_apply_mod, {[unquote_splicing(args)], nil, []}}
+                    )
               end
             end
           else
