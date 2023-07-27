@@ -18,7 +18,7 @@ defmodule LiveViewNative.LiveSession do
     else
       _result ->
         platform_config = %LiveViewNative.Platforms.Web{}
-        platform_context = LiveViewNativePlatform.context(platform_config)
+        platform_context = LiveViewNativePlatform.Kit.context(platform_config)
 
         socket =
           socket

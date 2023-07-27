@@ -37,7 +37,7 @@ defmodule LiveViewNative.Platforms do
 
     platform_context =
       platform_config
-      |> LiveViewNativePlatform.context()
+      |> LiveViewNativePlatform.Kit.context()
       |> Map.put(:platform_config, platform_config)
 
     {"#{platform_context.platform_id}", platform_context}

@@ -11,8 +11,8 @@ defmodule LiveViewNative.LiveViewTest do
   end
 
   test "calling render_native/1 renders the correct platform for `assigns`" do
-    web_context = LiveViewNativePlatform.context(%LiveViewNative.Platforms.Web{})
-    test_context = LiveViewNativePlatform.context(%LiveViewNative.TestPlatform{})
+    web_context = LiveViewNativePlatform.Kit.context(%LiveViewNative.Platforms.Web{})
+    test_context = LiveViewNativePlatform.Kit.context(%LiveViewNative.TestPlatform{})
     web_result = TestLiveView.render(%{platform_id: :web, native: web_context})
     test_result = TestLiveView.render(%{platform_id: :lvntest, native: test_context})
 
@@ -26,8 +26,8 @@ defmodule LiveViewNative.LiveViewTest do
   end
 
   test "calling render/1 renders platform-specific templates inline" do
-    web_context = LiveViewNativePlatform.context(%LiveViewNative.Platforms.Web{})
-    test_context = LiveViewNativePlatform.context(%LiveViewNative.TestPlatform{})
+    web_context = LiveViewNativePlatform.Kit.context(%LiveViewNative.Platforms.Web{})
+    test_context = LiveViewNativePlatform.Kit.context(%LiveViewNative.TestPlatform{})
     web_result = TestLiveViewInline.render(%{platform_id: :web, native: web_context})
     test_result = TestLiveViewInline.render(%{platform_id: :lvntest, native: test_context})
 
