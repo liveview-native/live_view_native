@@ -46,9 +46,9 @@ This allows us to define a specific template for each platform:
 ```
 
 ```html
-<% # hello_live.ios.heex %>
+<% # hello_live.swiftui.heex %>
 <VStack id="hello-ios">
-  <HStack modifiers={@native |> padding(all: 5)}>
+  <HStack modifiers={padding(5)}>
     <Text>Hello from SwiftUI!</Text>
   </HStack>
 </VStack>
@@ -112,16 +112,9 @@ struct MyApp: App {
 import SwiftUI
 import LiveViewNative
 
-@MainActor
 struct ContentView: View {
-    @StateObject private var session: LiveSessionCoordinator<EmptyRegistry> = {
-        var config = LiveSessionConfiguration()
-
-        return LiveSessionCoordinator(URL(string: "http://127.0.0.1:4000")!, config: config)
-    }()
-
     var body: some View {
-        LiveView(session: session)
+        LiveView(.localhost)
     }
 }
 ```
