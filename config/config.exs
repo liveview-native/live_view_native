@@ -10,7 +10,7 @@ import Config
 if config_env() == :test do
   # Define platform support for LiveView Native
   config :live_view_native,
-    platforms: [
+    plugins: [
       LiveViewNative.TestPlatform
     ]
 

@@ -9,8 +9,10 @@ defmodule LiveViewNative.Platforms do
   @default_platforms [LiveViewNative.Platforms.Web]
 
   @env_platforms :live_view_native
-                 |> Application.compile_env(:platforms, [])
+                 |> Application.compile_env(:plugins, [])
+                 |> Enum.flat_map(fn plugin_mod -> apply(plugin_mod, :platforms, []) end)
                  |> Enum.concat(@default_platforms)
+                 |> Enum.uniq()
                  |> Enum.map(fn platform_mod ->
                    platform_config = Application.compile_env(:live_view_native, platform_mod, [])
                    platform_params = Enum.into(platform_config, %{})
