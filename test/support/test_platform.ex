@@ -18,8 +18,8 @@ defmodule LiveViewNative.TestPlatform do
   defstruct [:testing_notes]
 
   defimpl LiveViewNativePlatform.Kit do
-    def context(_struct) do
-      LiveViewNativePlatform.Context.define(:lvntest,
+    def compile(_struct) do
+      LiveViewNativePlatform.Env.define(:lvntest,
         template_extension: ".test.heex",
         template_namespace: Test,
         otp_app: :live_view_native

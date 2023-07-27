@@ -125,7 +125,7 @@ defmodule LiveViewNative.Extensions.Modifiers do
                 args = Macro.generate_arguments(n, nil)
 
                 def unquote(:"#{modifier_key}")(
-                      %LiveViewNativePlatform.Context{modifiers: mod},
+                      %LiveViewNativePlatform.Env{modifiers: mod},
                       unquote_splicing(args)
                     ),
                     do:
@@ -155,7 +155,7 @@ defmodule LiveViewNative.Extensions.Modifiers do
             # map or modifier struct. Zero arity modifier functions are also included for modifiers without
             # schema fields.
             def unquote(:"#{modifier_key}")(
-                  %LiveViewNativePlatform.Context{modifiers: modifiers},
+                  %LiveViewNativePlatform.Env{modifiers: modifiers},
                   params
                 ) do
               mod = struct(unquote(modifiers_struct), Map.from_struct(modifiers))

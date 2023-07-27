@@ -4,7 +4,7 @@ defmodule LiveViewNative.Extensions.Render do
   for specific platforms from a LiveView or Live Component. Using this macro causes
   a module to inherit a `render_native/1` function which takes a map of assigns and
   calls `render/1` on the render module for the calling platform as defined by the
-  `LiveViewNativePlatform.Context` struct set to the `:native` assign. The module
+  `LiveViewNativePlatform.Env` struct set to the `:native` assign. The module
   where that platform-specific `render/1` function lives is derived by concatenating
   the LiveView or LiveComponent's module name with the platform context struct's
   `template_namespace` and should be automatically generated from a LiveView or Live
@@ -21,7 +21,7 @@ defmodule LiveViewNative.Extensions.Render do
 
       def render_native(assigns) do
         case assigns do
-          %{native: %LiveViewNativePlatform.Context{} = platform_context} ->
+          %{native: %LiveViewNativePlatform.Env{} = platform_context} ->
             render_module = Module.safe_concat([__MODULE__, platform_context.template_namespace])
 
             apply(render_module, :render, [assigns])

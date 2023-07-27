@@ -15,7 +15,7 @@ defmodule LiveViewNative.LiveSessionTest do
 
       assert updated_socket.assigns
       assert updated_socket.assigns.native
-      assert updated_socket.assigns.native.__struct__ == LiveViewNativePlatform.Context
+      assert updated_socket.assigns.native.__struct__ == LiveViewNativePlatform.Env
       assert updated_socket.assigns.native.platform_id == :lvntest
 
       assert updated_socket.assigns.native.platform_config == %LiveViewNative.TestPlatform{
@@ -35,7 +35,7 @@ defmodule LiveViewNative.LiveSessionTest do
 
       assert updated_socket.assigns
       assert updated_socket.assigns.native
-      assert updated_socket.assigns.native.__struct__ == LiveViewNativePlatform.Context
+      assert updated_socket.assigns.native.__struct__ == LiveViewNativePlatform.Env
       assert updated_socket.assigns.native.platform_id == :web
       assert updated_socket.assigns.native.template_extension == ".html.heex"
     end
