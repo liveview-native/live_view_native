@@ -46,7 +46,7 @@ This allows us to define a specific template for each platform:
 ```
 
 ```html
-<% # hello_live.ios.heex %>
+<% # hello_live.swiftui.heex %>
 <VStack id="hello-ios">
   <HStack modifiers={@native |> padding(all: 5)}>
     <Text>Hello from SwiftUI!</Text>
