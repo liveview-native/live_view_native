@@ -15,14 +15,25 @@ defmodule LiveViewNative.Extensions.Bindings do
       def on_mount(:_set_native_binding_defaults, _params, _session, socket) do
         defaults =
           Enum.map(__native_bindings__(), fn {name, {_type, opts}} ->
-            {name, Keyword.get(opts, :default)}
+            case Keyword.get(opts, :persist) do
+              :global ->
+                {name, Keyword.get(socket.assigns.global_native_bindings, name, Keyword.get(opts, :default))}
+              _ ->
+                {name, Keyword.get(opts, :default)}
+            end
           end)
+
+        bindings = __native_bindings__()
+          |> Enum.map(fn {name, {_type, opts}} ->
+            {name, Enum.into(opts, %{})}
+          end)
+          |> Enum.into(%{})
 
         {
           :cont,
           socket
-            |> push_event("_persistent_native_bindings", %{ persistent: persistent_native_bindings(__native_bindings__()) })
-            |> assign_native_bindings(defaults, is_default: true)
+            |> push_event("_native_bindings_init", %{ bindings: bindings, scope: __ENV__.module })
+            |> assign(defaults)
         }
       end
 
@@ -68,25 +79,9 @@ defmodule LiveViewNative.Extensions.Bindings do
     end)
   end
 
-  def persistent_native_bindings(bindings) do
-    Enum.reduce(
-      bindings,
-      [],
-      fn
-        {name, {_type, opts}}, acc ->
-          case Keyword.get(opts, :persist) do
-            true ->
-              [name | acc]
-            _ ->
-              acc
-          end
-    end)
-  end
-
   defmacro assign_native_bindings(socket, map, opts \\ []) do
     quote bind_quoted: [socket: socket, map: map, opts: opts] do
       data = cast_native_bindings(map, __native_bindings__())
-      persistent = persistent_native_bindings(__native_bindings__())
 
       animation =
         case Keyword.get(opts, :animation) do
@@ -115,7 +110,7 @@ defmodule LiveViewNative.Extensions.Bindings do
 
       socket
         |> assign(map)
-        |> push_event("_native_bindings", %{data: data, animation: animation, persistent: persistent, is_default: Keyword.get(opts, :is_default, false)})
+        |> push_event("_native_bindings", %{data: data, animation: animation})
     end
   end
 end

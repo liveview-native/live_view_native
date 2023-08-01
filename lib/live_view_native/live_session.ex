@@ -13,6 +13,7 @@ defmodule LiveViewNative.LiveSession do
         socket
         |> assign(:native, platform_context)
         |> assign(:platform_id, platform_context.platform_id)
+        |> assign(:global_native_bindings, get_global_native_bindings(connect_params))
 
       {:cont, socket}
     else
@@ -24,6 +25,7 @@ defmodule LiveViewNative.LiveSession do
           socket
           |> assign(:native, platform_context)
           |> assign(:platform_id, platform_context.platform_id)
+          |> assign(:global_native_bindings, [])
 
         {:cont, socket}
     end
@@ -60,4 +62,9 @@ defmodule LiveViewNative.LiveSession do
       Map.put(acc, String.to_existing_atom(key), value)
     end)
   end
+
+  defp get_global_native_bindings(%{ "_global_native_bindings" => %{} = global_native_bindings }),
+    do: Enum.map(global_native_bindings, fn {key, value} -> {String.to_existing_atom(key), value} end)
+
+  defp get_global_native_bindings(_connect_params), do: nil
 end
