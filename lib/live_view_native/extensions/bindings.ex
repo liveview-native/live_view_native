@@ -18,7 +18,12 @@ defmodule LiveViewNative.Extensions.Bindings do
             {name, Keyword.get(opts, :default)}
           end)
 
-        {:cont, assign_native_bindings(socket, defaults)}
+        {
+          :cont,
+          socket
+            |> push_event("_persistent_native_bindings", %{ persistent: persistent_native_bindings(__native_bindings__()) })
+            |> assign_native_bindings(defaults, is_default: true)
+        }
       end
 
       def handle_event("_native_bindings", values, socket) do
@@ -63,9 +68,25 @@ defmodule LiveViewNative.Extensions.Bindings do
     end)
   end
 
+  def persistent_native_bindings(bindings) do
+    Enum.reduce(
+      bindings,
+      [],
+      fn
+        {name, {_type, opts}}, acc ->
+          case Keyword.get(opts, :persist) do
+            true ->
+              [name | acc]
+            _ ->
+              acc
+          end
+    end)
+  end
+
   defmacro assign_native_bindings(socket, map, opts \\ []) do
     quote bind_quoted: [socket: socket, map: map, opts: opts] do
       data = cast_native_bindings(map, __native_bindings__())
+      persistent = persistent_native_bindings(__native_bindings__())
 
       animation =
         case Keyword.get(opts, :animation) do
@@ -93,8 +114,8 @@ defmodule LiveViewNative.Extensions.Bindings do
         end
 
       socket
-      |> assign(map)
-      |> push_event("_native_bindings", %{data: data, animation: animation})
+        |> assign(map)
+        |> push_event("_native_bindings", %{data: data, animation: animation, persistent: persistent, is_default: Keyword.get(opts, :is_default, false)})
     end
   end
 end
