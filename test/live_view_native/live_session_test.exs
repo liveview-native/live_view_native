@@ -34,10 +34,8 @@ defmodule LiveViewNative.LiveSessionTest do
       {:cont, updated_socket} = LiveSession.on_mount(:live_view_native, %{}, %{}, socket)
 
       assert updated_socket.assigns
-      assert updated_socket.assigns.native
-      assert updated_socket.assigns.native.__struct__ == LiveViewNativePlatform.Env
-      assert updated_socket.assigns.native.platform_id == :web
-      assert updated_socket.assigns.native.template_extension == ".html.heex"
+      assert updated_socket.assigns.native == nil
+      assert updated_socket.assigns.platform_id == :web
     end
   end
 end

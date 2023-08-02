@@ -17,7 +17,8 @@ defmodule LiveViewNative.Extensions.RenderMacro do
         with %{} = platforms <- LiveViewNative.platforms(),
              %LiveViewNativePlatform.Env{} = context <-
                Map.get(platforms, unquote(platform_id)),
-             platform_module <- Module.concat(__ENV__.module, context.template_namespace) do
+             platform_module <- Module.concat(__ENV__.module, context.template_namespace),
+             expr <- LiveViewNative.Templates.precompile(expr) do
           options = [
             engine: Phoenix.LiveView.TagEngine,
             file: __CALLER__.file,
