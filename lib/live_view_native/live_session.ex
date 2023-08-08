@@ -5,8 +5,8 @@ defmodule LiveViewNative.LiveSession do
   import Phoenix.LiveView
   import Phoenix.Component, only: [assign: 3]
 
-  def on_mount(:live_view_native, _params, _session, socket) do
-    with %{} = connect_params <- get_connect_params(socket),
+  def on_mount(:live_view_native, params, _session, socket) do
+    with %{} = connect_params <- (if connected?(socket), do: get_connect_params(socket), else: params),
          %LiveViewNativePlatform.Context{} = platform_context <-
            get_platform_context(connect_params) do
       socket =
