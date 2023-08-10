@@ -41,6 +41,7 @@ defmodule LiveViewNative.Extensions do
       use LiveViewNative.Extensions.Render
       use LiveViewNative.Extensions.InlineRender
       use LiveViewNative.Extensions.Bindings
+      use LiveViewNative.Extensions.Persistence
     end
   end
 end
