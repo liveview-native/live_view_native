@@ -39,7 +39,7 @@ defmodule LiveViewNative.MixProject do
     [
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_view, "~> 0.18.18"},
+      {:phoenix_live_view, "~> 0.18.18 or ~> 0.19.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:floki, ">= 0.30.0", only: :test},
