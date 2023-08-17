@@ -14,9 +14,9 @@ defmodule LiveViewNative.Templates do
 
   ###
 
-  defp transform_node({key, node}) do
+  defp transform_node({_key, node}) do
     case node do
-      %{attributes: [_ | _] = attributes} = node ->
+      %{attributes: [_ | _] = attributes} ->
         attributes
         |> Enum.map(&transform_attribute/1)
         |> Enum.filter(&(&1 != nil))
