@@ -29,7 +29,7 @@ defmodule LiveViewNative.Templates do
   defp transform_attribute({key, value}) do
     case key do
       "modclass" ->
-        {"modclass=\"#{value}\"", transform_modclass(value)}
+        {" modclass=\"#{value}\"", transform_modclass(value)}
 
       _ ->
         nil
@@ -43,6 +43,6 @@ defmodule LiveViewNative.Templates do
       |> Enum.map(fn classname -> "modclass(\"#{classname}\", assigns)" end)
       |> Enum.join("|> ")
 
-    "modifiers={@native |> #{modifiers}}"
+    " modifiers={@native |> #{modifiers}}"
   end
 end
