@@ -14,7 +14,20 @@ defmodule LiveViewNative.MixProject do
       aliases: aliases(),
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
-      consolidate_protocols: Mix.env() != :test
+      consolidate_protocols: Mix.env() != :test,
+
+      docs: [
+        main: "about",
+        extras: [
+          "guides/introduction/about.md",
+          "guides/introduction/installation.md",
+          "guides/client-side-integration/change-events.md",
+        ],
+        groups_for_extras: [
+          "Introduction": Path.wildcard("guides/introduction/*.md"),
+          "Client-Side Integration": Path.wildcard("guides/client-side-integration/*.md")
+        ]
+      ]
     ]
   end
 
@@ -44,6 +57,7 @@ defmodule LiveViewNative.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:floki, ">= 0.30.0", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:live_view_native_platform, "~> 0.0.7"}
     ]
