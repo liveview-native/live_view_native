@@ -100,7 +100,6 @@ defmodule LiveViewNative.Extensions.Modifiers do
           # with the same arity and the name of the modifier is generated. This function takes
           # the same arguments as the `params` function, calling that function before applying
           # a modifier to the stack.
-
           def unquote(:"#{modifier_key}")({:_apply_mod, {mod_args, mod_builder, opts}}) do
             mod_builder = mod_builder || struct(unquote(modifiers_struct), %{})
             raw_params = Keyword.get(opts, :raw_params)

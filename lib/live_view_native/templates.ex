@@ -40,7 +40,7 @@ defmodule LiveViewNative.Templates do
     modifiers =
       modclass
       |> String.split(" ")
-      |> Enum.map(fn classname -> "modclass(\"#{classname}\")" end)
+      |> Enum.map(fn classname -> "modclass(\"#{classname}\", assigns)" end)
       |> Enum.join("|> ")
 
     "modifiers={@native |> #{modifiers}}"
