@@ -33,7 +33,7 @@ No change event is sent when the server updates the value.
 ## Modifier change events
 Some modifiers have values that can be changed by the client.
 
-To receive change events on these modifiers, pass a `LiveViewNativePlatform.Types.Event` to the `change` argument.
+To receive change events on these modifiers, pass a `LiveViewNativePlatform.Modifier.Types.Event` to the `change` argument.
 
 ```elixir
 sheet(is_presented: @show, change: "presentation-changed")
