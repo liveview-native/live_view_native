@@ -1,11 +1,6 @@
 defmodule LiveViewNative.Platforms do
-  @moduledoc """
-  Provides configuration constants about all platforms supported by an
-  application that uses LiveView Native. This module is a dependency
-  of various LiveView Native systems, such as `LiveViewNative.LiveSession`
-  which is responsible for determining which platform (web, iOS, etc.) a
-  session originates from.
-  """
+  @moduledoc false
+
   @default_platforms [LiveViewNative.Platforms.Web]
 
   @env_platforms :live_view_native
@@ -21,6 +16,13 @@ defmodule LiveViewNative.Platforms do
                  end)
                  |> Enum.into(%{})
 
+  @doc """
+  Provides configuration constants about all platforms supported by an
+  application that uses LiveView Native. This function is a dependency
+  of various LiveView Native systems, such as `LiveViewNative.LiveSession`
+  which is responsible for determining which platform (web, iOS, etc.) a
+  session originates from.
+  """
   def env_platforms do
     @env_platforms
     |> Enum.map(&expand_env_platform/1)

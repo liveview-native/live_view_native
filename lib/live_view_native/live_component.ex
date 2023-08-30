@@ -1,7 +1,9 @@
 defmodule LiveViewNative.LiveComponent do
   @moduledoc """
-  Upgrades a Live Component to a Native Live Component when inherited
-  with `use LiveViewNative.LiveComponent` like so:
+  Upgrades a Live Component to a native Live Component.
+
+  To use, inherit with `use LiveViewNative.LiveComponent`
+  like so:
 
   ```
   defmodule MyApp.MyComponent do

@@ -1,10 +1,12 @@
 defmodule LiveViewNative.MixProject do
   use Mix.Project
 
+  @version "0.1.0"
+
   def project do
     [
       app: :live_view_native,
-      version: "0.0.9",
+      version: @version,
       elixir: "~> 1.15",
       description: "Native platform implementations of the Phoenix LiveView protocol",
       package: package(),
@@ -15,19 +17,7 @@ defmodule LiveViewNative.MixProject do
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       consolidate_protocols: Mix.env() != :test,
-
-      docs: [
-        main: "about",
-        extras: [
-          "guides/introduction/about.md",
-          "guides/introduction/installation.md",
-          "guides/client-side-integration/change-events.md",
-        ],
-        groups_for_extras: [
-          "Introduction": Path.wildcard("guides/introduction/*.md"),
-          "Client-Side Integration": Path.wildcard("guides/client-side-integration/*.md")
-        ]
-      ]
+      docs: docs()
     ]
   end
 
@@ -52,16 +42,54 @@ defmodule LiveViewNative.MixProject do
     [
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_view, "~> 0.18.18 or ~> 0.19.0"},
+      {:phoenix_live_view, "~> 0.18.0 or ~> 0.19.0"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:floki, ">= 0.30.0", only: :test},
-      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:meeseeks, "~> 0.17.0"},
       {:live_view_native_platform, "~> 0.0.8"}
     ]
+  end
+
+  defp docs do
+    [
+      source_ref: "v#{@version}",
+      main: "overview",
+      logo: "logo.png",
+      assets: "guides/assets",
+      extra_section: "GUIDES",
+      extras: extras(),
+      groups_for_extras: groups_for_extras(),
+      groups_for_modules: groups_for_modules()
+    ]
+  end
+
+  defp extras do
+    [
+      "guides/introduction/overview.md",
+      "guides/introduction/installation.md",
+      "guides/introduction/your-first-native-liveview.md",
+      "guides/introduction/troubleshooting.md",
+      "guides/common-features/template-syntax.md",
+      "guides/common-features/modifiers.md",
+      "guides/common-features/render-patterns.md",
+      "guides/common-features/handling-events.md"
+    ]
+  end
+
+  defp groups_for_extras do
+    [
+      Introduction: ~r/guides\/introduction\/.?/,
+      Guides: ~r/guides\/[^\/]+\.md/,
+      "Common Features": ~r/guides\/common-features\/.?/
+    ]
+  end
+
+  defp groups_for_modules do
+    []
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

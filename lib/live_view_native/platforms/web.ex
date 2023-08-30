@@ -1,4 +1,6 @@
 defmodule LiveViewNative.Platforms.Web do
+  @moduledoc false
+
   defstruct []
 
   defimpl LiveViewNativePlatform.Kit do

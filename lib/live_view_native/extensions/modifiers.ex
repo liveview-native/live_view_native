@@ -1,16 +1,18 @@
 defmodule LiveViewNative.Extensions.Modifiers do
-  @moduledoc """
-  LiveView Native extension for platform-specific modifiers. Modifiers refer to
-  properties that affect the behavior and visual presentation of native components,
-  such as alignment, visibility, styling, and so on. Each platform library defines
-  its own set of supported modifiers as well as how to encode those modifiers before
-  they are returned from the LiveView server to the client.
+  @moduledoc false
 
-  A modifier is a struct that implements the `LiveViewNativePlatform.Modifier` protocol
-  and optionally defines any number of functions with the name `params` of any arity up
-  to 6. The `params` function is used to encode the modifier before it is added to the
-  modifier stack when applying the modifier as part of a LiveView Native HEEx template.
-  For example:
+  @doc """
+  This macro adds support for modifiers. Modifiers refer to properties which
+  affect the behavior and visual presentation of individual elements. Some
+  examples might include alignment, visibility, styling, and so on. Platform
+  libraries can define their own set of supported modifiers as well as any
+  platform-specific code for encoding modifier payloads.
+
+  A modifier is a struct that implements the `LiveViewNativePlatform.Modifier`
+  protocol and optionally defines any number of functions with the name `params`
+  of any arity up to 6. The `params` function is used for encoding the modifier
+  before it is added to the modifier stack when applying the modifier as part
+  of a LiveView Native HEEx template. For example:
 
   ```elixir
   defmodule MyPlatform.Modifiers.Bold do
@@ -25,60 +27,67 @@ defmodule LiveViewNative.Extensions.Modifiers do
   end
   ```
 
-  This module defines a modifier named `bold` that can be constructed by passing a boolean
-  or any value that can be cast to a modifier schema (an option list, map or struct of the
-  same module). It could be called any of the following ways from a LiveView Native HEEx
-  template:
+  This module defines a modifier named `bold` that can be constructed by passing
+  a boolean or any value that can be cast to a modifier schema (an option list, map
+  or struct of the same module). It could be called any of the following ways from
+  a LiveView Native HEEx template:
 
   ```heex
-  <Text modifiers={bold(true)}>This text is bold</Text>
+  <Text modifiers={bold(true)}>
+    This text is bold
+  </Text>
   ```
 
-  This example demonstrates using `bold/1` as the first modifier in a chain. It is called
-  with a boolean which is then passed to `params/1`. `true` matches the `is_boolean/1` guard
-  and so an option list is returned with the value of `:is_active` being `true`. Finally,
-  that option list is cast to `%MyPlatform.Modifiers.Bold{}` which gets wrapped in a new
-  modifier builder as the return value.
+  This example demonstrates using `bold/1` as the first modifier in a chain. It
+  is called with a boolean which is then passed to `params/1`. `true` matches the
+  `is_boolean/1` guard and an option list is returned with the value of `:is_active`
+  being `true`. Finally, that option list is cast to `%MyPlatform.Modifiers.Bold{}`
+  which gets wrapped in a new modifier builder as the return value.
 
   ```heex
   <Text modifiers={bold(is_active: true)}>This text is bold too.</Text>
   ```
 
-  This `bold/1` call also occurs at the beginning of a chain but here it is called with
-  an option list. The option list falls back to the second function clause of `params/1`
-  and is returned as is, being cast to `%MyPlatform.Modifiers.Bold{}` and wrapped in a
-  modifier builder which is returned.
+  This `bold/1` call also occurs at the beginning of a chain but here it is called
+  with an option list. The option list falls back to the second function clause of
+  `params/1` and is returned as is, being cast to `%MyPlatform.Modifiers.Bold{}`
+  and wrapped in a modifier builder which is returned.
 
   ```heex
-  <Text modifiers={some_other_modifier() |> bold(true)}>Oh, and this one as well.</Text>
+  <Text modifiers={some_other_modifier() |> bold(true)}>
+    Oh, and this one as well.
+  </Text>
   ```
 
-  Here, the modifier is being called in the middle of a chain as `bold/2` with the first
-  value being a modifier builder returned by `some_other_modifier/0` and the second value
-  being a boolean. All of the same steps as the first example are applied with the return
-  value being `%MyPlatform.Modifiers.Bold{is_active: true}`. This modifier is added to the
-  modifier builder stack through its implementation of `LiveViewNativePlatform.ModifiersStack`.
-  The modifier builder is then returned with the modifier added to the stack.
+  Here, the modifier is being called in the middle of a chain as `bold/2` with the
+  first value being a modifier builder returned by `some_other_modifier/0` and the
+  second value being a boolean. All the same steps as the first example are applied
+  with the return value being `%MyPlatform.Modifiers.Bold{is_active: true}`. This
+  modifier is added to the modifier builder stack and then the modifier builder is
+  returned with the modifier added to the stack.
 
   ```heex
-  <Text modifiers={some_other_modifier() |> bold(%{is_active: true})}>And even this one as well.</Text>
+  <Text modifiers={some_other_modifier() |> bold(%{is_active: true})}>
+    And even this one as well.
+  </Text>
   ```
 
-  This example is the same as the previous one except that the second value is an option
-  list. The same steps are applied as the second example, with the same return value being
-  added to the passed modifier builder's stack.
+  This example is the same as the previous one except that the second value is an
+  option list. The same steps are applied as the second example, with the same return
+  value being added to the passed modifier builder's stack.
 
-  The "modifier builder" that gets returned in all of these examples is a custom struct
-  defined by the platform library that provides the modifier function being called. In all
-  cases, it is a module that implements the following protocols:
+  The "modifier builder" that gets returned in all of these examples is a custom
+  struct defined by the platform library that provides the modifier function being
+  called. In all cases, it is a module that implements the following protocols:
 
     * `LiveViewNativePlatform.ModifiersStack`
     * `Jason.Encoder`
     * `Phoenix.HTML.Safe`
 
-  These implementations are used for appending modifiers, encoding them as JSON and rendering
-  them as HTML attributes respectively. For platforms that don't provide a modifier builder
-  struct, a `%LiveViewNativePlatform.GenericModifiers{}` is used as a fallback.
+  These implementations are used for appending modifiers, encoding them as JSON and
+  rendering them as HTML attributes respectively. For platforms that don't provide a
+  modifier builder struct, a `%LiveViewNativePlatform.GenericModifiers{}` is used as
+  a fallback.
   """
   alias LiveViewNativePlatform.ModifiersStack
 

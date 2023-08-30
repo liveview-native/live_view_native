@@ -1,5 +1,7 @@
 defmodule LiveViewNative.Extensions do
-  @moduledoc """
+  @moduledoc false
+
+  @doc """
   This macro is largely responsible for upgrading a LiveView or Live Component
   to a module that supports LiveView Native. This macro should not be directly
   inherited by a LiveView or Live Component via `use`; instead, those modules

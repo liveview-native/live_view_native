@@ -1,7 +1,9 @@
 defmodule LiveViewNative.Extensions.Templates do
-  @moduledoc """
-  LiveView Native extension for rendering platform-specific templates.
-  Takes the following parameters which are typically derived from a `Macro.Env`
+  @moduledoc false
+
+  @doc """
+  This macro adds support for rendering platform-specific templates. It takes
+  the following parameters which are typically derived from a `Macro.Env`
   struct:
 
   - `tag_handler` (optional) - a module implementation of `Phoenix.LiveView.TagEngine`

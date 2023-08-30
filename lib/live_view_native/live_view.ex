@@ -1,7 +1,11 @@
 defmodule LiveViewNative.LiveView do
   @moduledoc """
-  Upgrades a LiveView to a Native LiveView when inherited with
-  `use LiveViewNative.LiveView` like so:
+  Upgrades a LiveView to a native LiveView.
+
+  To use, inherit with `use LiveViewNative.LiveView`
+  like so:
+
+  Example:
 
   ```
   defmodule MyApp.MyLive do

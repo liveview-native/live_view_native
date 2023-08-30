@@ -1,4 +1,6 @@
 defmodule LiveViewNative.Modclasses do
+  @moduledoc false
+
   defmacro __using__(opts) do
     platform_id = "#{opts[:platform]}"
 
