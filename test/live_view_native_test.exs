@@ -46,14 +46,4 @@ defmodule LiveViewNativeTest do
       end
     end
   end
-
-  describe "start_simulator!/1" do
-    test "it starts a simulator for the given platform" do
-      web_result = LiveViewNative.start_simulator!(:web)
-      test_result = LiveViewNative.start_simulator!(:lvntest)
-
-      assert web_result == {:ok, :skipped}
-      assert test_result == {:ok, "start_simulator/2 was called from LiveViewNative.TestPlatform"}
-    end
-  end
 end

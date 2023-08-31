@@ -10,8 +10,8 @@ import Config
 if config_env() == :test do
   # Define platform support for LiveView Native
   config :live_view_native,
-    platforms: [
-      LiveViewNative.TestPlatform
+    plugins: [
+      LiveViewNative.TestPlugin
     ]
 
   config :live_view_native, LiveViewNative.TestPlatform, testing_notes: "everything is ok"

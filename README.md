@@ -60,10 +60,10 @@ This library provides a base SDK that allows Elixir developers to use LiveView N
 
 The `live_view_native` Hex package isn't useful on its own. You also need to add any platform libraries you want your application to support. The supported platforms and their libraries are:
 
-| Platform   | Clients           | Dependency                                                              |
-| :--------- | :--------------------- | :------------------------------------------------------------------------ |
-| SwiftUI | iOS, iPadOS, macOS, watchOS, tvOS | [live_view_native_swift_ui](https://github.com/liveview-native/liveview-client-swiftui)         |
-| Jetpack Compose      | Android    |  [live_view_native_jetpack](https://github.com/liveview-native/liveview-client-jetpack) |
+| Platform        | Clients                           | Dependency                                                                              |
+| :-------------- | :-------------------------------- | :-------------------------------------------------------------------------------------- |
+| SwiftUI         | iOS, iPadOS, macOS, watchOS, tvOS | [live_view_native_swift_ui](https://github.com/liveview-native/liveview-client-swiftui) |
+| Jetpack Compose | Android                           | [live_view_native_jetpack](https://github.com/liveview-native/liveview-client-jetpack)  |
 
 For example, if you want to support rendering LiveViews in SwiftUI, add its platform library as a dependency in your `mix.exs` file:
 
@@ -86,11 +86,9 @@ import Config
 
 # Define platform support for LiveView Native
 config :live_view_native,
-  platforms: [
-    LiveViewNativeSwiftUi.Platform
+  plugins: [
+    LiveViewNativeSwiftUi
   ]
-
-config :live_view_native, LiveViewNativeSwiftUi.Platform, app_name: "My App"
 ```
 
 Finally, each platform has its own implementation details for connecting a native client application to a LiveView Native backend. For example, if you want to support `live_view_native_swift_ui` you'll need to [create an App in Xcode](https://liveview-native.github.io/liveview-client-swiftui/tutorials/liveviewnative/01-initial-list#Creating-the-App) and use the `LiveViewNative` Swift dependency to render a clientside [LiveView](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/liveview) that connects to your Phoenix server:

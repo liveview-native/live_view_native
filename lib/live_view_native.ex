@@ -8,12 +8,6 @@ defmodule LiveViewNative do
   """
   import LiveViewNative.Platforms, only: [env_platform: 1, env_platforms: 0]
 
-  def start_simulator!(platform_id, opts \\ []) do
-    %LiveViewNativePlatform.Context{platform_config: platform_config} = platform!(platform_id)
-
-    LiveViewNativePlatform.start_simulator(platform_config, opts)
-  end
-
   def platform(platform_id) when is_atom(platform_id) and not is_nil(platform_id),
     do: platform("#{platform_id}")
 

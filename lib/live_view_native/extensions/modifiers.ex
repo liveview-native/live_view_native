@@ -100,7 +100,6 @@ defmodule LiveViewNative.Extensions.Modifiers do
           # with the same arity and the name of the modifier is generated. This function takes
           # the same arguments as the `params` function, calling that function before applying
           # a modifier to the stack.
-
           def unquote(:"#{modifier_key}")({:_apply_mod, {mod_args, mod_builder, opts}}) do
             mod_builder = mod_builder || struct(unquote(modifiers_struct), %{})
             raw_params = Keyword.get(opts, :raw_params)
@@ -125,7 +124,7 @@ defmodule LiveViewNative.Extensions.Modifiers do
                 args = Macro.generate_arguments(n, nil)
 
                 def unquote(:"#{modifier_key}")(
-                      %LiveViewNativePlatform.Context{modifiers: mod},
+                      %LiveViewNativePlatform.Env{modifiers: mod},
                       unquote_splicing(args)
                     ),
                     do:
@@ -155,7 +154,7 @@ defmodule LiveViewNative.Extensions.Modifiers do
             # map or modifier struct. Zero arity modifier functions are also included for modifiers without
             # schema fields.
             def unquote(:"#{modifier_key}")(
-                  %LiveViewNativePlatform.Context{modifiers: modifiers},
+                  %LiveViewNativePlatform.Env{modifiers: modifiers},
                   params
                 ) do
               mod = struct(unquote(modifiers_struct), Map.from_struct(modifiers))
