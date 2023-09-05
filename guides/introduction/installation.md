@@ -1,108 +1,158 @@
 # Installation
-To use LiveView Native, add it to your list of dependencies in `mix.exs`.
 
+There are a few steps that must be completed before you can use LiveView Native. This document covers them, which are as follows:
+
+1. Setup a Phoenix project with the minimum required versions of Elixir, Phoenix and LiveView.
+2. Add LiveView Native to your `mix.exs` dependencies.
+3. Add any number of platform libraries to enable support for native clients.
+4. Fetch dependencies.
+5. Enable LiveView Native within your app.
+
+## 1. Prepare your Phoenix app
+
+To use LiveView Native, you must have an existing Phoenix project. If you don't have one, follow the [Up and Running](https://hexdocs.pm/phoenix/up_and_running.html) section of the official Phoenix guide to create one.
+
+Next, make sure your project meets the following requirements:
+
+- it uses **Elixir 1.15 or greater** — to enforce this, update your `mix.exs`:
 ```elixir
-def deps do
-  [{:live_view_native, "~> 0.0.7"}]
+def project do
+  [
+    # ...
+    elixir: "~> 1.15",
+    # ...
+  ]
 end
 ```
 
-## Adding platform libraries
+- it uses **Phoenix >= 1.7** and **Phoenix LiveView >= 0.18** — your `mix.exs` should partially resemble this:
+```elixir
+def deps do
+  [
+    {:phoenix, "~> 1.7"},
+    {:phoenix_live_view, "~> 0.18"},
+    # other dependencies here...
+  ]
+end
+```
 
-The `live_view_native` Hex package isn't useful on its own. You also need to add any platform libraries you want your application to support.
+If your project doesn't meet this criteria then it will need to be upgraded. Some helpful resources for this include the [Elixir installation page](https://elixir-lang.org/install.html), [Phoenix installation page](https://hexdocs.pm/phoenix/installation.html), as well as the changelogs for [Elixir](https://github.com/elixir-lang/elixir/blob/main/CHANGELOG.md), [Phoenix](https://github.com/phoenixframework/phoenix/blob/main/CHANGELOG.md) and [Phoenix LiveView](https://github.com/phoenixframework/phoenix_live_view/blob/main/CHANGELOG.md).
 
-You can add any number of platform libraries, allowing you to serve a variety of non-web clients from the same application.
+## 2. Add LiveView Native
+
+Once you've met the requirements to use LiveView Native, simply add it to your list of dependencies in your project's mix.exs:
+
+```elixir
+def deps do
+  [
+    # other dependencies here...
+    {:live_view_native, "~> 0.1"}
+  ]
+end
+```
+
+## 3. Add platform libraries
+
+The `:live_view_native` dependency isn't useful on its own. You'll also need to add any _platform libraries_ you want your project to be compatible with. Platform libraries provide the native implementations that allow those platforms' clients to connect to your app and render LiveView paths as native user interfaces.
+
+This guide only covers installation for the officially supported platforms, [SwiftUI](https://hexdocs.pm/live_view_native_swift_ui) (iOS, macOS and watchOS) and [Jetpack](https://hexdocs.pm/live_view_native_jetpack) (Android). For information on using a third-party platform, consult that library's documentation. 
 
 <!-- tabs-open -->
 
 ### SwiftUI
-Supported platforms:
-* iOS 16+
-* macOS 13+
-* watchOS 9+
+Adds compatibility for iOS 16+, macOS 13+ and watchOS 9+.
 
-> #### Platform Documentation {: .info}
-> For more information, see the platform-specific documentation: [`live_view_native_swift_ui`](https://github.com/liveview-native/liveview-client-swiftui)
 ```elixir
 def deps do
   [
-    # ...
-    {:live_view_native_swift_ui, "~> 0.0.9"}
+    # other dependencies here...
+    {:live_view_native_swift_ui, "~> 0.1"}
   ]
 end
 ```
-The list of supported platforms, along with their configuration, is defined within your application's Mix configuration:
-```elixir
-# config.exs
-import Config
 
-# ...
+### Jetpack
 
-# Define platform support for LiveView Native
-config :live_view_native,
-  platforms: [
-    LiveViewNativeSwiftUi.Platform
-  ]
+Adds compatibility for Android.
 
-config :live_view_native, LiveViewNativeSwiftUi.Platform, app_name: "My App"
-```
+> #### Warning {: .warning}
+> The Jetpack client is under development and is not yet usable in end-user applications.
+> For more information, check the repo for `live_view_native_jetpack` [here](https://github.com/liveview-native/liveview-client-jetpack).
 
-### Jetpack Compose
-Supported platforms:
-* Android
-
-> #### Platform Documentation {: .info}
-> For more information, see the platform-specific documentation: [`live_view_native_jetpack`](https://github.com/liveview-native/liveview-client-jetpack)
 ```elixir
 def deps do
   [
-    # ...
-    {:live_view_native_jetpack, "~> 0.0.9"}
+    # other dependencies here...
+    {:live_view_native_jetpack, "~> 0.0.0"}
   ]
 end
-```
-The list of supported platforms, along with their configuration, is defined within your application's Mix configuration:
-```elixir
-# config.exs
-import Config
-
-# ...
-
-# Define platform support for LiveView Native
-config :live_view_native,
-  platforms: [
-    LiveViewNativeJetpack.Platform
-  ]
-
-config :live_view_native, LiveViewNativeJetpack.Platform, app_name: "My App"
 ```
 
 <!-- tabs-close -->
 
-Finally, each platform has its own implementation details for connecting a native client application to a LiveView Native backend. For example, if you want to support `live_view_native_swift_ui` you'll need to [create an App in Xcode](https://liveview-native.github.io/liveview-client-swiftui/tutorials/liveviewnative/01-initial-list#Creating-the-App) and use the `LiveViewNative` Swift dependency to render a clientside [LiveView](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/liveview) that connects to your Phoenix server:
+## 4. Fetch dependencies
 
-```swift
-// MyApp.swift
-import SwiftUI
+Next, fetch any new dependencies you added to your `mix.exs`.
 
-@main
-struct MyApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
-}
-
-//  ContentView.swift
-import SwiftUI
-import LiveViewNative
-
-struct ContentView: View {
-    var body: some View {
-        LiveView(.localhost)
-    }
-}
+```bash
+mix deps.get
 ```
 
-For more information on how to configure a LiveView Native project for a specific platform, please visit the documentation page for that platform library.
+## 5. Enable LiveView Native
+
+LiveView Native includes a Mix task that can automatically handle the process of configuring your project to support it. If that is not to your liking, manual setup is also an option. This guide includes instructions for both of these approaches.
+
+<!-- tabs-open -->
+
+### Automatic
+
+Within your project directory, run the following command:
+
+```bash
+mix lvn.install
+```
+
+This command will prompt you to answer a few questions. If everything goes well, you should see a message that your project has been configured to use LiveView Native.
+
+### Manual
+
+After adding the `:live_view_native` Hex package and any platform libraries, define a key-value configuration in your [Config](https://hexdocs.pm/elixir/main/Config.html) file (this is typically found in `config/config.exs`). This configuration expects a `:plugins` option which takes a list of any platform libraries you want your application to support. Platform libraries are represented by their top-level namespace module:
+
+```elixir
+# config.exs
+
+# Use LiveView Native to add support for native platforms
+config :live_view_native,
+  plugins: [
+    # other plugins here...
+    LiveViewNativeSwiftUi,
+    LiveViewNativeJetpack
+  ]
+```
+
+Next, create a project for each platform's native client using the official tools provided by each platform.
+
+<!-- tabs-close -->
+
+## Post-Installation
+
+Once LiveView Native is installed and your application is properly configured, you should be able to run your
+Phoenix app in development as usual:
+
+```bash
+iex -S mix phx.server
+```
+
+To confirm that LiveView Native has been properly installed, call the following function in an IEx
+session. It should return a map describing all of the native platform libraries that have been installed
+for your app.
+
+```elixir
+iex(1)> LiveViewNative.platforms()
+```
+
+Confirm that each platform listed (excluding `web`) has a platform-specific client app (i.e. Xcode,
+Android Studio, etc.) for connecting to your LiveView Native backend. If you used `mix lvn.install`
+to enable LiveView Native, these project files will be placed in the `native/` directory of your app.  
+
+If everything looks good, continue on to writing [your first native LiveView](./your-first-native-liveview.md).

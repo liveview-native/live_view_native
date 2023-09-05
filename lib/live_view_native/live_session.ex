@@ -1,6 +1,7 @@
 defmodule LiveViewNative.LiveSession do
   @moduledoc """
-  Ensures common `assigns` are applied to all LiveViews attaching this hook.
+  Conducts platform detection on socket connections and applies
+  native assigns.
   """
   import Phoenix.LiveView
   import Phoenix.Component, only: [assign: 3]

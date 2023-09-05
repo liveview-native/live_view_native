@@ -1,6 +1,11 @@
 defmodule LiveViewNative.Extensions.RenderMacro do
-  @moduledoc """
-  TODO: Write docs
+  @moduledoc false
+
+  @doc """
+  This macro enables custom render macros for LiveView Native platforms.
+  Each platform library can define its own custom render macro, typically
+  a sigil (i.e. `~SWIFTUI`, `~JETPACK` etc.) as part of its implementation
+  of `LiveViewNativePlatform.Kit.compile/1`.
   """
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [

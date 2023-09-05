@@ -1,9 +1,69 @@
-# Change Events
+# Handling Events
+
+Events are a common part of any LiveView application. On the server, LiveView Native handles events identically to LiveView
+on the web. How the client handles events depends on the native platform and its respective client implementation. This
+document provides some general information on events regardless of platform.
+
+## Translated Bindings
+
+Platforms may translate [Phoenix bindings](https://hexdocs.pm/phoenix_live_view/bindings.html) to their native counterparts
+where it makes sense. The most common example of this is `phx-click` which listens for tap events on SwiftUI and Jetpack
+targets.
+
+On the server, events are handled using standard LiveView callbacks like `handle_event/3` regardless of what platform they
+come from. Callbacks can also be shared across platforms, assuming the events and their params are compatible. Here is a
+basic example of sharing a `handle_event/3` callback in this way:
+
+```elixir
+# hello_live.ex
+defmodule MyAppWeb.HelloLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  @impl true
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, name: "World")}
+  end
+
+  @impl true
+  def render(%{platform_id: :swiftui} = assigns) do
+    # This UI renders on the iPhone / iPad app
+    ~SWIFTUI"""
+    <VStack>
+      <Text phx-click="click_test">Hello <%= @name %>!</Text>
+    </VStack>
+    """
+  end
+
+  @impl true
+  def render(%{} = assigns) do
+    # This UI renders on the web
+    ~H"""
+    <div class="flex w-full h-screen items-center">
+      <span class="w-full text-center" phx-click="click_test">
+        Hello <%= @name %>!
+      </span>
+    </div>
+    """
+  end
+
+  @impl true
+  def handle_event("click_test", _params, socket) do
+    # This event can be called from both SwiftUI and the web
+    {:noreply, assign(socket, name: "José")}
+  end
+end
+```
+
+In this example, clicking the "Hello World" button changes it to say "Hello José" on both the web and iOS.
+The same `handle_event/3` callback is fired in both cases.
+
+## Change Events
 
 In LiveView Native, elements can support client-side changes to their value outside of a `<form>`.
 Synchronizing the values must be handled manually by the LiveView using change events.
 
-## Client-side changes
+### Client-side changes
 Use the `phx-change` attribute to respond to client-side changes to an element's value.
 
 ```html
@@ -22,7 +82,7 @@ The `phx-debounce`, `phx-throttle`, and `phx-target` attributes can be used to c
 
 Refer to the documentation for an element to find out if it supports client-side changes.
 
-## Server-side changes
+### Server-side changes
 Each element has an attribute that controls its value.
 For example, `TextField` in the SwiftUI client uses the attribute `text`.
 See the documentation for an element to find out what attribute it uses.
@@ -30,7 +90,7 @@ See the documentation for an element to find out what attribute it uses.
 Whenever the attribute's value is changed, the client will update to display the new value.
 No change event is sent when the server updates the value.
 
-## Modifier change events
+### Modifier change events
 Some modifiers have values that can be changed by the client.
 
 To receive change events on these modifiers, pass a `LiveViewNativePlatform.Modifier.Types.Event` to the `change` argument.

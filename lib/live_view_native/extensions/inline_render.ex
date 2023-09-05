@@ -1,9 +1,11 @@
 defmodule LiveViewNative.Extensions.InlineRender do
-  @moduledoc """
-  LiveView Native extension that enables inline-rendering of templates for LiveView
-  Native platforms within a LiveView or Live Component. Using this macro causes
-  a module to inherit a `LVN/2` sigil that can be used to render templates inline
-  by suffixing it with the platform's `platform_id`:
+  @moduledoc false
+
+  @doc """
+  This macro enables inline-rendering of templates for any LiveView Native
+  platform. Using this macro causes a module to inherit a `LVN/2` sigil that
+  can be used to render templates inline by suffixing it with the platform's
+  `platform_id`:
 
   ```elixir
   defmodule MyAppWeb.HelloLive do

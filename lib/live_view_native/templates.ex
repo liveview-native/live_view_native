@@ -1,4 +1,9 @@
 defmodule LiveViewNative.Templates do
+  @moduledoc """
+  Provides functionality for preprocessing LiveView Native
+  templates.
+  """
+
   def precompile(expr) do
     doc = Meeseeks.parse(expr, :xml)
     replacements = Enum.flat_map(doc.nodes, &transform_node/1)

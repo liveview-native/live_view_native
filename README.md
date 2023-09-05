@@ -2,15 +2,13 @@
 
 [![Build Status](https://github.com/liveview-native/live_view_native/workflows/Elixir%20CI/badge.svg)](https://github.com/liveview-native/live_view_native/actions) [![Hex.pm](https://img.shields.io/hexpm/v/live_view_native.svg)](https://hex.pm/packages/live_view_native)
 
-> ⚠️ LiveView Native is _prerelease software_ and not recommended for production use.
-
 ## Installation
 
 To use LiveView Native, add it to your list of dependencies in `mix.exs`.
 
 ```elixir
 def deps do
-  [{:live_view_native, "~> 0.0.7"}]
+  [{:live_view_native, "~> 0.1"}]
 end
 ```
 
@@ -70,8 +68,8 @@ For example, if you want to support rendering LiveViews in SwiftUI, add its plat
 ```elixir
 def deps do
   [
-    {:live_view_native, "~> 0.0.7"},
-    {:live_view_native_swift_ui, "~> 0.0.7"}
+    {:live_view_native, "~> 0.1"},
+    {:live_view_native_swift_ui, "~> 0.1"}
   ]
 end
 ```

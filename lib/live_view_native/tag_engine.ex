@@ -1,4 +1,9 @@
 defmodule LiveViewNative.TagEngine do
+  @moduledoc """
+  An implementation of `Phoenix.LiveView.TagEngine` that omits
+  HTML-centric template rules.
+  """
+
   @behaviour Phoenix.LiveView.TagEngine
 
   def classify_type(":inner_block"), do: {:error, "the slot name :inner_block is reserved"}
