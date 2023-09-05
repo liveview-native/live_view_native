@@ -50,7 +50,7 @@ defmodule LiveViewNative.MixProject do
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:meeseeks, "~> 0.17.0"},
-      {:live_view_native_platform, "~> 0.0.8"}
+      {:live_view_native_platform, "~> 0.1"}
     ]
   end
 
@@ -58,7 +58,7 @@ defmodule LiveViewNative.MixProject do
     [
       source_ref: "v#{@version}",
       main: "overview",
-      logo: "logo.png",
+      logo: "guides/assets/images/logo.png",
       assets: "guides/assets",
       extra_section: "GUIDES",
       extras: extras(),
