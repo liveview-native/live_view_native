@@ -57,7 +57,7 @@ end
 ```
 
 Then, run your app and navigate to your local development server in a web browser.
-You should the LiveView you created.
+You should see the LiveView you created.
 
 ![Hello World - Web](./assets/images/hello-web.png)
 
