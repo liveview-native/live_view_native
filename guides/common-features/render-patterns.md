@@ -63,10 +63,10 @@ defmodule MyAppWeb.SharedComponents do
 
   def logo(%{} = assigns) do
     ~H"""
-    <VStack>
+    <div>
       <img src="my-logo.png" />
       <h1><%= @title %></h1>
-    </VStack>
+    </div>
     """
   end
 end
