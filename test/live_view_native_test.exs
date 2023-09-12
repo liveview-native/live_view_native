@@ -6,7 +6,7 @@ defmodule LiveViewNativeTest do
 
     assert platforms
     assert is_map(platforms)
-    assert platforms["web"]
+    assert platforms["html"]
     assert platforms["lvntest"]
   end
 
@@ -23,20 +23,20 @@ defmodule LiveViewNativeTest do
     end
 
     test "when platform_id is a binary" do
-      {:ok, platform_struct} = LiveViewNative.platform("web")
+      {:ok, platform_struct} = LiveViewNative.platform("html")
 
       assert platform_struct
-      assert platform_struct.platform_id == :web
+      assert platform_struct.platform_id == :html
       assert platform_struct.platform_config == %LiveViewNative.Platforms.Web{}
     end
   end
 
   describe "platform!/1" do
     test "when platform_id is valid" do
-      platform_struct = LiveViewNative.platform!("web")
+      platform_struct = LiveViewNative.platform!("html")
 
       assert platform_struct
-      assert platform_struct.platform_id == :web
+      assert platform_struct.platform_id == :html
       assert platform_struct.platform_config == %LiveViewNative.Platforms.Web{}
     end
 
