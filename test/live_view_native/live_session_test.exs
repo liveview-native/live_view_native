@@ -35,7 +35,7 @@ defmodule LiveViewNative.LiveSessionTest do
 
       assert updated_socket.assigns
       assert updated_socket.assigns.native == nil
-      assert updated_socket.assigns.platform_id == :web
+      assert updated_socket.assigns.platform_id == :html
     end
   end
 end
