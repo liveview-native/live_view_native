@@ -44,4 +44,4 @@ To use LiveView Native in your Phoenix application, follow the instructions in t
 
   * Official website: https://native.live
   * Docs: https://hexdocs.pm/live_view_native
-  * Source: https://github.com/liveviewnative/live_view_native
+  * Source: https://github.com/liveview-native/live_view_native
