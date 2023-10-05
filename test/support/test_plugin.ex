@@ -1,10 +1,8 @@
-if Mix.env() == :test do
-  defmodule LiveViewNative.TestPlugin do
-    use LiveViewNativePlatform
+defmodule LiveViewNative.TestPlugin do
+  use LiveViewNativePlatform
 
-    def platforms,
-      do: [
-        LiveViewNative.TestPlatform
-      ]
-  end
+  def platforms,
+    do: [
+      LiveViewNative.TestPlatform
+    ]
 end
