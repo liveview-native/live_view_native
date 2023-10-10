@@ -4,50 +4,37 @@ defmodule LiveViewNative.Templates do
   templates.
   """
 
-  def precompile(expr) do
+  def precompile(expr, platform_id) do
     doc = Meeseeks.parse(expr, :xml)
-    replacements = Enum.flat_map(doc.nodes, &transform_node/1)
+    class_names = Enum.flat_map(doc.nodes, &extract_class_names/1) |> IO.inspect()
+    append_class_names_to_partial_stylesheet(class_names, platform_id)
 
-    transformed_expr =
-      replacements
-      |> Enum.reduce(expr, fn {from, to}, acc ->
-        String.replace(acc, from, to)
-      end)
-
-    transformed_expr
+    expr
   end
 
   ###
 
-  defp transform_node({_key, node}) do
+  defp extract_class_names({_key, node}) do
     case node do
       %{attributes: [_ | _] = attributes} ->
         attributes
-        |> Enum.map(&transform_attribute/1)
-        |> Enum.filter(&(&1 != nil))
+        |> Enum.into(%{})
+        |> Map.get("class", "")
+        |> String.split(" ")
+        |> Enum.filter(&(&1 != ""))
 
       _ ->
         []
     end
   end
 
-  defp transform_attribute({key, value}) do
-    case key do
-      "modclass" ->
-        {" modclass=\"#{value}\"", transform_modclass(value)}
+  # TODO: Reuse IO device
+  defp append_class_names_to_partial_stylesheet([], _platform_id), do: :ok
 
-      _ ->
-        nil
-    end
-  end
+  defp append_class_names_to_partial_stylesheet(class_names, platform_id) do
+    {:ok, file} = File.open("_build/lvn.styleclasses.#{platform_id}.tmp", [:write, :append])
 
-  defp transform_modclass(modclass) do
-    modifiers =
-      modclass
-      |> String.split(" ")
-      |> Enum.map(fn classname -> "modclass(\"#{classname}\", assigns)" end)
-      |> Enum.join("|> ")
-
-    " modifiers={@native |> #{modifiers}}"
+    IO.write(file, Enum.join(class_names, "\n") <> "\n")
+    File.close(file)
   end
 end
