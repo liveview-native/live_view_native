@@ -50,7 +50,9 @@ defmodule LiveViewNative.MixProject do
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:meeseeks, "~> 0.17.0"},
-      {:live_view_native_platform, "~> 0.1"}
+      {:live_view_native_platform, "~> 0.1"},
+      {:swift_class, git: "https://github.com/NduatiK/swift_class", branch: "master"},
+      {:live_view_native_stylesheet, git: "https://github.com/liveview-native/live_view_native_stylesheet", branch: "main"}
     ]
   end
 
