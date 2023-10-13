@@ -6,7 +6,7 @@ defmodule LiveViewNative.Templates do
 
   def precompile(expr, platform_id) do
     doc = Meeseeks.parse(expr, :xml)
-    class_names = Enum.flat_map(doc.nodes, &extract_class_names/1) |> IO.inspect()
+    class_names = Enum.flat_map(doc.nodes, &extract_class_names/1)
     append_class_names_to_partial_stylesheet(class_names, platform_id)
 
     expr
