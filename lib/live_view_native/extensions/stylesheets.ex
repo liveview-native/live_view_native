@@ -11,15 +11,19 @@ defmodule LiveViewNative.Extensions.Stylesheets do
     stylesheet = opts[:stylesheet]
 
     quote bind_quoted: [module: module, stylesheet: stylesheet] do
-      def __compiled_stylesheet__ do
-        class_tree_module = Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
-        class_tree = apply(class_tree_module, :class_tree, [])
-        class_names =
-          class_tree
-          |> Map.values()
-          |> List.flatten()
+      if stylesheet do
+        def __compiled_stylesheet__ do
+          class_tree_module = Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
+          class_tree = apply(class_tree_module, :class_tree, [])
+          class_names =
+            class_tree
+            |> Map.values()
+            |> List.flatten()
 
-        apply(unquote(stylesheet), :compile_string, [class_names])
+          apply(unquote(stylesheet), :compile_string, [class_names])
+        end
+      else
+        def __compiled_stylesheet_, do: nil
       end
     end
   end

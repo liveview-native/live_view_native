@@ -6,7 +6,9 @@ defmodule LiveViewNative.LiveSession do
   import Phoenix.LiveView
   import Phoenix.Component, only: [assign: 3]
 
-  def on_mount(:live_view_native, params, _session, socket) do
+  alias Phoenix.LiveView.Socket
+
+  def on_mount(:live_view_native, params, _session, %Socket{} = socket) do
     with %{} = connect_params <- (if connected?(socket), do: get_connect_params(socket), else: params),
          %LiveViewNativePlatform.Env{} = platform_context <-
            get_platform_context(connect_params) do
@@ -14,6 +16,7 @@ defmodule LiveViewNative.LiveSession do
         socket
         |> assign(:native, platform_context)
         |> assign(:platform_id, platform_context.platform_id)
+        |> push_stylesheet_if_present()
 
       {:cont, socket}
     else
@@ -57,5 +60,15 @@ defmodule LiveViewNative.LiveSession do
     |> Enum.reduce(platform_config, fn {key, value}, acc ->
       Map.put(acc, String.to_existing_atom(key), value)
     end)
+  end
+
+  defp push_stylesheet_if_present(%Socket{view: view_module} = socket) do
+    case apply(view_module, :__compiled_stylesheet__, []) do
+      nil ->
+        socket
+
+      stylesheet ->
+        push_event(socket, "_ingest_stylesheet", %{stylesheet: stylesheet})
+    end
   end
 end
