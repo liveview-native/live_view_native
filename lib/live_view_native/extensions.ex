@@ -8,8 +8,8 @@ defmodule LiveViewNative.Extensions do
   should use `LiveViewNative.LiveView` or `LiveViewNative.LiveComponent`
   respectively.
   """
-  defmacro __using__(_opts \\ []) do
-    quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
+  defmacro __using__(opts \\ []) do
+    quote bind_quoted: [caller: Macro.escape(__CALLER__), stylesheet: opts[:stylesheet]] do
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
@@ -42,6 +42,9 @@ defmodule LiveViewNative.Extensions do
 
       use LiveViewNative.Extensions.Render
       use LiveViewNative.Extensions.InlineRender
+      use LiveViewNative.Extensions.Stylesheets,
+        module: __ENV__.module,
+        stylesheet: stylesheet
     end
   end
 end
