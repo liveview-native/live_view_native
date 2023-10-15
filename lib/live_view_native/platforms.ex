@@ -1,7 +1,7 @@
 defmodule LiveViewNative.Platforms do
   @moduledoc false
 
-  @default_platforms [LiveViewNative.Platforms.Web]
+  @default_platforms [LiveViewNative.Platforms.HTML]
 
   @env_platforms :live_view_native
                  |> Application.compile_env(:plugins, [])

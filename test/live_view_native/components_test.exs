@@ -6,7 +6,7 @@ defmodule LiveViewNative.ComponentsTest do
   import Meeseeks.CSS
 
   test "test_component/1 renders as expected" do
-    web_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.Web{})
+    web_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.HTML{})
     test_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.TestPlatform{})
     web_result =
       render_component(&TestComponents.test_component/1, platform_id: :web, native: web_context)
