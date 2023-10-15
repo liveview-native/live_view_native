@@ -8,12 +8,14 @@ defmodule Mix.Tasks.Lvn.Install do
   @template_projects_version "0.0.1"
 
   @shortdoc "Installs LiveView Native."
-  def run(_) do
+  def run(args) do
+    {parsed_args, _, _} = OptionParser.parse(args, strict: [namespace: :string])
+
     # Define some paths for the host project
     current_path = File.cwd!()
     mix_config_path = Path.join(current_path, "mix.exs")
     app_config_path = Path.join(current_path, "/config/config.exs")
-    {:ok, app_name} = infer_app_name(mix_config_path)
+    app_name = infer_app_name(mix_config_path, parsed_args[:namespace])
     build_path = Path.join(current_path, "_build")
     libs_path = Path.join(build_path, "dev/lib")
 
@@ -84,11 +86,39 @@ defmodule Mix.Tasks.Lvn.Install do
     end
   end
 
-  defp infer_app_name(config_path) do
+  defp infer_app_name(config_path, nil) do
     with {:ok, config} <- File.read(config_path),
-         {:ok, {:defmodule, _meta, [{:__aliases__, [line: 1], [namespace, :MixProject]}, _rest]}} <- Code.string_to_quoted(config)
+         {:ok, mix_project_ast} <- Code.string_to_quoted(config),
+         {:ok, namespace} <- find_mix_project_namespace(mix_project_ast)
     do
-      {:ok, "#{namespace}"}
+      namespace
+    else
+      _ ->
+        raise "Could not infer Mix project namespace from mix.exs. Please provide it manually using the --namespace argument."
+    end
+  end
+
+  defp infer_app_name(_config_path, namespace), do: String.to_atom(namespace)
+
+  defp find_mix_project_namespace(ast) do
+    case ast do
+      ast when is_list(ast) ->
+        ast
+        |> Enum.reduce_while({:error, :cannot_infer_app_name}, fn node, _acc ->
+          {status, result} = find_mix_project_namespace(node)
+          acc_op = if status == :ok, do: :halt, else: :cont
+
+          {acc_op, {status, result}}
+        end)
+
+      {:defmodule, _, [{:__aliases__, _, [namespace, :MixProject]} | _rest]} ->
+        {:ok, namespace}
+
+      {:__block__, _, contents} ->
+        find_mix_project_namespace(contents)
+
+      _ ->
+        {:error, :cannot_infer_app_name}
     end
   end
 
