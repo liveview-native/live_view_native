@@ -11,12 +11,12 @@ defmodule LiveViewNative.LiveViewTest do
   end
 
   test "calling render_native/1 renders the correct platform for `assigns`" do
-    web_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.HTML{})
+    html_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.HTML{})
     test_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.TestPlatform{})
-    web_result = TestLiveView.render(%{platform_id: :html, native: web_context})
+    html_result = TestLiveView.render(%{platform_id: :html, native: html_context})
     test_result = TestLiveView.render(%{platform_id: :lvntest, native: test_context})
 
-    assert web_result.static == [
+    assert html_result.static == [
              "<div>\n  <span>This is an HTML template</span>\n  <input>\n</div>"
            ]
 
@@ -26,12 +26,12 @@ defmodule LiveViewNative.LiveViewTest do
   end
 
   test "calling render/1 renders platform-specific templates inline" do
-    web_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.HTML{})
+    html_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.HTML{})
     test_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.TestPlatform{})
-    web_result = TestLiveViewInline.render(%{platform_id: :html, native: web_context})
+    html_result = TestLiveViewInline.render(%{platform_id: :html, native: html_context})
     test_result = TestLiveViewInline.render(%{platform_id: :lvntest, native: test_context})
 
-    assert web_result.static == ["<div>Hello from the web</div>"]
+    assert html_result.static == ["<div>Hello from the web</div>"]
     assert test_result.static == ["<Text>Hello from the test platform</Text>"]
   end
 end
