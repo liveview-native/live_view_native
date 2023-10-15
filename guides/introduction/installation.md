@@ -151,7 +151,7 @@ for your app.
 iex(1)> LiveViewNative.platforms()
 ```
 
-Confirm that each platform listed (excluding `web`) has a platform-specific client app (i.e. Xcode,
+Confirm that each platform listed (excluding `HTML`) has a platform-specific client app (i.e. Xcode,
 Android Studio, etc.) for connecting to your LiveView Native backend. If you used `mix lvn.install`
 to enable LiveView Native, these project files will be placed in the `native/` directory of your app.  
 

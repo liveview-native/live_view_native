@@ -96,9 +96,9 @@ end
 
 ### hello_live.html.heex
 ```heex
-<div id="template-web">
+<div id="template-htmll">
   <div class="text-slate-800 bg-slate-50 h-screen w-screen grid grid-cols-1 gap-1 content-center items-center text-center">
-    <div class="font-semibold mb-1">A web template, courtesy of hello_live.html.heex</div>
+    <div class="font-semibold mb-1">A html template, courtesy of hello_live.html.heex</div>
   </div>
 </div>
 ```

@@ -1,6 +1,6 @@
 # Overview
 
-LiveView Native is a framework for building native applications using Elixir and Phoenix LiveView. It allows a single application to serve a multitude of clients by transforming platform-specific template code into native user interfaces. Here's a basic example that serves web, iOS, iPadOS and macOS clients natively:
+LiveView Native is a framework for building native applications using Elixir and Phoenix LiveView. It allows a single application to serve a multitude of clients by transforming platform-specific template code into native user interfaces. Here's a basic example that serves HTML, iOS, iPadOS and macOS clients natively:
 
 <!-- tabs-open -->
 

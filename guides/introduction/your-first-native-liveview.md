@@ -2,7 +2,7 @@
 
 Now that you've [installed LiveView Native](./installation.md), its time to create a LiveView
 that uses it. This guide explains how to create a basic LiveView module that can serve different
-templates to both web and native platforms while sharing non-template code between them.
+templates to both HTML and native platforms while sharing non-template code between them.
 
 ## A basic LiveView
 
