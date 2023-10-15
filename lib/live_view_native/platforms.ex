@@ -20,7 +20,7 @@ defmodule LiveViewNative.Platforms do
   Provides configuration constants about all platforms supported by an
   application that uses LiveView Native. This function is a dependency
   of various LiveView Native systems, such as `LiveViewNative.LiveSession`
-  which is responsible for determining which platform (HTML, iOS, etc.) a
+  which is responsible for determining which platform (HTML, SwiftUI, etc.) a
   session originates from.
   """
   def env_platforms do

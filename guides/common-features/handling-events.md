@@ -55,7 +55,7 @@ defmodule MyAppWeb.HelloLive do
 end
 ```
 
-In this example, clicking the "Hello World" button changes it to say "Hello José" on both the web and iOS.
+In this example, clicking the "Hello World" button changes it to say "Hello José" on both the web and SwiftUI.
 The same `handle_event/3` callback is fired in both cases.
 
 ## Change Events

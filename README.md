@@ -14,7 +14,7 @@ defmodule MyAppWeb.HelloLive do
 
   @impl true
   def render(%{platform_id: :swiftui} = assigns) do
-    # This UI renders on iOS
+    # This UI renders on SwiftUI
     ~SWIFTUI"""
     <VStack>
       <Text>
