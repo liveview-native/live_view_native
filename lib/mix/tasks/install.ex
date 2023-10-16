@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Lvn.Install do
     current_path = File.cwd!()
     mix_config_path = Path.join(current_path, "mix.exs")
     app_config_path = Path.join(current_path, "/config/config.exs")
-    app_name = infer_app_name(mix_config_path, parsed_args[:namespace])
+    app_namespace = parsed_args[:namespace] || infer_app_namespace(mix_config_path)
     build_path = Path.join(current_path, "_build")
     libs_path = Path.join(build_path, "dev/lib")
 
@@ -53,7 +53,7 @@ defmodule Mix.Tasks.Lvn.Install do
         # Phoenix project.
         lib_path = Path.join(template_projects_path, "/#{lib}")
         script_path = Path.join(lib_path, "/install.exs")
-        cmd_opts = [script_path, "--app-name", app_name, "--app-path", current_path, "--platform-lib-path", lib_path]
+        cmd_opts = [script_path, "--app-name", app_namespace, "--app-path", current_path, "--platform-lib-path", lib_path]
 
         with {platform_name, 0} <- System.cmd("elixir", cmd_opts) do
           String.trim(platform_name)
@@ -86,19 +86,17 @@ defmodule Mix.Tasks.Lvn.Install do
     end
   end
 
-  defp infer_app_name(config_path, nil) do
+  def infer_app_namespace(config_path) do
     with {:ok, config} <- File.read(config_path),
          {:ok, mix_project_ast} <- Code.string_to_quoted(config),
          {:ok, namespace} <- find_mix_project_namespace(mix_project_ast)
     do
-      namespace
+      "#{namespace}"
     else
       _ ->
         raise "Could not infer Mix project namespace from mix.exs. Please provide it manually using the --namespace argument."
     end
   end
-
-  defp infer_app_name(_config_path, namespace), do: String.to_atom(namespace)
 
   defp find_mix_project_namespace(ast) do
     case ast do
