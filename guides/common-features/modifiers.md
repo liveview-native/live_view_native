@@ -20,7 +20,6 @@ Here's a simple example of calling modifier functions inline for elements with t
 ### Source
 
 ```elixir
-
 defmodule MyAppWeb.ModifiersExampleLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
