@@ -20,8 +20,14 @@ defmodule Mix.Tasks.Lvn.Install do
     libs_path = Path.join(build_path, "dev/lib")
 
     # Ask the user some questions about their app
-    preferred_route_input = IO.gets("What path should native clients connect to by default? Leave blank for default: \"/\")\n")
-    preferred_prod_url_input = IO.gets("What URL will you use in production? Leave blank for default: \"example.com\")\n")
+    preferred_route_input =
+      IO.gets(
+        "What path should native clients connect to by default? Leave blank for default: \"/\")\n"
+      )
+
+    preferred_prod_url_input =
+      IO.gets("What URL will you use in production? Leave blank for default: \"example.com\")\n")
+
     preferred_route = String.trim(preferred_route_input)
     _preferred_route = if preferred_route == "", do: "/", else: preferred_route
     preferred_prod_url = String.trim(preferred_prod_url_input)
@@ -53,7 +59,16 @@ defmodule Mix.Tasks.Lvn.Install do
         # Phoenix project.
         lib_path = Path.join(template_projects_path, "/#{lib}")
         script_path = Path.join(lib_path, "/install.exs")
-        cmd_opts = [script_path, "--app-name", app_namespace, "--app-path", current_path, "--platform-lib-path", lib_path]
+
+        cmd_opts = [
+          script_path,
+          "--app-name",
+          app_namespace,
+          "--app-path",
+          current_path,
+          "--platform-lib-path",
+          lib_path
+        ]
 
         with {platform_name, 0} <- System.cmd("elixir", cmd_opts) do
           String.trim(platform_name)
@@ -78,19 +93,23 @@ defmodule Mix.Tasks.Lvn.Install do
     with {:ok, current_path} <- File.cwd(),
          tmp_path <- Path.join(current_path, "_build/lvn_tmp"),
          _ <- File.rm_rf(tmp_path),
-         :ok <- File.mkdir(tmp_path)
-    do
+         :ok <- File.mkdir(tmp_path) do
       status_message("downloading", "template project files")
 
-      System.cmd("git", ["clone", "-b", @template_projects_version, @template_projects_repo, tmp_path <> "/liveview-native-template-projects"])
+      System.cmd("git", [
+        "clone",
+        "-b",
+        @template_projects_version,
+        @template_projects_repo,
+        tmp_path <> "/liveview-native-template-projects"
+      ])
     end
   end
 
   def infer_app_namespace(config_path) do
     with {:ok, config} <- File.read(config_path),
          {:ok, mix_project_ast} <- Code.string_to_quoted(config),
-         {:ok, namespace} <- find_mix_project_namespace(mix_project_ast)
-    do
+         {:ok, namespace} <- find_mix_project_namespace(mix_project_ast) do
       "#{namespace}"
     else
       _ ->
@@ -158,13 +177,13 @@ defmodule Mix.Tasks.Lvn.Install do
   end
 
   defp native_exs_body(platform_names_string) do
-"""
-# This file is responsible for configuring LiveView Native.
-# It is auto-generated when running `mix lvn.install`.
-import Config
+    """
+    # This file is responsible for configuring LiveView Native.
+    # It is auto-generated when running `mix lvn.install`.
+    import Config
 
-config :live_view_native, plugins: [#{platform_names_string}]
-"""
+    config :live_view_native, plugins: [#{platform_names_string}]
+    """
   end
 
   defp status_message(label, message) do
