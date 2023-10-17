@@ -23,7 +23,7 @@ defmodule LiveViewNative.Extensions.Stylesheets do
           apply(unquote(stylesheet), :compile_string, [class_names])
         end
       else
-        def __compiled_stylesheet_, do: nil
+        def __compiled_stylesheet__, do: nil
       end
     end
   end
