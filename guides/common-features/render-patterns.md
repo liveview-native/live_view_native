@@ -6,7 +6,7 @@ patterns and when you might use them.
 ## `render/1` function clauses
 
 The most common pattern that is often used throughout this guide is the function clause pattern.
-Each function clause matches on the `:platform_id`, allowing each platform to define its own UI:
+Each function clause matches on the `:layout`, allowing each platform to define its own UI:
 
 ```elixir
 # lib/my_app_web/live/hello_live.ex
@@ -15,7 +15,7 @@ defmodule MyAppWeb.HelloLive do
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{layout: :swiftui} = assigns) do
     # This UI renders on the iPhone / iPad app
     ~SWIFTUI"""
     <VStack>
@@ -52,7 +52,7 @@ defmodule MyAppWeb.SharedComponents do
 
   import ElixirconfChatWeb.Modclasses.SwiftUi, only: [modclass: 3]
 
-  def logo(%{platform_id: :swiftui} = assigns) do
+  def logo(%{layout: :swiftui} = assigns) do
     ~SWIFTUI"""
     <VStack>
       <Image name="Logo" />
@@ -76,7 +76,7 @@ end
 
 If you would prefer to break your render function out into separate template files, you can
 conditionally render platform-specific templates using the `render_native/1` macro. External
-template files are namespaced according to their `:platform_id`:
+template files are namespaced according to their `:layout`:
 
 <!-- tabs-open -->
 
@@ -127,7 +127,7 @@ defmodule MyAppWeb.SharedComponents do
 
   import ElixirconfChatWeb.Modclasses.SwiftUi, only: [modclass: 3]
 
-  def logo(%{platform_id: :swiftui} = assigns) do
+  def logo(%{layout: :swiftui} = assigns) do
     ~SWIFTUI"""
     <VStack>
       <%= case @native.platform_config.user_interface_idiom do %>

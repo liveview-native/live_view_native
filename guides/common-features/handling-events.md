@@ -26,7 +26,7 @@ defmodule MyAppWeb.HelloLive do
   end
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{layout: :swiftui} = assigns) do
     # This UI renders on the iPhone / iPad app
     ~SWIFTUI"""
     <VStack>

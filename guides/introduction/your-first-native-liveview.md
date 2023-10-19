@@ -66,7 +66,7 @@ You should see the LiveView you created.
 To support non-web platforms using LiveView Native, simply provide a template for each
 platform you want to support. This is done by extending LiveView's standard `render/1` callback.
 
-Each platform will have its own custom `:platform_id`, render sigil and HEEx syntax, which are
+Each platform will have its own custom `:layout`, render sigil and HEEx syntax, which are
 all pulled in by the `LiveViewNative.LiveView` macro inherited toward the top of your LiveView.
 The following example demonstrates handling the `:swiftui` platform for LiveView Native apps
 with the `:live_view_native_swift_ui` dependency, which covers iOS, iPadOS and macOS support:
@@ -78,7 +78,7 @@ defmodule MyAppWeb.HelloLive do
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{layout: :swiftui} = assigns) do
     # This UI renders on the iPhone / iPad app
     ~SWIFTUI"""
     <VStack>

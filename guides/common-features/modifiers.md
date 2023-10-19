@@ -25,7 +25,7 @@ defmodule MyAppWeb.ModifiersExampleLive do
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{layout: :swiftui} = assigns) do
     # This UI renders on the iPhone / iPad app
     ~SWIFTUI"""
     <VStack>
@@ -83,7 +83,7 @@ defmodule MyAppWeb.ModifiersExampleLive do
   import MyAppWeb.Modclasses, only: [modclass: 3]
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{layout: :swiftui} = assigns) do
     ~SWIFTUI"""
     <VStack>
       <Text>This text is normal</Text>
@@ -148,7 +148,7 @@ defmodule MyAppWeb.ModifiersExampleLive do
   import MyAppWeb.Modclasses, only: [modclass: 3]
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{layout: :swiftui} = assigns) do
     ~SWIFTUI"""
     <VStack>
       <Text>This text is normal</Text>
