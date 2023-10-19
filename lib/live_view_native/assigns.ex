@@ -1,5 +1,7 @@
 defmodule LiveViewNative.Assigns do
   defstruct [
+    :app_version,
+    :app_build,
     :format,
     :native,
     :os,

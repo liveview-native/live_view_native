@@ -39,6 +39,8 @@ defmodule LiveViewNative.LiveSession do
 
   defp expand_lvn_params(%{"_lvn" => %{} = lvn_params}) do
     %Assigns{
+      app_build: lvn_params["app_build"],
+      app_version: lvn_params["app_version"],
       native: get_platform_env(lvn_params),
       os: lvn_params["os"],
       os_version: lvn_params["os_version"]
