@@ -4,64 +4,76 @@ defmodule LiveViewNative.LiveSession do
   native assigns.
   """
   import Phoenix.LiveView
-  import Phoenix.Component, only: [assign: 3]
+  import Phoenix.Component, only: [assign: 2]
 
+  alias LiveViewNative.Assigns
   alias Phoenix.LiveView.Socket
 
   def on_mount(:live_view_native, params, _session, %Socket{} = socket) do
-    with %{} = connect_params <-
-           if(connected?(socket), do: get_connect_params(socket), else: params),
-         %LiveViewNativePlatform.Env{} = platform_context <-
-           get_platform_context(connect_params) do
-      socket =
-        socket
-        |> assign(:native, platform_context)
-        |> assign(:platform_id, platform_context.platform_id)
-        |> push_stylesheet_if_present()
-
-      {:cont, socket}
-    else
-      _result ->
+    case get_native_assigns(socket, params) do
+      %Assigns{} = native_assigns ->
+        assigns = Map.from_struct(native_assigns)
         socket =
           socket
-          |> assign(:native, nil)
-          |> assign(:platform_id, :html)
+          |> assign(assigns)
+          |> push_stylesheet_if_present()
 
+        {:cont, socket}
+
+      _ ->
         {:cont, socket}
     end
   end
 
   ###
 
-  defp get_platform_context(%{"_platform" => platform_id} = connect_params) do
-    platforms = LiveViewNative.platforms()
-
-    with %LiveViewNativePlatform.Env{platform_config: platform_config} = context <-
-           Map.get(platforms, platform_id) do
-      platform_metadata = get_platform_metadata(connect_params)
-      platform_config = merge_platform_metadata(platform_config, platform_metadata)
-
-      Map.put(context, :platform_config, platform_config)
+  defp get_native_assigns(socket, params) do
+    if connected?(socket) do
+      socket
+      |> get_connect_params()
+      |> expand_lvn_params()
+    else
+      expand_lvn_params(params)
     end
   end
 
-  defp get_platform_context(_connect_params), do: nil
-
-  defp get_platform_metadata(%{"_platform_meta" => %{} = platform_metadata}),
-    do: platform_metadata
-
-  defp get_platform_metadata(_connect_params), do: %{}
-
-  defp merge_platform_metadata(platform_config, platform_metadata) do
-    platform_config_keys = Map.keys(platform_config)
-    platform_config_string_keys = Enum.map(platform_config_keys, &to_string/1)
-
-    platform_metadata
-    |> Map.take(platform_config_string_keys)
-    |> Enum.reduce(platform_config, fn {key, value}, acc ->
-      Map.put(acc, String.to_existing_atom(key), value)
-    end)
+  defp expand_lvn_params(%{"_lvn" => %{} = lvn_params}) do
+    %Assigns{
+      native: get_platform_env(lvn_params),
+      os: lvn_params["os"],
+      os_version: lvn_params["os_version"]
+    }
+    |> put_format(lvn_params)
+    |> put_target(lvn_params)
   end
+
+  defp expand_lvn_params(_), do: nil
+
+  defp get_platform_env(%{"format" => format}) do
+    platforms = LiveViewNative.platforms()
+
+    case Map.get(platforms, format) do
+      %LiveViewNativePlatform.Env{} = env ->
+        env
+
+      _ ->
+        nil
+    end
+  end
+
+  defp get_platform_env(_lvn_params), do: nil
+
+  defp put_format(%Assigns{} = assigns, %{"format" => format}) do
+    %Assigns{assigns | format: String.to_existing_atom(format)}
+  end
+
+  defp put_format(assigns, _lvn_params), do: assigns
+
+  defp put_target(%Assigns{} = assigns, %{"target" => target}) do
+    %Assigns{assigns | target: String.to_existing_atom(target)}
+  end
+
+  defp put_target(assigns, _lvn_params), do: assigns
 
   defp push_stylesheet_if_present(%Socket{view: view_module} = socket)
        when not is_nil(view_module) do
