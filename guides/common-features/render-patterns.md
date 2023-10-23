@@ -52,7 +52,7 @@ defmodule MyAppWeb.SharedComponents do
 
   import ElixirconfChatWeb.Modclasses.SwiftUi, only: [modclass: 3]
 
-  def logo(%{layout: :swiftui} = assigns) do
+  def logo(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
     <VStack>
       <Image name="Logo" />
@@ -127,7 +127,7 @@ defmodule MyAppWeb.SharedComponents do
 
   import ElixirconfChatWeb.Modclasses.SwiftUi, only: [modclass: 3]
 
-  def logo(%{layout: :swiftui} = assigns) do
+  def logo(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
     <VStack>
       <%= case @native.platform_config.user_interface_idiom do %>

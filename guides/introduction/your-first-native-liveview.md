@@ -78,7 +78,7 @@ defmodule MyAppWeb.HelloLive do
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{layout: :swiftui} = assigns) do
+  def render(%{format: :swiftui} = assigns) do
     # This UI renders on the iPhone / iPad app
     ~SWIFTUI"""
     <VStack>

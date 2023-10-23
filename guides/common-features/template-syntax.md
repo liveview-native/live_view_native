@@ -19,7 +19,7 @@ defmodule MyAppWeb.MyComponents do
   use Phoenix.LiveView
   use LiveViewNative.Component
 
-  def album_detail(%{layout: :swiftui} = assigns) do
+  def album_detail(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
     <List>
       <%= for song <- @album.songs do %>
