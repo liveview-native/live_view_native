@@ -38,10 +38,13 @@ defmodule LiveViewNative.Extensions do
         use LiveViewNative.Extensions.RenderMacro,
           platform_id: platform_id,
           render_macro: platform_context.render_macro
+
+        use LiveViewNative.Extensions.InlineRender,
+          platform_id: platform_id
       end
 
       use LiveViewNative.Extensions.Render
-      use LiveViewNative.Extensions.InlineRender
+
       use LiveViewNative.Extensions.Stylesheets,
         module: __ENV__.module,
         stylesheet: stylesheet

@@ -13,8 +13,11 @@ defmodule LiveViewNative.Extensions.Stylesheets do
     quote bind_quoted: [module: module, stylesheet: stylesheet] do
       if stylesheet do
         def __compiled_stylesheet__ do
-          class_tree_module = Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
+          class_tree_module =
+            Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
+
           class_tree = apply(class_tree_module, :class_tree, [])
+
           class_names =
             class_tree
             |> Map.values()

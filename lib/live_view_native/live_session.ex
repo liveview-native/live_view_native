@@ -9,7 +9,8 @@ defmodule LiveViewNative.LiveSession do
   alias Phoenix.LiveView.Socket
 
   def on_mount(:live_view_native, params, _session, %Socket{} = socket) do
-    with %{} = connect_params <- (if connected?(socket), do: get_connect_params(socket), else: params),
+    with %{} = connect_params <-
+           if(connected?(socket), do: get_connect_params(socket), else: params),
          %LiveViewNativePlatform.Env{} = platform_context <-
            get_platform_context(connect_params) do
       socket =
@@ -62,7 +63,8 @@ defmodule LiveViewNative.LiveSession do
     end)
   end
 
-  defp push_stylesheet_if_present(%Socket{view: view_module} = socket) do
+  defp push_stylesheet_if_present(%Socket{view: view_module} = socket)
+       when not is_nil(view_module) do
     case apply(view_module, :__compiled_stylesheet__, []) do
       nil ->
         socket
@@ -71,4 +73,6 @@ defmodule LiveViewNative.LiveSession do
         push_event(socket, "_ingest_stylesheet", %{stylesheet: stylesheet})
     end
   end
+
+  defp push_stylesheet_if_present(socket), do: socket
 end

@@ -49,6 +49,7 @@ defmodule LiveViewNative.Extensions.InlineRender do
             line: __CALLER__.line + 1,
             tag_handler: LiveViewNative.TagEngine
           ]
+
           expr = LiveViewNative.Templates.precompile(expr, unquote(platform_id), base_opts)
           eex_opts = Keyword.put(base_opts, :source, expr)
 
