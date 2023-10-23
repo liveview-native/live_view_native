@@ -41,6 +41,7 @@ defmodule LiveViewNative.LiveSession do
     %Assigns{
       app_build: lvn_params["app_build"],
       app_version: lvn_params["app_version"],
+      bundle_id: lvn_params["bundle_id"],
       native: get_platform_env(lvn_params),
       os: lvn_params["os"],
       os_version: lvn_params["os_version"]
