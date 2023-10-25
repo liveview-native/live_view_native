@@ -7,17 +7,22 @@ defmodule LiveViewNative.Templates do
   def precompile(expr, platform_id, eex_opts) do
     %Macro.Env{function: {template_func, _template_func_arity}, module: template_module} =
       eex_opts[:caller]
-
+    stylesheet = eex_opts[:stylesheet]
     doc = Meeseeks.parse(expr, :xml)
     class_names = extract_all_class_names(doc)
 
-    class_tree_filename =
-      "_build/#{Mix.env()}/lib/live_view_native/.lvn/#{platform_id}/#{template_module}.classtree.json"
+    case stylesheet do
+      nil ->
+        expr
 
-    class_tree = build_incremental_class_tree(class_tree_filename, class_names, template_func)
-    dump_class_tree_bytecode(class_tree, template_module)
+      stylesheet ->
+        compiled_stylesheet =
+          [body: apply(stylesheet, :compile_string, [class_names])]
+          |> Phoenix.HTML.attributes_escape()
+          |> Phoenix.HTML.safe_to_string()
 
-    expr
+       "<compiled-lvn-stylesheet #{compiled_stylesheet}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
+    end
   end
 
   ###
@@ -38,52 +43,5 @@ defmodule LiveViewNative.Templates do
       _ ->
         []
     end
-  end
-
-  defp build_incremental_class_tree(class_tree_filename, class_names, template_func) do
-    class_tree_filename
-    |> read_or_stub_class_tree()
-    # TODO: Properly handle multiple function clauses
-    |> Map.put("#{template_func}", Enum.uniq(class_names))
-    |> persist_to_class_tree(class_tree_filename)
-  end
-
-  defp read_or_stub_class_tree(class_tree_filename) do
-    with {:ok, body} <- File.read(class_tree_filename),
-         {:ok, %{} = class_tree} <- Jason.decode(body) do
-      class_tree
-    else
-      _ ->
-        %{}
-    end
-  end
-
-  defp persist_to_class_tree(class_tree, class_tree_filename) do
-    with {:ok, encoded_class_tree} <- Jason.encode(class_tree),
-         dirname <- Path.dirname(class_tree_filename),
-         :ok <- File.mkdir_p(dirname),
-         :ok <- File.touch(class_tree_filename),
-         :ok <- File.write(class_tree_filename, encoded_class_tree) do
-      class_tree
-    else
-      error ->
-        raise "TODO: Handle error #{error}"
-    end
-  end
-
-  defp dump_class_tree_bytecode(class_tree, template_module) do
-    class_tree_module = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
-
-    expr =
-      Macro.to_string(
-        quote do
-          defmodule unquote(class_tree_module) do
-            def class_tree, do: unquote(class_tree)
-          end
-        end
-      )
-
-    Code.put_compiler_option(:ignore_module_conflict, true)
-    Code.compile_string(expr)
   end
 end

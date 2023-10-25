@@ -23,6 +23,7 @@ defmodule LiveViewNative.Extensions do
             caller: caller,
             eex_engine: platform_context.eex_engine,
             platform_module: platform_module,
+            stylesheet: stylesheet,
             tag_handler: platform_context.tag_handler,
             template_basename: Path.basename(__ENV__.file) |> String.split(".") |> List.first(),
             template_directory: Path.dirname(__ENV__.file),
@@ -37,17 +38,15 @@ defmodule LiveViewNative.Extensions do
 
         use LiveViewNative.Extensions.RenderMacro,
           platform_id: platform_id,
-          render_macro: platform_context.render_macro
+          render_macro: platform_context.render_macro,
+          stylesheet: stylesheet
 
         use LiveViewNative.Extensions.InlineRender,
-          platform_id: platform_id
+          platform_id: platform_id,
+          stylesheet: stylesheet
       end
 
       use LiveViewNative.Extensions.Render
-
-      use LiveViewNative.Extensions.Stylesheets,
-        module: __ENV__.module,
-        stylesheet: stylesheet
     end
   end
 end
