@@ -13,12 +13,8 @@ defmodule LiveViewNative.LiveSession do
     case get_native_assigns(socket, params) do
       %Assigns{} = native_assigns ->
         assigns = Map.from_struct(native_assigns)
-        socket =
-          socket
-          |> assign(assigns)
-          |> push_stylesheet_if_present()
 
-        {:cont, socket}
+        {:cont, assign(socket, assigns)}
 
       _ ->
         {:cont, socket}
@@ -77,17 +73,4 @@ defmodule LiveViewNative.LiveSession do
   end
 
   defp put_target(assigns, _lvn_params), do: assigns
-
-  defp push_stylesheet_if_present(%Socket{view: view_module} = socket)
-       when not is_nil(view_module) do
-    case apply(view_module, :__compiled_stylesheet__, []) do
-      nil ->
-        socket
-
-      stylesheet ->
-        push_event(socket, "_ingest_stylesheet", %{stylesheet: stylesheet})
-    end
-  end
-
-  defp push_stylesheet_if_present(socket), do: socket
 end
