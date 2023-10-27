@@ -25,6 +25,26 @@ defmodule LiveViewNative.LiveSessionTest do
       assert updated_socket.assigns.native.template_extension == ".test.heex"
     end
 
+    test "correspond _lvn_platform parameter" do
+      socket = %Socket{
+        private: %{connect_params: %{"_lvn_platform" => "lvntest"}},
+        transport_pid: self()
+      }
+
+      {:cont, updated_socket} = LiveSession.on_mount(:live_view_native, %{}, %{}, socket)
+
+      assert updated_socket.assigns
+      assert updated_socket.assigns.native
+      assert updated_socket.assigns.native.__struct__ == LiveViewNativePlatform.Env
+      assert updated_socket.assigns.native.platform_id == :lvntest
+
+      assert updated_socket.assigns.native.platform_config == %LiveViewNative.TestPlatform{
+               testing_notes: "everything is ok"
+             }
+
+      assert updated_socket.assigns.native.template_extension == ".test.heex"
+    end
+
     test "falls back to Web platform if _platform connect param is not passed" do
       socket = %Socket{
         private: %{connect_params: %{}},

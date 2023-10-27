@@ -41,6 +41,12 @@ defmodule LiveViewNative.LiveSession do
     end
   end
 
+  defp get_platform_context(%{"_lvn_platform" => platform_id} = connect_params) do
+    connect_params
+    |> Map.put_new("_platform", platform_id)
+    |> get_platform_context()
+  end
+
   defp get_platform_context(_connect_params), do: nil
 
   defp get_platform_metadata(%{"_platform_meta" => %{} = platform_metadata}),
