@@ -76,14 +76,17 @@ defmodule LiveViewNative.MixProject do
       "guides/common-features/template-syntax.md",
       "guides/common-features/modifiers.md",
       "guides/common-features/render-patterns.md",
-      "guides/common-features/handling-events.md"
+      "guides/common-features/handling-events.md",
+      "guides/notebooks/getting-started.livemd",
+      "guides/notebooks/create-a-swiftui-application.livemd",
     ]
   end
 
   defp groups_for_extras do
     [
       Introduction: ~r/guides\/introduction\/.?/,
-      Guides: ~r/guides\/[^\/]+\.md/,
+      Guides: ~r/guides\/[^\/]+\.[md|livemd]/,
+      "Livebook Notebooks": ~r/guides\/notebooks\/[^\/]+\.[md|livemd]/,
       "Common Features": ~r/guides\/common-features\/.?/
     ]
   end

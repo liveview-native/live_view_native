@@ -1,0 +1,21 @@
+# Create a SwiftUI Application
+
+<!-- livebook:{"file_entries":[{"name":"hello_world_ios_app.png","type":"attachment"},{"name":"live_view_native_guides_xcode_open_existing_projec.png","type":"attachment"},{"name":"live_view_native_guides_xcode_open_existing_project.png","type":"attachment"},{"name":"logo.png","type":"attachment"},{"name":"xcode_live_view_guides_open_project.png","type":"attachment"}]} -->
+
+```elixir
+Mix.install(
+  [
+    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
+  ],
+  config: [
+    # This must be a compile time configuration for :live_view_native.
+    live_view_native: [plugins: [LiveViewNativeSwiftUi]]
+  ]
+)
+
+KinoLiveViewNative.start([])
+```
+
+## Overview
+
+How to create SwiftUI application [WIP]

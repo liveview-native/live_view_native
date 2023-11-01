@@ -1,0 +1,95 @@
+# Getting Started
+
+```elixir
+Mix.install(
+  [
+    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
+  ],
+  config: [
+    live_view_native: [plugins: [LiveViewNativeSwiftUi]]
+  ]
+)
+
+KinoLiveViewNative.start([])
+```
+
+## Overview
+
+Our **Interactive Guides** are a step-by-step interactive tutorial for LiveView Native using Livebook. Livebooks are interactive Elixir notebooks. These interactive guides focus on teaching LiveView Native concepts and will assume the reader already has a baseline knowledge of [Phoenix LiveView](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html) applications.
+
+For the best experience, we recommend running these guides in Livebook so that you can see how the examples affect a native application. Each Livebook notebook has a "Run in Livebook" badge you can use to automatically import the guide into Livebook. Alternatively, you can also read through these guides and experiment with examples provided in your own Phoenix project.
+
+Guides are isolated from each other, so you can complete guides in any order. However, the guides are made to be completed chronologically for the most complete learning experience.
+
+## Prerequisites
+
+To use these guides, you'll need to install the following prerequisites:
+
+* [Elixir/Erlang](https://elixir-lang.org/install.html)
+* [Livebook](https://livebook.dev/)
+* [Xcode](https://developer.apple.com/xcode/)
+
+While not necessary for our guides, we also recommend you install the following for general LiveView Native development:
+
+* [Phoenix](https://hexdocs.pm/phoenix/installation.html)
+* [PostgreSQL](https://www.postgresql.org/download/)
+
+## Hello World
+
+If you are not already running this guide in Livebook, click on the "Run in Livebook" badge at the top of this page to import this guide into Livebook.
+
+Then, you can evalate the following smart cell and visit http://localhost:4000 to ensure Livebook is working properly.
+
+<!-- livebook:{"attrs":{"action":":index","code":"defmodule Server.HomeLive do\n  use Phoenix.LiveView, layout: {__MODULE__, :layout}\n  use LiveViewNative.LiveView\n\n  def layout(assigns) do\n    ~H\"\"\"\n      <%= @inner_content %>\n    \"\"\"\n  end\n\n  @impl true\n  def render(%{platform_id: :swiftui} = assigns) do\n    ~SWIFTUI\"\"\"\n    <Text>\n      Hello from LiveView Native!\n    </Text>\n    \"\"\"\n  end\n\n  def render(assigns) do\n    ~H\"\"\"\n    <div>Hello from LiveView!</div>\n    \"\"\"\n  end\nend","path":"/"},"chunks":[[0,109],[111,433],[546,45],[593,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
+defmodule Server.HomeLive do
+  use Phoenix.LiveView, layout: {__MODULE__, :layout}
+  use LiveViewNative.LiveView
+
+  def layout(assigns) do
+    ~H"""
+      <%= @inner_content %>
+    """
+  end
+
+  @impl true
+  def render(%{platform_id: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <Text>
+      Hello from LiveView Native!
+    </Text>
+    """
+  end
+
+  def render(assigns) do
+    ~H"""
+    <div>Hello from LiveView!</div>
+    """
+  end
+end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+:ok
+```
+
+If you make a change to the above LiveView and re-evaluate the cell. You should see the change automatically live reload on the browser.
+
+For example, change `Hello from LiveView!` to `Hello again from LiveView!` and re-evaluate the cell to see the text change.
+
+## Troubleshooting
+
+Some common issues you may encounter are:
+
+* Another server is already running on port 4000.
+* Your version of Livebook is out of date.
+* Your version of Elixir/Erlang is out of date.
+* Your version of Xcode is out of date.
+
+Make sure you have the latest versions of all necessary software installed, and ensure there are no other servers running on port 4000.
+If that does not resolve the issue, you can [Raise an Issue](https://github.com/liveview-native/live_view_native/issues/new) to receive support from the LiveView Native team.
