@@ -17,7 +17,7 @@ defmodule LiveViewNative.Templates do
 
     case stylesheet do
       stylesheet when template_func == :render and not is_nil(stylesheet) ->
-        "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>" |> IO.inspect()
+        "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
 
       _ ->
         expr
