@@ -5,7 +5,7 @@ defmodule LiveViewNative.Templates do
   """
 
   def precompile(expr, platform_id, eex_opts) do
-    %Macro.Env{function: {template_func, _template_func_arity}, module: template_module} =
+    %Macro.Env{function: {func_name, _func_arity} = template_func, module: template_module} =
       eex_opts[:caller]
 
     stylesheet = eex_opts[:stylesheet]
@@ -16,7 +16,7 @@ defmodule LiveViewNative.Templates do
     dump_class_tree_bytecode(class_tree, template_module)
 
     case stylesheet do
-      stylesheet when template_func == :render and not is_nil(stylesheet) ->
+      stylesheet when func_name == :render and not is_nil(stylesheet) ->
         "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
 
       _ ->
@@ -26,10 +26,9 @@ defmodule LiveViewNative.Templates do
 
   ###
 
-  defp build_class_tree(%{} = class_tree_context, class_names, template_func) do
+  defp build_class_tree(%{} = class_tree_context, class_names, {func_name, func_arity}) do
     class_tree_context
-    # TODO: Properly handle multiple function clauses
-    |> put_in([:class_tree, "#{template_func}"], Enum.uniq(class_names))
+    |> put_in([:class_tree, "#{func_name}/#{func_arity}"], Enum.uniq(class_names))
     |> persist_to_class_tree()
   end
 
