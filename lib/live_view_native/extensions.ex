@@ -47,6 +47,10 @@ defmodule LiveViewNative.Extensions do
       end
 
       use LiveViewNative.Extensions.Render
+
+      use LiveViewNative.Extensions.Stylesheets,
+        module: __ENV__.module,
+        stylesheet: stylesheet
     end
   end
 end
