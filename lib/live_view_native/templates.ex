@@ -8,19 +8,16 @@ defmodule LiveViewNative.Templates do
     %Macro.Env{function: {func_name, _func_arity} = template_func, module: template_module} =
       eex_opts[:caller]
 
-    stylesheet = eex_opts[:stylesheet]
     doc = Meeseeks.parse(expr, :xml)
     class_names = extract_all_class_names(doc)
     class_tree_context = class_tree_context(platform_id, template_module)
     class_tree = build_class_tree(class_tree_context, class_names, template_func)
     dump_class_tree_bytecode(class_tree, template_module)
 
-    case stylesheet do
-      stylesheet when func_name == :render and not is_nil(stylesheet) ->
-        "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
-
-      _ ->
-        expr
+    if func_name == :render do
+      "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
+    else
+      expr
     end
   end
 
@@ -46,8 +43,7 @@ defmodule LiveViewNative.Templates do
   end
 
   defp class_tree_filename(platform_id, template_module) do
-    # TODO: Infer build path
-    "_build/#{Mix.env()}/lib/live_view_native/.lvn/#{platform_id}/#{template_module}.classtree.json"
+    "#{:code.lib_dir(:live_view_native)}/.lvn/#{platform_id}/#{template_module}.classtree.json"
   end
 
   defp dump_class_tree_bytecode(class_tree, template_module) do

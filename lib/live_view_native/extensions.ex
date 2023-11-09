@@ -9,7 +9,7 @@ defmodule LiveViewNative.Extensions do
   respectively.
   """
   defmacro __using__(opts \\ []) do
-    quote bind_quoted: [caller: Macro.escape(__CALLER__), stylesheet: opts[:stylesheet]] do
+    quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
@@ -23,7 +23,6 @@ defmodule LiveViewNative.Extensions do
             caller: caller,
             eex_engine: platform_context.eex_engine,
             platform_module: platform_module,
-            stylesheet: stylesheet,
             tag_handler: platform_context.tag_handler,
             template_basename: Path.basename(__ENV__.file) |> String.split(".") |> List.first(),
             template_directory: Path.dirname(__ENV__.file),
@@ -38,19 +37,16 @@ defmodule LiveViewNative.Extensions do
 
         use LiveViewNative.Extensions.RenderMacro,
           platform_id: platform_id,
-          render_macro: platform_context.render_macro,
-          stylesheet: stylesheet
+          render_macro: platform_context.render_macro
 
         use LiveViewNative.Extensions.InlineRender,
-          platform_id: platform_id,
-          stylesheet: stylesheet
+          platform_id: platform_id
       end
 
       use LiveViewNative.Extensions.Render
 
       use LiveViewNative.Extensions.Stylesheets,
-        module: __ENV__.module,
-        stylesheet: stylesheet
+        module: __ENV__.module
     end
   end
 end
