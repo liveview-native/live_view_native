@@ -40,7 +40,7 @@ If you are not already running this guide in Livebook, click on the "Run in Live
 
 Then, you can evalate the following smart cell and visit http://localhost:4000 to ensure Livebook is working properly.
 
-<!-- livebook:{"attrs":{"action":":index","code":"defmodule Server.HomeLive do\n  use Phoenix.LiveView, layout: {__MODULE__, :layout}\n  use LiveViewNative.LiveView\n\n  def layout(assigns) do\n    ~H\"\"\"\n      <%= @inner_content %>\n    \"\"\"\n  end\n\n  @impl true\n  def render(%{platform_id: :swiftui} = assigns) do\n    ~SWIFTUI\"\"\"\n    <Text>\n      Hello from LiveView Native!\n    </Text>\n    \"\"\"\n  end\n\n  def render(assigns) do\n    ~H\"\"\"\n    <div>Hello from LiveView!</div>\n    \"\"\"\n  end\nend","path":"/"},"chunks":[[0,109],[111,433],[546,45],[593,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":{"action":":index","code":"defmodule Server.HomeLive do\n  use Phoenix.LiveView\n  use LiveViewNative.LiveView\n\n  @impl true\n  def render(%{platform_id: :swiftui} = assigns) do\n    ~SWIFTUI\"\"\"\n    <Text>\n      Hello Again from LiveView Native!\n    </Text>\n    \"\"\"\n  end\n\n  def render(assigns) do\n    ~H\"\"\"\n    <div style=\"color: red;\">Hello from LiveView!</div>\n    \"\"\"\n  end\nend","path":"/"},"chunks":[[0,109],[111,350],[463,45],[510,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
@@ -48,27 +48,21 @@ import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
 defmodule Server.HomeLive do
-  use Phoenix.LiveView, layout: {__MODULE__, :layout}
+  use Phoenix.LiveView
   use LiveViewNative.LiveView
-
-  def layout(assigns) do
-    ~H"""
-      <%= @inner_content %>
-    """
-  end
 
   @impl true
   def render(%{platform_id: :swiftui} = assigns) do
     ~SWIFTUI"""
     <Text>
-      Hello from LiveView Native!
+      Hello Again from LiveView Native!
     </Text>
     """
   end
 
   def render(assigns) do
     ~H"""
-    <div>Hello from LiveView!</div>
+    <div style="color: red;">Hello from LiveView!</div>
     """
   end
 end
@@ -92,4 +86,4 @@ Some common issues you may encounter are:
 * Your version of Xcode is out of date.
 
 Make sure you have the latest versions of all necessary software installed, and ensure there are no other servers running on port 4000.
-If that does not resolve the issue, you can [Raise an Issue](https://github.com/liveview-native/live_view_native/issues/new) to receive support from the LiveView Native team.
+If that does not resolve the issue, you can [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) to receive support from the LiveView Native team.
