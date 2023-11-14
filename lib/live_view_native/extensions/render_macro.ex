@@ -10,8 +10,7 @@ defmodule LiveViewNative.Extensions.RenderMacro do
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
             render_macro: opts[:render_macro],
-            platform_id: opts[:platform_id],
-            stylesheet: opts[:stylesheet]
+            platform_id: opts[:platform_id]
           ] do
       require EEx
 
@@ -29,7 +28,6 @@ defmodule LiveViewNative.Extensions.RenderMacro do
             file: __CALLER__.file,
             indentation: meta[:indentation] || 0,
             line: __CALLER__.line + 1,
-            stylesheet: unquote(stylesheet),
             tag_handler: LiveViewNative.TagEngine
           ]
 

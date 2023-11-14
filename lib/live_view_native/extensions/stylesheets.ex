@@ -8,26 +8,29 @@ defmodule LiveViewNative.Extensions.Stylesheets do
   """
   defmacro __using__(opts \\ []) do
     module = opts[:module]
-    stylesheet = opts[:stylesheet]
 
-    quote bind_quoted: [module: module, stylesheet: stylesheet] do
-      if stylesheet do
-        def __compiled_stylesheet__ do
-          class_tree_module =
-            Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
+    quote bind_quoted: [module: module] do
+      def __compiled_stylesheet__ do
+        class_tree_module =
+          Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
 
-          class_tree = apply(class_tree_module, :class_tree, [])
+        class_tree = apply(class_tree_module, :class_tree, [])
 
-          class_names =
-            class_tree
-            |> Map.values()
-            |> List.flatten()
+        class_names =
+          class_tree
+          |> Map.values()
+          |> List.flatten()
 
-          apply(unquote(stylesheet), :compile_string, [class_names])
-        end
-      else
-        def __compiled_stylesheet__, do: nil
+        __stylesheet_modules__()
+        |> Enum.reduce(%{}, fn stylesheet_module, acc ->
+          compiled_stylesheet = apply(stylesheet_module, :compile_ast, [class_names])
+
+          Map.merge(acc, compiled_stylesheet)
+        end)
+        |> inspect(limit: :infinity, charlists: :as_list, printable_limit: :infinity)
       end
+
+      def __stylesheet_modules__, do: []
     end
   end
 end
