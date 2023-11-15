@@ -87,3 +87,12 @@ Some common issues you may encounter are:
 
 Make sure you have the latest versions of all necessary software installed, and ensure there are no other servers running on port 4000.
 If that does not resolve the issue, you can [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) to receive support from the LiveView Native team.
+
+## Navigation
+
+<div style="display: flex; align-items: center; width: 100%; justify-content: space-between; font-size: 1rem; color: #61758a; background-color: #f0f5f9; height: 4rem; padding: 0 1rem; border-radius: 1rem;">
+<div style="display: flex; margin-left: auto;">
+<a style="display: flex; color: #61758a; margin-right: 1rem;" href="https://livebook.dev/run?url=https%3A%2F%2Fhexdocs.pm%2Flive_view_native%2F0.1.2%2Fcreate-a-swiftui-application.livemd">Create a SwiftUI Application</a>
+<i class="ri-arrow-right-fill"></i>
+</div>
+</div>
