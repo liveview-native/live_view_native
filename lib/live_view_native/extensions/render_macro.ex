@@ -20,21 +20,21 @@ defmodule LiveViewNative.Extensions.RenderMacro do
         end
 
         with %{} = platforms <- LiveViewNative.platforms(),
-             %LiveViewNativePlatform.Env{} = context <-
-               Map.get(platforms, unquote(platform_id)),
-             platform_module <- Module.concat(__ENV__.module, context.template_namespace),
-             expr <- LiveViewNative.Templates.precompile(expr) do
-          options = [
+             %LiveViewNativePlatform.Env{} = context <- Map.get(platforms, unquote(platform_id)),
+             platform_module <- Module.concat(__ENV__.module, context.template_namespace) do
+          base_opts = [
+            caller: __CALLER__,
             engine: Phoenix.LiveView.TagEngine,
             file: __CALLER__.file,
-            line: __CALLER__.line + 1,
-            caller: __CALLER__,
             indentation: meta[:indentation] || 0,
-            source: expr,
+            line: __CALLER__.line + 1,
             tag_handler: LiveViewNative.TagEngine
           ]
 
-          EEx.compile_string(expr, options)
+          expr = LiveViewNative.Templates.precompile(expr, unquote(platform_id), base_opts)
+          eex_opts = Keyword.put(base_opts, :source, expr)
+
+          EEx.compile_string(expr, eex_opts)
         end
       end
     end

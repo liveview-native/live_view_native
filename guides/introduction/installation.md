@@ -125,8 +125,8 @@ After adding the `:live_view_native` Hex package and any platform libraries, def
 config :live_view_native,
   plugins: [
     # other plugins here...
-    LiveViewNativeSwiftUi,
-    LiveViewNativeJetpack
+    LiveViewNative.SwiftUI,
+    LiveViewNative.Jetpack
   ]
 ```
 

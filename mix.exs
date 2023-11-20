@@ -42,7 +42,7 @@ defmodule LiveViewNative.MixProject do
     [
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_view, ">= 0.18.0"},
+      {:phoenix_live_view, git: "https://github.com/phoenixframework/phoenix_live_view", branch: "jv-render-with"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:floki, ">= 0.30.0", only: :test},
@@ -50,7 +50,7 @@ defmodule LiveViewNative.MixProject do
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0", only: :dev, runtime: false},
       {:meeseeks, "~> 0.17.0"},
-      {:live_view_native_platform, "~> 0.1"}
+      {:live_view_native_platform, "0.2.0-beta.0"}
     ]
   end
 

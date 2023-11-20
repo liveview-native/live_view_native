@@ -19,6 +19,7 @@ defmodule LiveViewNative.Extensions.Templates do
             caller: opts[:caller],
             eex_engine: opts[:eex_engine],
             platform_module: opts[:platform_module],
+            stylesheet: opts[:stylesheet],
             tag_handler: opts[:tag_handler],
             template_basename: opts[:template_basename],
             template_directory: opts[:template_directory],

@@ -4,50 +4,92 @@ defmodule LiveViewNative.Templates do
   templates.
   """
 
-  def precompile(expr) do
+  def precompile(expr, platform_id, eex_opts) do
+    %Macro.Env{function: {func_name, _func_arity} = template_func, module: template_module} =
+      eex_opts[:caller]
+
     doc = Meeseeks.parse(expr, :xml)
-    replacements = Enum.flat_map(doc.nodes, &transform_node/1)
+    class_names = extract_all_class_names(doc)
+    class_tree_context = class_tree_context(platform_id, template_module)
+    class_tree = build_class_tree(class_tree_context, class_names, template_func)
+    dump_class_tree_bytecode(class_tree, template_module)
 
-    transformed_expr =
-      replacements
-      |> Enum.reduce(expr, fn {from, to}, acc ->
-        String.replace(acc, from, to)
-      end)
-
-    transformed_expr
+    if func_name == :render do
+      "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
+    else
+      expr
+    end
   end
 
   ###
 
-  defp transform_node({_key, node}) do
+  defp build_class_tree(%{} = class_tree_context, class_names, {func_name, func_arity}) do
+    class_tree_context
+    |> put_in([:class_tree, "#{func_name}/#{func_arity}"], Enum.uniq(class_names))
+    |> persist_to_class_tree()
+  end
+
+  defp class_tree_context(platform_id, template_module) do
+    filename = class_tree_filename(platform_id, template_module)
+
+    with {:ok, body} <- File.read(filename),
+         {:ok, %{} = class_tree} <- Jason.decode(body)
+    do
+      %{class_tree: class_tree, meta: %{filename: filename}}
+    else
+      _ ->
+        %{class_tree: %{}, meta: %{filename: filename}}
+    end
+  end
+
+  defp class_tree_filename(platform_id, template_module) do
+    "#{:code.lib_dir(:live_view_native)}/.lvn/#{platform_id}/#{template_module}.classtree.json"
+  end
+
+  defp dump_class_tree_bytecode(class_tree, template_module) do
+    class_tree_module = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
+
+    expr =
+      Macro.to_string(
+        quote do
+          defmodule unquote(class_tree_module) do
+            def class_tree, do: unquote(class_tree)
+          end
+        end
+      )
+
+    Code.put_compiler_option(:ignore_module_conflict, true)
+    Code.compile_string(expr)
+  end
+
+  defp extract_all_class_names(doc) do
+    Enum.flat_map(doc.nodes, &extract_class_names/1)
+  end
+
+  defp extract_class_names({_key, node}) do
     case node do
       %{attributes: [_ | _] = attributes} ->
         attributes
-        |> Enum.map(&transform_attribute/1)
-        |> Enum.filter(&(&1 != nil))
+        |> Enum.into(%{})
+        |> Map.get("class", "")
+        |> String.split(" ")
+        |> Enum.filter(&(&1 != ""))
 
       _ ->
         []
     end
   end
 
-  defp transform_attribute({key, value}) do
-    case key do
-      "modclass" ->
-        {" modclass=\"#{value}\"", transform_modclass(value)}
-
-      _ ->
-        nil
+  defp persist_to_class_tree(%{class_tree: %{} = class_tree, meta: %{filename: filename}}) do
+    with {:ok, encoded_tree} <- Jason.encode(class_tree),
+         dirname <- Path.dirname(filename),
+         :ok <- File.mkdir_p(dirname),
+         :ok <- File.touch(filename),
+         :ok <- File.write(filename, encoded_tree) do
+      class_tree
+    else
+      error ->
+        raise "TODO: Handle error #{error}"
     end
-  end
-
-  defp transform_modclass(modclass) do
-    modifiers =
-      modclass
-      |> String.split(" ")
-      |> Enum.map(fn classname -> "modclass(\"#{classname}\", assigns)" end)
-      |> Enum.join("|> ")
-
-    " modifiers={@native |> #{modifiers}}"
   end
 end

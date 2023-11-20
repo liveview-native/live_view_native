@@ -22,7 +22,8 @@ defmodule LiveViewNative.TestPlatform do
       LiveViewNativePlatform.Env.define(:lvntest,
         template_extension: ".test.heex",
         template_namespace: Test,
-        otp_app: :live_view_native
+        otp_app: :live_view_native,
+        valid_targets: ~w(testsuite)a
       )
     end
   end

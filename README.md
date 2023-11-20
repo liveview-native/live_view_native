@@ -13,7 +13,7 @@ defmodule MyAppWeb.HelloLive do
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{format: :swiftui} = assigns) do
     # This UI renders on iOS
     ~SWIFTUI"""
     <VStack>
