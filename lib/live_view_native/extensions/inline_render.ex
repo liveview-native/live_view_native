@@ -31,9 +31,9 @@ defmodule LiveViewNative.Extensions.InlineRender do
   """
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
-      platform_id: opts[:platform_id],
-      stylesheet: opts[:stylesheet]
-    ] do
+            platform_id: opts[:platform_id],
+            stylesheet: opts[:stylesheet]
+          ] do
       require EEx
 
       defmacro sigil_LVN({:<<>>, meta, [expr]}, modifiers) do

@@ -8,7 +8,7 @@ defmodule LiveViewNative.Extensions do
   should use `LiveViewNative.LiveView` or `LiveViewNative.LiveComponent`
   respectively.
   """
-  defmacro __using__(opts \\ []) do
+  defmacro __using__(_opts) do
     quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
