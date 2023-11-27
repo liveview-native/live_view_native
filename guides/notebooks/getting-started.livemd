@@ -15,11 +15,11 @@ KinoLiveViewNative.start([])
 
 ## Overview
 
-Our **Interactive Guides** are a step-by-step interactive tutorial for LiveView Native using Livebook. Livebooks are interactive Elixir notebooks. These interactive guides focus on teaching LiveView Native concepts and will assume the reader already has a baseline knowledge of [Phoenix LiveView](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html) applications.
+Our Interactive Guides offer an interactive tutorial for LiveView Native using Livebook. They teach LiveView Native concepts step-by-step and assume some familiarity with [Phoenix LiveView](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html) applications.
 
-For the best experience, we recommend running these guides in Livebook so that you can see how the examples affect a native application. Each Livebook notebook has a "Run in Livebook" badge you can use to automatically import the guide into Livebook. Alternatively, you can also read through these guides and experiment with examples provided in your own Phoenix project.
+We suggest using Livebook to run these guides for the best experience. Click the "Run in Livebook" badge to import the guide into Livebook.
 
-Guides are isolated from each other, so you can complete guides in any order. However, the guides are made to be completed chronologically for the most complete learning experience.
+Guides are isolated from each other so that you can complete guides in any order. However, we recommend completing the guides in chronological order for the most comprehensive learning experience.
 
 ## Prerequisites
 
@@ -72,20 +72,18 @@ import KinoLiveViewNative.Livebook, only: []
 :ok
 ```
 
-If you make a change to the above LiveView and re-evaluate the cell. You should see the change automatically live reload on the browser.
-
-For example, change `Hello from LiveView!` to `Hello again from LiveView!` and re-evaluate the cell to see the text change.
+Change `Hello from LiveView!` to `Hello again from LiveView!` in the above LiveView. Notice the application live reloads and automatically updates in the browser.
 
 ## Troubleshooting
 
 Some common issues you may encounter are:
 
 * Another server is already running on port 4000.
-* Your version of Livebook is out of date.
-* Your version of Elixir/Erlang is out of date.
-* Your version of Xcode is out of date.
+* Your version of Livebook needs to be updated.
+* Your version of Elixir/Erlang needs to be updated.
+* Your version of Xcode needs to be updated.
 
-Make sure you have the latest versions of all necessary software installed, and ensure there are no other servers running on port 4000.
+Ensure you have the latest versions of all necessary software installed, and ensure no other servers are running on port 4000.
 If that does not resolve the issue, you can [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) to receive support from the LiveView Native team.
 
 ## Navigation

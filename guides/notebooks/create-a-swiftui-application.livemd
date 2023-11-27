@@ -27,7 +27,7 @@ In future lessons, we'll use this IOS application to view IOS examples in the Xc
 
 First, make sure you have followed the [Getting Started](./getting_started.livemd) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server is running properly. You should see the text `Hello from LiveView!`
 
-<!-- livebook:{"attrs":{"action":":index","code":"defmodule MyApp.HomeLive do\n  use Phoenix.LiveView\n  use LiveViewNative.LiveView\n\n  @impl true\n  def render(%{platform_id: :swiftui} = assigns) do\n    ~SWIFTUI\"\"\"\n    <Text>\n      Hello again from LiveView Native!\n    </Text>\n    \"\"\"\n  end\n  \n  def render(assigns) do\n    ~H\"\"\"\n    <div>Hello from LiveView!</div>\n    \"\"\"\n  end\nend","path":"/"},"chunks":[[0,109],[111,331],[444,45],[491,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuICBcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPGRpdj5IZWxsbyBmcm9tIExpdmVWaWV3ITwvZGl2PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,325],[438,45],[485,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
@@ -42,7 +42,7 @@ defmodule MyApp.HomeLive do
   def render(%{platform_id: :swiftui} = assigns) do
     ~SWIFTUI"""
     <Text>
-      Hello again from LiveView Native!
+      Hello from LiveView Native!
     </Text>
     """
   end
@@ -79,12 +79,17 @@ Select the `iOS` and `App` options to create an iOS application. Then click `Nex
 
 Choose options for your new project that match the following image then click `Next`.
 
+<details style="background-color: lightgreen; padding: 1rem; margin: 1rem 0;">
+<summary>What do these options mean?</summary>
+
 * **Product Name:** The name of the application. This can be any valid name. We've chosen `Guides`.
 * **Organization Identifier:** A reverse DNS string that uniquely identifies your organization. If you don't have a company identifier, [Apple recomends](https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app) using `com.example.your_name` where `your_name` is your organization or personal name.
 * **Interface:**: Xcode generates an interface file that includes all your source code's internal and public declarations when using the Assistant editor, the Related Items, or the Navigate menu. Select `SwiftUI` since we're building a SwiftUI application.
 * **Language:** Determines which language Xcode should use for the project. Select `Swift`.
 
 Including Tests is optional, but it's enabled by default so we've left the setting as-is.
+
+</details>
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -100,7 +105,7 @@ Select an appropriate folder location where you would like to store the iOS proj
 
 ## Add the LiveView Client SwiftUI Package
 
-To add the `liveview-client-swiftui` package to the iOS application, select `File -> Add Package Dependencies`. Then, search for `liveview-client-swiftui`. Once you have selected the package, click `Add Package`.
+In Xcode from the project you just created, select `File -> Add Package Dependencies`. Then, search for `liveview-client-swiftui`. Once you have selected the package, click `Add Package`.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -230,7 +235,7 @@ LiveView Native implements live reloading whenever changes are made to the Phoen
 
 Run the following smart cell and you should see the Xcode simulator update automatically to display `Hello again from LiveView Native!`
 
-<!-- livebook:{"attrs":{"action":":index","code":"defmodule MyApp.HomeLive do\n  use Phoenix.LiveView\n  use LiveViewNative.LiveView\n\n  @impl true\n  def render(%{platform_id: :swiftui} = assigns) do\n    ~SWIFTUI\"\"\"\n    <Text>\n      Hello again from LiveView Native!\n    </Text>\n    \"\"\"\n  end\n\n  def render(assigns) do\n    ~H\"\"\"\n    <div>Hello again from LiveView!</div>\n    \"\"\"\n  end\nend","path":"/"},"chunks":[[0,109],[111,335],[448,45],[495,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBhZ2FpbiBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxkaXY+SGVsbG8gYWdhaW4gZnJvbSBMaXZlVmlldyE8L2Rpdj5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,335],[448,45],[495,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
@@ -282,7 +287,7 @@ You can also [raise an issue](https://github.com/BrooklinJazz/liveview_native_gu
 <a style="display: flex; color: #61758a; margin-left: 1rem;" href="https://livebook.dev/run?url=https%3A%2F%2Fhexdocs.pm%2Flive_view_native%2F0.1.2%2Fgetting-started.livemd">Getting Started</a>
 </div>
 <div style="display: flex; margin-left: auto;">
-<span style="display: flex; color: #61758a; margin-right: 1rem;">Coming Soon</span>
+<span style="display: flex; color: #61758a; margin-right: 1rem;" href="https://livebook.dev/run?url=https%3A%2F%2Fhexdocs.pm%2Flive_view_native%2F0.1.2%2Fswift-ui-elements.livemd">Coming Soon</span>
 <i class="ri-arrow-right-fill"></i>
 </div>
 </div>
