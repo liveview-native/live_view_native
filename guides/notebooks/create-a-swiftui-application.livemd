@@ -15,17 +15,15 @@ KinoLiveViewNative.start([])
 
 ## Overview
 
-In this guide, we'll walk through how to manually setup a SwiftUI Application for LiveViewNative.
+This guide will teach you how to set up a SwiftUI Application for LiveView Native.
 
-For existing Phoenix projects, it's simpler to use the `mix lvn.install` command as described in the [Installation Guide](https://hexdocs.pm/live_view_native/installation.html#5-enable-liveview-native) in an existing Phoenix project to create a new IOS application and configure the Phoenix project for LiveView Native.
+Typically, we recommend using the `mix lvn.install` task as described in the [Installation Guide](https://hexdocs.pm/live_view_native/installation.html#5-enable-liveview-native) to add LiveView Native to a Phoenix project. However, we will walk through the steps of manually setting up an Xcode IOS project to learn how the IOS side of a LiveView Native application works.
 
-However, we're going to walk through the steps of manually setting up an Xcode IOS project to better understand how the IOS side of a LiveView Native application works.
-
-In future lessons, we'll use this IOS application to view IOS examples in the Xcode simulator (or a physical device if you prefer.)
+In future lessons, you'll use this IOS application to view IOS examples in the Xcode simulator (or a physical device if you prefer.)
 
 ## Prerequisites
 
-First, make sure you have followed the [Getting Started](./getting_started.livemd) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server is running properly. You should see the text `Hello from LiveView!`
+First, make sure you have followed the [Getting Started](./getting_started.livemd) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server runs properly. You should see the text `Hello from LiveView!`
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuICBcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPGRpdj5IZWxsbyBmcm9tIExpdmVWaWV3ITwvZGl2PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,325],[438,45],[485,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
@@ -61,7 +59,7 @@ import KinoLiveViewNative.Livebook, only: []
 
 ## Create the IOS Application
 
-Open XCode and select Create New Project new project.
+Open XCode and select Create New Project.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -77,7 +75,7 @@ Select the `iOS` and `App` options to create an iOS application. Then click `Nex
 
 <!-- livebook:{"break_markdown":true} -->
 
-Choose options for your new project that match the following image then click `Next`.
+Choose options for your new project that match the following image, then click `Next`.
 
 <details style="background-color: lightgreen; padding: 1rem; margin: 1rem 0;">
 <summary>What do these options mean?</summary>
@@ -86,9 +84,6 @@ Choose options for your new project that match the following image then click `N
 * **Organization Identifier:** A reverse DNS string that uniquely identifies your organization. If you don't have a company identifier, [Apple recomends](https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app) using `com.example.your_name` where `your_name` is your organization or personal name.
 * **Interface:**: Xcode generates an interface file that includes all your source code's internal and public declarations when using the Assistant editor, the Related Items, or the Navigate menu. Select `SwiftUI` since we're building a SwiftUI application.
 * **Language:** Determines which language Xcode should use for the project. Select `Swift`.
-
-Including Tests is optional, but it's enabled by default so we've left the setting as-is.
-
 </details>
 
 <!-- livebook:{"break_markdown":true} -->
@@ -113,7 +108,7 @@ In Xcode from the project you just created, select `File -> Add Package Dependen
 
 <!-- livebook:{"break_markdown":true} -->
 
-Choose the Package Products for `liveview-client-swiftui`. Select the iOS application we've already built for the `LiveViewNative` target.
+Choose the Package Products for `liveview-client-swiftui`. Select the iOS app you previously created as the `LiveViewNative` target.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -129,9 +124,9 @@ If the following prompt appears, select `Trust & Enable All` to enable the `live
 
 ## Setup the LiveSessionCoordinator and SwiftUI LiveView
 
-The [ContentView](https://developer.apple.com/tutorials/swiftui-concepts/exploring-the-structure-of-a-swiftui-app#Content-view) contains the main view of our iOS application. We need to establish a connection between the SwiftUI application and the Phoenix application in this file.
+The [ContentView](https://developer.apple.com/tutorials/swiftui-concepts/exploring-the-structure-of-a-swiftui-app#Content-view) contains the main view of our iOS application.
 
-Replace the code in the `ContentView` file with the following.
+Replace the code in the `ContentView` file with the following to connect the SwiftUI application and the Phoenix application.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -161,9 +156,7 @@ struct ContentView: View {
 
 <!-- livebook:{"break_markdown":true} -->
 
-The code above sets up a [LiveSessionCoordinator](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/livesessioncoordinator) which is session coordinator object that handles the initial connection and navigation on the iOS app. We also create a SwiftUI [LiveView](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/liveview), which is the SwiftUI root view for a Phoenix LiveView.
-
-The SwiftUI [LiveView](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/liveview) uses the [LiveSessionCoordinator](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/livesessioncoordinator) and our SwiftUI application connects to the Phoenix application on a given URL. By default, the iOS application connects to a Phoenix application on http://localhost:4000.
+The code above sets up a [LiveSessionCoordinator](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/livesessioncoordinator), which is a session coordinator object that handles the initial connection and navigation on the iOS app. The code also renders a SwiftUI [LiveView](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/liveview), which renders the content sent by the Phoenix application on a given URL. By default, we've configured it to connect to any Phoenix app on http://localhost:4000.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -189,7 +182,7 @@ graph LR;
 
 <!-- livebook:{"break_markdown":true} -->
 
-To avoid any potential confusion with the step above, here's how our `ContentView` should look in Xcode.
+To avoid confusion in the step above, here's how our `ContentView` should now look in Xcode.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -203,7 +196,7 @@ Click the `start active scheme` button <i class="ri-play-fill"></i> to build the
 > 
 > * https://developer.apple.com/documentation/xcode/build-system
 
-You may encounter an issue with `LiveViewNativeMacros`. If you do, click on the error in the error panel as seen in the image below and you should see the following prompt. Select `Trust & Enable` to resolve the issue.
+If you encounter an issue with `LiveViewNativeMacros`, select `Trust & Enable` to resolve the problem.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -211,7 +204,7 @@ You may encounter an issue with `LiveViewNativeMacros`. If you do, click on the 
 
 <!-- livebook:{"break_markdown":true} -->
 
-The iOS Xcode simulator should start. If at this point you get a `No Connection` error, make sure you have followed the [Prerequisites](#prerequisites) steps at the beginning of this guide.
+The iOS Xcode simulator should start. If you encounter any issues, make sure you have installed all [Prerequisites](#prerequisites) and see the [Troubleshooting](#troubleshooting) section for help.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -231,9 +224,9 @@ After you start the active scheme, the simulator should open the iOS application
 
 ## Live Reloading
 
-LiveView Native implements live reloading whenever changes are made to the Phoenix application.
+The SwiftUI application will reload whenever changes occur on the connected Phoenix application.
 
-Run the following smart cell and you should see the Xcode simulator update automatically to display `Hello again from LiveView Native!`
+Evaluate the following smart cell. The Xcode simulator should update automatically to display `Hello again from LiveView Native!`
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBhZ2FpbiBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxkaXY+SGVsbG8gYWdhaW4gZnJvbSBMaXZlVmlldyE8L2Rpdj5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,335],[448,45],[495,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
@@ -269,15 +262,15 @@ import KinoLiveViewNative.Livebook, only: []
 
 ## Troubleshooting
 
-If you encountered any issues with the native application, here are some common troubleshooting steps you can use:
+If you encountered any issues with the native application, here are some troubleshooting steps you can use:
 
 * **Reset Package Caches:** In the Xcode application go to `File -> Packages -> Reset Package Caches`.
 * **Update Packages:** In the Xcode application go to `File -> Packages -> Update to Latest Package Versions`.
 * **Rebuild the Active Scheme**: In the Xcode application, press the `start active scheme` button <i class="ri-play-fill"></i> to rebuild the active scheme and run it on the Xcode simulator.
 * Update your [XCode](https://developer.apple.com/xcode/) version if it is not already the latest version
-* Ensure that the Livebook smart cells in this Notebook evaluate with `:ok`.
+* Check for error messages in the Livebook smart cells.
 
-You can also [raise an issue](https://github.com/BrooklinJazz/liveview_native_guides/issues/new) if you would like support from the LiveView Native team.
+You can also [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) if you would like support from the LiveView Native team.
 
 ## Navigation
 
