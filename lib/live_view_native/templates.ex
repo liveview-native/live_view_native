@@ -5,25 +5,40 @@ defmodule LiveViewNative.Templates do
   """
 
   def precompile(expr, platform_id, eex_opts) do
-    %Macro.Env{function: {func_name, _func_arity} = template_func, module: template_module} =
-      eex_opts[:caller]
+    case compile_class_tree(expr, platform_id, eex_opts) do
+      :ok ->
+        with_stylesheet_wrapper(expr)
 
-    doc = Meeseeks.parse(expr, :xml)
-    class_names = extract_all_class_names(doc)
-    class_tree_context = class_tree_context(platform_id, template_module)
-    class_tree = build_class_tree(class_tree_context, class_names, template_func)
-    dump_class_tree_bytecode(class_tree, template_module)
-
-    if func_name == :render do
-      "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
-    else
-      expr
+      _ ->
+        expr
     end
+  end
+
+  def compile_class_tree(expr, platform_id, eex_opts) do
+    with %Macro.Env{module: template_module} <- eex_opts[:caller],
+         %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
+         [_ | _] = class_names <- extract_all_class_names(doc),
+         %{} = class_tree_context <- class_tree_context(platform_id, template_module),
+         %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts)
+    do
+      dump_class_tree_bytecode(class_tree, template_module)
+    else
+      _fallback ->
+        # TODO: Generate fallback stylesheet module
+
+        :skipped
+    end
+  end
+
+  def with_stylesheet_wrapper(expr) do
+    "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
   end
 
   ###
 
-  defp build_class_tree(%{} = class_tree_context, class_names, {func_name, func_arity}) do
+  defp build_class_tree(%{} = class_tree_context, class_names, eex_opts) do
+    {func_name, func_arity} = eex_opts[:render_function] || eex_opts[:caller].function
+
     class_tree_context
     |> put_in([:class_tree, "#{func_name}/#{func_arity}"], Enum.uniq(class_names))
     |> persist_to_class_tree()
@@ -47,19 +62,23 @@ defmodule LiveViewNative.Templates do
   end
 
   defp dump_class_tree_bytecode(class_tree, template_module) do
-    class_tree_module = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
+    class_tree
+    |> generate_class_tree_module(template_module)
+    |> Code.compile_string()
 
-    expr =
-      Macro.to_string(
-        quote do
-          defmodule unquote(class_tree_module) do
-            def class_tree, do: unquote(class_tree)
-          end
+    :ok
+  end
+
+  defp generate_class_tree_module(class_tree, template_module) do
+    module_name = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
+
+    Macro.to_string(
+      quote do
+        defmodule unquote(module_name) do
+          def class_tree, do: unquote(class_tree)
         end
-      )
-
-    Code.put_compiler_option(:ignore_module_conflict, true)
-    Code.compile_string(expr)
+      end
+    )
   end
 
   defp extract_all_class_names(doc) do

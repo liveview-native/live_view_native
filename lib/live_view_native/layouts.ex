@@ -38,6 +38,7 @@ defmodule LiveViewNative.Layouts do
     %{
       template: File.read!(template_path),
       eex_engine: platform.eex_engine,
+      platform_id: platform.platform_id,
       render_function: render_function_name,
       tag_handler: platform.tag_handler,
       template_path: template_path
@@ -58,8 +59,7 @@ defmodule LiveViewNative.Layouts do
 
   defmacro __using__(_opts \\ []) do
     quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
-      use LiveViewNative.Extensions,
-        role: :layouts
+      use LiveViewNative.Extensions, role: :layouts
 
       layout_templates =
         __ENV__.file
@@ -74,15 +74,22 @@ defmodule LiveViewNative.Layouts do
         |> Enum.map(fn %{} = layout_params ->
           @external_resource layout_params.template_path
 
+          eex_opts = [
+            caller: caller,
+            engine: layout_params.eex_engine,
+            file: __ENV__.file,
+            render_function: {layout_params.render_function, 1},
+            source: layout_params.template,
+            tag_handler: layout_params.tag_handler
+          ]
+          LiveViewNative.Templates.compile_class_tree(layout_params.template, layout_params.platform_id, eex_opts)
+
           EEx.function_from_string(
             :def,
             layout_params.render_function,
-            layout_params.template,
+            LiveViewNative.Templates.with_stylesheet_wrapper(layout_params.template),
             [:assigns],
-            caller: caller,
-            engine: layout_params.eex_engine,
-            source: layout_params.template,
-            tag_handler: layout_params.tag_handler
+            eex_opts
           )
         end)
     end

@@ -10,6 +10,8 @@ defmodule LiveViewNative.Extensions do
   """
   defmacro __using__(_opts) do
     quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
+      Code.put_compiler_option(:ignore_module_conflict, true)
+
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
