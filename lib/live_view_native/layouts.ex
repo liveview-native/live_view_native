@@ -58,7 +58,7 @@ defmodule LiveViewNative.Layouts do
   end
 
   defmacro __using__(_opts \\ []) do
-    quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
+    quote bind_quoted: [caller: Macro.escape(__CALLER__)], location: :keep do
       use LiveViewNative.Extensions, role: :layouts
 
       layout_templates =

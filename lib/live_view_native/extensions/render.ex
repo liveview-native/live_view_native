@@ -7,7 +7,7 @@ defmodule LiveViewNative.Extensions.Render do
   `template_live.swiftui.heex`, `template_live.jetpack.heex`, etc.)
   """
   defmacro __using__(_opts \\ []) do
-    quote bind_quoted: [] do
+    quote bind_quoted: [], location: :keep do
       require EEx
 
       def render_native(assigns) do

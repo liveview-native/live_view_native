@@ -33,7 +33,7 @@ defmodule LiveViewNative.Extensions.InlineRender do
     quote bind_quoted: [
             platform_id: opts[:platform_id],
             stylesheet: opts[:stylesheet]
-          ] do
+          ], location: :keep do
       require EEx
 
       defmacro sigil_LVN({:<<>>, meta, [expr]}, modifiers) do

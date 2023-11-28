@@ -9,10 +9,12 @@ defmodule LiveViewNative.Extensions do
   respectively.
   """
   defmacro __using__(_opts) do
-    quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
+    quote bind_quoted: [caller: Macro.escape(__CALLER__)], location: :keep do
       Code.put_compiler_option(:ignore_module_conflict, true)
 
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
+        require EEx
+
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
         defmodule :"#{platform_module}" do
@@ -37,12 +39,14 @@ defmodule LiveViewNative.Extensions do
           platform_modifiers: platform_context.platform_modifiers || [],
           platform_module: platform_module
 
-        use LiveViewNative.Extensions.RenderMacro,
-          platform_id: platform_id,
-          render_macro: platform_context.render_macro
-
-        use LiveViewNative.Extensions.InlineRender,
-          platform_id: platform_id
+        if is_nil(platform_context.render_macro) do
+          use LiveViewNative.Extensions.InlineRender,
+            platform_id: platform_id
+        else
+          use LiveViewNative.Extensions.RenderMacro,
+            platform_id: platform_id,
+            render_macro: platform_context.render_macro
+        end
       end
 
       use LiveViewNative.Extensions.Render

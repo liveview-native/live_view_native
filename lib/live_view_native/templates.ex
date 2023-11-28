@@ -73,7 +73,7 @@ defmodule LiveViewNative.Templates do
     module_name = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
 
     Macro.to_string(
-      quote do
+      quote location: :keep do
         defmodule unquote(module_name) do
           def class_tree, do: unquote(class_tree)
         end

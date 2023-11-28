@@ -9,7 +9,7 @@ defmodule LiveViewNative.Extensions.Stylesheets do
   defmacro __using__(opts \\ []) do
     module = opts[:module]
 
-    quote bind_quoted: [module: module] do
+    quote bind_quoted: [module: module], location: :keep do
       def __compiled_stylesheet__ do
         class_tree_module =
           Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
