@@ -9,6 +9,8 @@ defmodule LiveViewNative.Layouts do
     |> Enum.reject(&(format_excluded?(&1, opts)))
     |> Enum.into(%{})
     |> apply_default_layouts(opts)
+    |> generate_class_trees(opts)
+    |> persist_class_trees(opts)
   end
 
   def extract_layouts_recursive({:embed_templates, _meta, [template | _args]}, %{} = opts) do
@@ -40,7 +42,7 @@ defmodule LiveViewNative.Layouts do
   end
 
   def compile_layout({_format, platform}, template_path, _opts) do
-    render_function_name =
+    func_name =
       template_path
       |> Path.basename()
       |> Path.rootname()
@@ -48,10 +50,11 @@ defmodule LiveViewNative.Layouts do
       |> String.to_atom()
 
     %{
+      class_tree: %{},
       template: File.read!(template_path),
       eex_engine: platform.eex_engine,
       platform_id: platform.platform_id,
-      render_function: render_function_name,
+      render_function: func_name,
       tag_handler: platform.tag_handler,
       template_path: template_path
     }
@@ -69,6 +72,28 @@ defmodule LiveViewNative.Layouts do
     end
   end
 
+  def generate_class_trees(%{} = layouts, %{} = opts) do
+    Enum.reduce(layouts, layouts, fn {func_name, %{template: template, platform_id: platform_id} = layout}, acc ->
+      opts = Map.put(opts, :render_function, {layout.render_function, 1})
+
+      case LiveViewNative.Templates.compile_class_tree(template, platform_id, opts) do
+        {:ok, %{} = class_tree} ->
+          Map.put(acc, func_name, %{layout | class_tree: class_tree})
+
+        _ ->
+          acc
+      end
+    end)
+  end
+
+  def persist_class_trees(%{} = layouts, opts) do
+    layouts
+    |> Enum.map(fn {func_name, %{class_tree: class_tree} = layout} -> {func_name, class_tree} end)
+    |> LiveViewNative.Templates.persist_class_tree_map(opts.caller.module)
+
+    layouts
+  end
+
   ###
 
   defp apply_default_layouts(%{} = layouts, %{default_layouts: true, platforms: platforms} = opts) do
@@ -80,13 +105,13 @@ defmodule LiveViewNative.Layouts do
       end)
     end)
     |> Enum.into(%{})
-    |> Enum.reduce(layouts, fn {render_function_name, {layout_source, platform}}, %{} = acc ->
-      if Map.has_key?(acc, render_function_name) do
+    |> Enum.reduce(layouts, fn {func_name, {layout_source, platform}}, %{} = acc ->
+      if Map.has_key?(acc, func_name) do
         acc
       else
-        Map.put(acc, render_function_name, %{
+        Map.put(acc, func_name, %{
           template: layout_source,
-          render_function: render_function_name,
+          render_function: func_name,
           template_path: nil,
           eex_engine: platform.eex_engine,
           platform_id: platform.platform_id,
@@ -133,10 +158,11 @@ defmodule LiveViewNative.Layouts do
             file: __ENV__.file,
             render_function: {render_func, 1},
             source: layout_params.template,
+            persist_class_tree: false,
             tag_handler: layout_params.tag_handler
           ]
           LiveViewNative.Templates.compile_class_tree(layout_params.template, layout_params.platform_id, eex_opts)
-          expr = LiveViewNative.Templates.with_stylesheet_wrapper(layout_params.template)
+          expr = LiveViewNative.Templates.with_stylesheet_wrapper(layout_params.template, render_func)
 
           EEx.function_from_string(:def, render_func, expr, [:assigns], eex_opts)
         end)

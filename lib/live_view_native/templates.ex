@@ -6,7 +6,7 @@ defmodule LiveViewNative.Templates do
 
   def precompile(expr, platform_id, eex_opts) do
     case compile_class_tree(expr, platform_id, eex_opts) do
-      :ok ->
+      {:ok, _class_tree} ->
         with_stylesheet_wrapper(expr)
 
       _ ->
@@ -22,17 +22,21 @@ defmodule LiveViewNative.Templates do
          %{} = class_tree_context <- class_tree_context(platform_id, template_module),
          %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts)
     do
-      dump_class_tree_bytecode(class_tree, template_module)
-    else
-      _fallback ->
-        dump_class_tree_bytecode(%{}, template_module)
+      if eex_opts[:persist_class_tree], do: persist_class_tree_map(%{default: class_tree}, template_module)
 
-        :skipped
+      {:ok, class_tree}
+    else
+      fallback ->
+        {:ok, :skipped}
     end
   end
 
-  def with_stylesheet_wrapper(expr) do
-    "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
+  def persist_class_tree_map(class_tree_map, template_module) do
+    dump_class_tree_bytecode(class_tree_map, template_module)
+  end
+
+  def with_stylesheet_wrapper(expr, stylesheet_key \\ :default) do
+    "<compiled-lvn-stylesheet body={__compiled_stylesheet__(:#{stylesheet_key})}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
   end
 
   ###
@@ -62,21 +66,21 @@ defmodule LiveViewNative.Templates do
     "#{:code.lib_dir(:live_view_native)}/.lvn/#{platform_id}/#{template_module}.classtree.json"
   end
 
-  defp dump_class_tree_bytecode(class_tree, template_module) do
-    class_tree
+  defp dump_class_tree_bytecode(class_tree_map, template_module) do
+    class_tree_map
     |> generate_class_tree_module(template_module)
     |> Code.compile_string()
 
     :ok
   end
 
-  defp generate_class_tree_module(class_tree, template_module) do
+  defp generate_class_tree_module(class_tree_map, template_module) do
     module_name = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
 
     Macro.to_string(
       quote location: :keep do
         defmodule unquote(module_name) do
-          def class_tree, do: unquote(class_tree)
+          def class_tree(stylesheet_key), do: unquote(class_tree_map)[stylesheet_key] || %{}
         end
       end
     )

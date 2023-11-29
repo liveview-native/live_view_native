@@ -10,11 +10,11 @@ defmodule LiveViewNative.Extensions.Stylesheets do
     module = opts[:module]
 
     quote bind_quoted: [module: module], location: :keep do
-      def __compiled_stylesheet__ do
+      def __compiled_stylesheet__(stylesheet_key) do
         class_tree_module =
           Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
 
-        class_tree = apply(class_tree_module, :class_tree, [])
+        class_tree = apply(class_tree_module, :class_tree, [stylesheet_key])
 
         class_names =
           class_tree

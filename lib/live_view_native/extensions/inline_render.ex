@@ -50,6 +50,7 @@ defmodule LiveViewNative.Extensions.InlineRender do
             file: __CALLER__.file,
             indentation: meta[:indentation] || 0,
             line: __CALLER__.line + 1,
+            persist_class_tree: true,
             stylesheet: unquote(stylesheet),
             tag_handler: LiveViewNative.TagEngine
           ]
