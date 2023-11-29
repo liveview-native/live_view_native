@@ -5,8 +5,10 @@ defmodule LiveViewNative.Templates do
   """
 
   def precompile(expr, platform_id, eex_opts) do
+    with_stylesheet_wrapper = Keyword.get(eex_opts, :with_stylesheet_wrapper, true)
+
     case compile_class_tree(expr, platform_id, eex_opts) do
-      {:ok, _class_tree} ->
+      {:ok, _class_tree} when with_stylesheet_wrapper ->
         with_stylesheet_wrapper(expr)
 
       _ ->

@@ -10,7 +10,8 @@ defmodule LiveViewNative.Extensions.RenderMacro do
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
             render_macro: opts[:render_macro],
-            platform_id: opts[:platform_id]
+            platform_id: opts[:platform_id],
+            role: opts[:role]
           ], location: :keep do
       defmacro unquote(:"#{render_macro}")({:<<>>, meta, [expr]}, _modifiers) do
         unless Macro.Env.has_var?(__CALLER__, {:assigns, nil}) do
@@ -27,7 +28,8 @@ defmodule LiveViewNative.Extensions.RenderMacro do
             indentation: meta[:indentation] || 0,
             line: __CALLER__.line + 1,
             persist_class_tree: true,
-            tag_handler: LiveViewNative.TagEngine
+            tag_handler: LiveViewNative.TagEngine,
+            with_stylesheet_wrapper: unquote(role) != :component
           ]
 
           expr = LiveViewNative.Templates.precompile(expr, unquote(platform_id), base_opts)
