@@ -28,7 +28,7 @@ defmodule LiveViewNative.Templates do
 
       {:ok, class_tree}
     else
-      fallback ->
+      _ ->
         {:ok, :skipped}
     end
   end

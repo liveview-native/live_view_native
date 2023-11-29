@@ -88,7 +88,7 @@ defmodule LiveViewNative.Layouts do
 
   def persist_class_trees(%{} = layouts, opts) do
     layouts
-    |> Enum.map(fn {func_name, %{class_tree: class_tree} = layout} -> {func_name, class_tree} end)
+    |> Enum.map(fn {func_name, %{class_tree: class_tree}} -> {func_name, class_tree} end)
     |> LiveViewNative.Templates.persist_class_tree_map(opts.caller.module)
 
     layouts
@@ -136,7 +136,6 @@ defmodule LiveViewNative.Layouts do
   defmacro __using__(_opts \\ []) do
     quote bind_quoted: [caller: Macro.escape(__CALLER__)], location: :keep do
       use LiveViewNative.Extensions, role: :layouts
-      use LiveViewNative.Extensions.Stylesheets, module: __ENV__.module
 
       layout_templates =
         %{

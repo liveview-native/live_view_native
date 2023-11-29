@@ -16,7 +16,7 @@ defmodule LiveViewNative.LiveView do
   end
   ```
   """
-  defmacro __using__(opts \\ []) do
+  defmacro __using__(_opts \\ []) do
     quote location: :keep do
       on_mount {LiveViewNative.LiveSession, :live_view_native}
 
