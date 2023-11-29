@@ -15,8 +15,9 @@ defmodule LiveViewNative.Templates do
   end
 
   def compile_class_tree(expr, platform_id, eex_opts) do
-    with %Macro.Env{module: template_module} <- eex_opts[:caller],
-         %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
+    %Macro.Env{module: template_module} = eex_opts[:caller]
+
+    with %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
          [_ | _] = class_names <- extract_all_class_names(doc),
          %{} = class_tree_context <- class_tree_context(platform_id, template_module),
          %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts)
@@ -24,7 +25,7 @@ defmodule LiveViewNative.Templates do
       dump_class_tree_bytecode(class_tree, template_module)
     else
       _fallback ->
-        # TODO: Generate fallback stylesheet module
+        dump_class_tree_bytecode(%{}, template_module)
 
         :skipped
     end
