@@ -46,6 +46,10 @@ defmodule LiveViewNative.LiveSession do
     |> put_target(lvn_params)
   end
 
+  defp expand_lvn_params(%{"_lvn_platform" => lvn_platform}) do
+    expand_lvn_params(%{"_lvn" => %{"format" => lvn_platform}})
+  end
+
   defp expand_lvn_params(_), do: nil
 
   defp get_platform_env(%{"format" => format}) do
