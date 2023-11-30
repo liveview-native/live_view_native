@@ -1,6 +1,7 @@
 # Getting Started
 
 [![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%2Fnotebooks%getting-started.livemd)
+
 ## Overview
 
 Our Interactive Guides offer an interactive tutorial for LiveView Native using Livebook. They teach LiveView Native concepts step-by-step and assume some familiarity with [Phoenix LiveView](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html) applications.

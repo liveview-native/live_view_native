@@ -1,6 +1,6 @@
-defmodule Mix.Tasks.Lvn.CreateExDocGuidesTest do
+defmodule Mix.Tasks.CreateExDocGuidesTest do
   use ExUnit.Case
-  alias Mix.Tasks.Lvn.CreateExDocGuides
+  alias Mix.Tasks.CreateExDocGuides
 
   test "make_ex_doc_friendly/1 removes Mix.install/2 section and adds Run in Livebook badge" do
     content = """
@@ -18,7 +18,7 @@ defmodule Mix.Tasks.Lvn.CreateExDocGuidesTest do
     ```
     """
 
-    assert CreateExDocGuides.make_ex_doc_friendly("filename.livemd", content) =~
+    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") =~
              "[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%2Fnotebooks%filename.livemd)"
   end
 
@@ -30,7 +30,7 @@ defmodule Mix.Tasks.Lvn.CreateExDocGuidesTest do
 
     """
 
-    assert CreateExDocGuides.make_ex_doc_friendly("filename.livemd", content) == """
+    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
            """
   end
 
@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Lvn.CreateExDocGuidesTest do
     :ok
     """
 
-    assert CreateExDocGuides.make_ex_doc_friendly("filename.livemd", content) == """
+    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
            """
   end
 
@@ -66,9 +66,31 @@ defmodule Mix.Tasks.Lvn.CreateExDocGuidesTest do
     """
 
     # We currently clear any code below navigation to make the regex easier.
-    assert CreateExDocGuides.make_ex_doc_friendly("filename.livemd", content) == """
+    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
            ## Section Above
 
            """
+  end
+
+  test "make_ex_doc_friendly/1 convert details sections" do
+    content = """
+    <details style="background-color: lightgreen; padding: 1rem; margin: 1rem 0;">
+    <summary>What do these options mean?</summary>
+
+    * **Product Name:** The name of the application. This can be any valid name. We've chosen `Guides`.
+    * **Organization Identifier:** A reverse DNS string that uniquely identifies your organization. If you don't have a company identifier, [Apple recomends](https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app) using `com.example.your_name` where `your_name` is your organization or personal name.
+    * **Interface:**: Xcode generates an interface file that includes all your source code's internal and public declarations when using the Assistant editor, the Related Items, or the Navigate menu. Select `SwiftUI` since we're building a SwiftUI application.
+    * **Language:** Determines which language Xcode should use for the project. Select `Swift`.
+    </details>
+    """
+
+    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") =~ """
+            ### What do these options mean?
+
+            * **Product Name:** The name of the application. This can be any valid name. We've chosen `Guides`.
+            * **Organization Identifier:** A reverse DNS string that uniquely identifies your organization. If you don't have a company identifier, [Apple recomends](https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app) using `com.example.your_name` where `your_name` is your organization or personal name.
+            * **Interface:**: Xcode generates an interface file that includes all your source code's internal and public declarations when using the Assistant editor, the Related Items, or the Navigate menu. Select `SwiftUI` since we're building a SwiftUI application.
+            * **Language:** Determines which language Xcode should use for the project. Select `Swift`.
+            """
   end
 end

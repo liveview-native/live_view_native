@@ -15,24 +15,12 @@ defmodule Mix.Tasks.CreateExDocGuides do
     |> replace_outline_with_badge(file_name)
     |> remove_kino_boilerplate()
     |> remove_navigation()
+    |> convert_details_sections()
   end
 
   defp replace_outline_with_badge(content, file_name) do
     badge = "[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%2Fnotebooks%#{file_name})"
-    String.replace(content, """
-    ```elixir
-    Mix.install(
-      [
-        {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
-      ],
-      config: [
-        live_view_native: [plugins: [LiveViewNativeSwiftUi]]
-      ]
-    )
-
-    KinoLiveViewNative.start([])
-    ```
-    """, badge)
+    String.replace(content, ~r/```elixir\nMix.install(.|\n)+?```/, badge)
   end
 
   defp remove_kino_boilerplate(content) do
@@ -48,5 +36,12 @@ defmodule Mix.Tasks.CreateExDocGuides do
 
   defp remove_navigation(content) do
     String.replace(content, ~r/## Navigation(\n|.)+/, "")
+  end
+
+  defp convert_details_sections(content) do
+    # Details sections do not properly render on ex_doc, so we convert them to headers
+    Regex.replace(~r/<details.+\n<summary>([^<]+)<\/summary>((.|\n)+)(?=<\/details>)<\/details>/, content, fn _full, title, content ->
+      "### #{title}#{content}"
+    end)
   end
 end

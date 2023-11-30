@@ -1,19 +1,6 @@
 # SwiftUI Views
 
-```elixir
-Mix.install(
-  [
-    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
-    # {:kino_live_view_native, path: "../kino_live_view_native"}
-  ],
-  config: [
-    live_view_native: [plugins: [LiveViewNativeSwiftUi]]
-  ],
-  force: true
-)
-
-KinoLiveViewNative.start([])
-```
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%2Fnotebooks%swiftui-views.livemd)
 
 ## Overview
 
@@ -82,7 +69,7 @@ We've already seen the [Text](https://developer.apple.com/documentation/swiftui/
 
 Evaluate the cell below, then in Xcode, Start the iOS application you created in the [Create a SwiftUI Application](https://hexdocs.pm/live_view_native/create-a-swiftui-application.html) lesson and ensure you see the `"Hello, World!"` text.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0PkhlbGxvIGZyb20gTGl2ZVZpZXcgTmF0aXZlITwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPHA+SGVsbG8gZnJvbSBMaXZlVmlldyE8L3A+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,308],[421,45],[468,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0PkJvbmpvdXIgTW9udHJlYWwgZnJvbSBMaXZlVmlldyBOYXRpdmUhPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,319],[432,45],[479,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.HomeLive do
@@ -199,8 +186,7 @@ subgraph HStack
 end
 ```
 
-<details style="background-color: lightgreen; padding: 1rem; margin: 1rem 0;">
-<summary>Example Solution</summary>
+### Example Solution
 
 ```elixir
 defmodule Server.HomeLive do
@@ -413,7 +399,7 @@ defmodule Server.HomeLive do
 end
 ```
 
-</details>
+
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDwhLS0gRW50ZXIgc29sdXRpb24gYmVsb3cgLS0+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDwhLS0gTGVhdmUgVW5jaGFuZ2VkIC0tPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,294],[407,45],[454,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
@@ -450,9 +436,9 @@ Evaluate the cell below to see an example of both an `AsyncImage` and `Image`.
 
 `AsyncImage` is best for network images, or images served by the Phoenix server.
 
-Here's an example of `AsyncImage` with a lorem picsum image from https://picsum.photos/200/300.
+Here's an example of `AsyncImage` with a lorem picsum image from https://picsum.photos/400/600.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxBc3luY0ltYWdlIHVybD1cImh0dHBzOi8vcGljc3VtLnBob3Rvcy8yMDAvMzAwXCI+PC9Bc3luY0ltYWdlPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,329],[442,45],[489,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxBc3luY0ltYWdlIHVybD1cImh0dHBzOi8vcGljc3VtLnBob3Rvcy80MDAvNDAwXCI+PC9Bc3luY0ltYWdlPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,329],[442,45],[489,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.HomeLive do
@@ -462,7 +448,7 @@ defmodule Server.HomeLive do
   @impl true
   def render(%{platform_id: :swiftui} = assigns) do
     ~SWIFTUI"""
-    <AsyncImage url="https://picsum.photos/200/300"></AsyncImage>
+    <AsyncImage url="https://picsum.photos/400/400"></AsyncImage>
     """
   end
 

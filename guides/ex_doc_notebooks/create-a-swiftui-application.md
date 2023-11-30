@@ -1,6 +1,7 @@
 # Create a SwiftUI Application
 
 [![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%2Fnotebooks%create-a-swiftui-application.livemd)
+
 ## Overview
 
 This guide will teach you how to set up a SwiftUI Application for LiveView Native.
@@ -57,14 +58,13 @@ Select the `iOS` and `App` options to create an iOS application. Then click `Nex
 
 Choose options for your new project that match the following image, then click `Next`.
 
-<details style="background-color: lightgreen; padding: 1rem; margin: 1rem 0;">
-<summary>What do these options mean?</summary>
+### What do these options mean?
 
 * **Product Name:** The name of the application. This can be any valid name. We've chosen `Guides`.
 * **Organization Identifier:** A reverse DNS string that uniquely identifies your organization. If you don't have a company identifier, [Apple recomends](https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app) using `com.example.your_name` where `your_name` is your organization or personal name.
 * **Interface:**: Xcode generates an interface file that includes all your source code's internal and public declarations when using the Assistant editor, the Related Items, or the Navigate menu. Select `SwiftUI` since we're building a SwiftUI application.
 * **Language:** Determines which language Xcode should use for the project. Select `Swift`.
-</details>
+
 
 <!-- livebook:{"break_markdown":true} -->
 
