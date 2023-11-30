@@ -12,7 +12,7 @@ In future lessons, you'll use this iOS application to view iOS examples in the X
 
 ## Prerequisites
 
-First, make sure you have followed the [Getting Started](./getting_started.livemd) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server runs properly. You should see the text `Hello from LiveView!`
+First, make sure you have followed the [Getting Started](https://hexdocs.pm/live_view_native/getting-started.html) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server runs properly. You should see the text `Hello from LiveView!`
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuICBcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPGRpdj5IZWxsbyBmcm9tIExpdmVWaWV3ITwvZGl2PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,325],[438,45],[485,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 

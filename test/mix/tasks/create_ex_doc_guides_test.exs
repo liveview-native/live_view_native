@@ -83,8 +83,9 @@ defmodule Mix.Tasks.CreateExDocGuidesTest do
     * **Language:** Determines which language Xcode should use for the project. Select `Swift`.
     </details>
     """
-
-    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") =~ """
+    result = CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd")
+    refute result =~ "details"
+    assert result =~ """
             ### What do these options mean?
 
             * **Product Name:** The name of the application. This can be any valid name. We've chosen `Guides`.

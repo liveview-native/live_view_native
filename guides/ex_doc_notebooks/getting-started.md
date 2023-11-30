@@ -4,11 +4,11 @@
 
 ## Overview
 
-Our Interactive Guides offer an interactive tutorial for LiveView Native using Livebook. They teach LiveView Native concepts step-by-step and assume some familiarity with [Phoenix LiveView](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html) applications.
+Our interactive guides provide a step-by-step tutorial for learning LiveView Native using Livebook. These guides assume that you already have some familiarity with Phoenix LiveView applications.
 
-We suggest using Livebook to run these guides for the best experience. Click the "Run in Livebook" badge to import the guide into Livebook.
+For the best experience, we recommend using Livebook to run these guides. Simply click on the "Run in Livebook" badge to import the guide into Livebook.
 
-Guides are isolated from each other so that you can complete guides in any order. However, we recommend completing the guides chronologically for the most comprehensive learning experience.
+Each guide is designed to be completed independently, but we suggest following them chronologically for the most comprehensive learning experience.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ If you are not already running this guide in Livebook, click on the "Run in Live
 
 Then, you can evaluate the following smart cell and visit http://localhost:4000 to ensure this Livebook works correctly.
 
-<!-- livebook:{"attrs":{"action":":index","code":"defmodule Server.HomeLive do\n  use Phoenix.LiveView\n  use LiveViewNative.LiveView\n\n  @impl true\n  def render(%{platform_id: :swiftui} = assigns) do\n    ~SWIFTUI\"\"\"\n    <Text>\n      Hello Again from LiveView Native!\n    </Text>\n    \"\"\"\n  end\n\n  def render(assigns) do\n    ~H\"\"\"\n    <div style=\"color: red;\">Hello from LiveView!</div>\n    \"\"\"\n  end\nend","path":"/"},"chunks":[[0,109],[111,350],[463,45],[510,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0PlxuICAgICAgSGVsbG8gQWdhaW4gZnJvbSBMaXZlVmlldyBOYXRpdmUhXG4gICAgPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8ZGl2IHN0eWxlPVwiY29sb3I6IHJlZDtcIj5IZWxsbyBmcm9tIExpdmVWaWV3ITwvZGl2PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,350],[463,45],[510,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.HomeLive do
