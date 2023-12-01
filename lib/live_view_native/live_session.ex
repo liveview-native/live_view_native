@@ -13,8 +13,12 @@ defmodule LiveViewNative.LiveSession do
     case get_native_assigns(socket, params) do
       %Assigns{} = native_assigns ->
         assigns = Map.from_struct(native_assigns)
+        socket =
+          socket
+          |> assign(assigns)
+          |> put_native_layout()
 
-        {:cont, assign(socket, assigns)}
+        {:cont, socket}
 
       _ ->
         {:cont, socket}
@@ -73,4 +77,15 @@ defmodule LiveViewNative.LiveSession do
   end
 
   defp put_target(assigns, _lvn_params), do: assigns
+
+  defp put_native_layout(%Socket{} = socket) do
+    with %Socket{assigns: %{format: format}, private: private, view: view} when not is_nil(view) <- socket,
+         %{layout: {layout_mod, layout_name}} <- apply(view, :__live__, [])
+    do
+      %Socket{socket | private: Map.put(private, :live_layout, {layout_mod, "#{layout_name}_#{format}"})}
+    else
+      _ ->
+        socket
+    end
+  end
 end

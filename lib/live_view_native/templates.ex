@@ -5,25 +5,47 @@ defmodule LiveViewNative.Templates do
   """
 
   def precompile(expr, platform_id, eex_opts) do
-    %Macro.Env{function: {func_name, _func_arity} = template_func, module: template_module} =
-      eex_opts[:caller]
+    with_stylesheet_wrapper = Keyword.get(eex_opts, :with_stylesheet_wrapper, true)
 
-    doc = Meeseeks.parse(expr, :xml)
-    class_names = extract_all_class_names(doc)
-    class_tree_context = class_tree_context(platform_id, template_module)
-    class_tree = build_class_tree(class_tree_context, class_names, template_func)
-    dump_class_tree_bytecode(class_tree, template_module)
+    case compile_class_tree(expr, platform_id, eex_opts) do
+      {:ok, _class_tree} when with_stylesheet_wrapper ->
+        with_stylesheet_wrapper(expr)
 
-    if func_name == :render do
-      "<compiled-lvn-stylesheet body={__compiled_stylesheet__()}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
-    else
-      expr
+      _ ->
+        expr
     end
+  end
+
+  def compile_class_tree(expr, platform_id, eex_opts) do
+    %Macro.Env{module: template_module} = eex_opts[:caller]
+
+    with %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
+         [_ | _] = class_names <- extract_all_class_names(doc),
+         %{} = class_tree_context <- class_tree_context(platform_id, template_module),
+         %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts)
+    do
+      if eex_opts[:persist_class_tree], do: persist_class_tree_map(%{default: class_tree}, template_module)
+
+      {:ok, class_tree}
+    else
+      _ ->
+        {:ok, :skipped}
+    end
+  end
+
+  def persist_class_tree_map(class_tree_map, template_module) do
+    dump_class_tree_bytecode(class_tree_map, template_module)
+  end
+
+  def with_stylesheet_wrapper(expr, stylesheet_key \\ :default) do
+    "<compiled-lvn-stylesheet body={__compiled_stylesheet__(:#{stylesheet_key})}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
   end
 
   ###
 
-  defp build_class_tree(%{} = class_tree_context, class_names, {func_name, func_arity}) do
+  defp build_class_tree(%{} = class_tree_context, class_names, eex_opts) do
+    {func_name, func_arity} = eex_opts[:render_function] || eex_opts[:caller].function
+
     class_tree_context
     |> put_in([:class_tree, "#{func_name}/#{func_arity}"], Enum.uniq(class_names))
     |> persist_to_class_tree()
@@ -46,20 +68,24 @@ defmodule LiveViewNative.Templates do
     "#{:code.lib_dir(:live_view_native)}/.lvn/#{platform_id}/#{template_module}.classtree.json"
   end
 
-  defp dump_class_tree_bytecode(class_tree, template_module) do
-    class_tree_module = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
+  defp dump_class_tree_bytecode(class_tree_map, template_module) do
+    class_tree_map
+    |> generate_class_tree_module(template_module)
+    |> Code.compile_string()
 
-    expr =
-      Macro.to_string(
-        quote do
-          defmodule unquote(class_tree_module) do
-            def class_tree, do: unquote(class_tree)
-          end
+    :ok
+  end
+
+  defp generate_class_tree_module(class_tree_map, template_module) do
+    module_name = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
+
+    Macro.to_string(
+      quote location: :keep do
+        defmodule unquote(module_name) do
+          def class_tree(stylesheet_key), do: unquote(class_tree_map)[stylesheet_key] || %{}
         end
-      )
-
-    Code.put_compiler_option(:ignore_module_conflict, true)
-    Code.compile_string(expr)
+      end
+    )
   end
 
   defp extract_all_class_names(doc) do

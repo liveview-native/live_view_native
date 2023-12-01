@@ -16,15 +16,11 @@ defmodule LiveViewNative.LiveView do
   end
   ```
   """
-  defmacro __using__(opts \\ []) do
-    stylesheet = opts[:stylesheet]
-
-    quote do
+  defmacro __using__(_opts \\ []) do
+    quote location: :keep do
       on_mount {LiveViewNative.LiveSession, :live_view_native}
 
-      use LiveViewNative.Extensions,
-        role: :live_view,
-        stylesheet: unquote(stylesheet)
+      use LiveViewNative.Extensions, role: :live_view
     end
   end
 end

@@ -16,13 +16,9 @@ defmodule LiveViewNative.Component do
   end
   ```
   """
-  defmacro __using__(opts \\ []) do
-    stylesheet = opts[:stylesheet]
-
+  defmacro __using__(_opts \\ []) do
     quote do
-      use LiveViewNative.Extensions,
-        role: :component,
-        stylesheet: unquote(stylesheet)
+      use LiveViewNative.Extensions, role: :component
     end
   end
 end

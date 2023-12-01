@@ -31,9 +31,10 @@ defmodule LiveViewNative.Extensions.InlineRender do
   """
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
-      platform_id: opts[:platform_id],
-      stylesheet: opts[:stylesheet]
-    ] do
+            platform_id: opts[:platform_id],
+            stylesheet: opts[:stylesheet],
+            role: opts[:role]
+          ], location: :keep do
       require EEx
 
       defmacro sigil_LVN({:<<>>, meta, [expr]}, modifiers) do
@@ -50,8 +51,10 @@ defmodule LiveViewNative.Extensions.InlineRender do
             file: __CALLER__.file,
             indentation: meta[:indentation] || 0,
             line: __CALLER__.line + 1,
+            persist_class_tree: true,
             stylesheet: unquote(stylesheet),
-            tag_handler: LiveViewNative.TagEngine
+            tag_handler: LiveViewNative.TagEngine,
+            with_stylesheet_wrapper: unquote(role) != :component
           ]
 
           expr = LiveViewNative.Templates.precompile(expr, unquote(platform_id), base_opts)

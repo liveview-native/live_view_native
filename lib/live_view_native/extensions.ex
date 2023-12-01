@@ -8,9 +8,15 @@ defmodule LiveViewNative.Extensions do
   should use `LiveViewNative.LiveView` or `LiveViewNative.LiveComponent`
   respectively.
   """
-  defmacro __using__(opts \\ []) do
-    quote bind_quoted: [caller: Macro.escape(__CALLER__)] do
+  defmacro __using__(opts) do
+    role = opts[:role]
+
+    quote bind_quoted: [caller: Macro.escape(__CALLER__), role: role], location: :keep do
+      Code.put_compiler_option(:ignore_module_conflict, true)
+
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
+        require EEx
+
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
         defmodule :"#{platform_module}" do
@@ -35,18 +41,20 @@ defmodule LiveViewNative.Extensions do
           platform_modifiers: platform_context.platform_modifiers || [],
           platform_module: platform_module
 
-        use LiveViewNative.Extensions.RenderMacro,
-          platform_id: platform_id,
-          render_macro: platform_context.render_macro
-
-        use LiveViewNative.Extensions.InlineRender,
-          platform_id: platform_id
+        if is_nil(platform_context.render_macro) do
+          use LiveViewNative.Extensions.InlineRender,
+            platform_id: platform_id,
+            role: role
+        else
+          use LiveViewNative.Extensions.RenderMacro,
+            platform_id: platform_id,
+            render_macro: platform_context.render_macro,
+            role: role
+        end
       end
 
       use LiveViewNative.Extensions.Render
-
-      use LiveViewNative.Extensions.Stylesheets,
-        module: __ENV__.module
+      use LiveViewNative.Extensions.Stylesheets, module: __ENV__.module
     end
   end
 end
