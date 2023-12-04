@@ -2,7 +2,7 @@ defmodule LiveViewNative.SessionPlug do
   def init(default), do: default
 
   def call(%Plug.Conn{
-    params: %{"_lvn_platform" => lvn_platform},
+    params: %{"_lvn" => %{"format" => lvn_platform}},
     private:
       %{
         :phoenix_format => "html",
