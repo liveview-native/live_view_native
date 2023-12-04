@@ -196,7 +196,7 @@ Click the `start active scheme` button <i class="ri-play-fill"></i> to build the
 > 
 > * https://developer.apple.com/documentation/xcode/build-system
 
-If you encounter an issue with `LiveViewNativeMacros`, select `Trust & Enable` to resolve the problem.
+If you encounter an issue with `LiveViewNativeMacros`, select `Trust & Enable` to resolve the problem. You may need to click on the error in the Xcode error console to see the prompt.
 
 <!-- livebook:{"break_markdown":true} -->
 
