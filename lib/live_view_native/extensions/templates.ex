@@ -19,11 +19,12 @@ defmodule LiveViewNative.Extensions.Templates do
             caller: opts[:caller],
             eex_engine: opts[:eex_engine],
             platform_module: opts[:platform_module],
+            stylesheet: opts[:stylesheet],
             tag_handler: opts[:tag_handler],
             template_basename: opts[:template_basename],
             template_directory: opts[:template_directory],
             template_extension: opts[:template_extension]
-          ] do
+          ], location: :keep do
       template_path = Path.join(template_directory, template_basename) <> template_extension
 
       if is_binary(template_path) and File.exists?(template_path) do

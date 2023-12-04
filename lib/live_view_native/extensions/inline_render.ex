@@ -29,8 +29,12 @@ defmodule LiveViewNative.Extensions.InlineRender do
   end
   ```
   """
-  defmacro __using__(_opts \\ []) do
-    quote bind_quoted: [] do
+  defmacro __using__(opts \\ []) do
+    quote bind_quoted: [
+            platform_id: opts[:platform_id],
+            stylesheet: opts[:stylesheet],
+            role: opts[:role]
+          ], location: :keep do
       require EEx
 
       defmacro sigil_LVN({:<<>>, meta, [expr]}, modifiers) do
@@ -39,20 +43,24 @@ defmodule LiveViewNative.Extensions.InlineRender do
         end
 
         with %{} = platforms <- LiveViewNative.platforms(),
-             %LiveViewNativePlatform.Env{} = context <- Map.get(platforms, "#{modifiers}"),
-             platform_module <- Module.concat(__ENV__.module, context.template_namespace),
-             expr <- LiveViewNative.Templates.precompile(expr) do
-          options = [
+             %LiveViewNativePlatform.Env{} = context <- Map.get(platforms, unquote(platform_id)),
+             platform_module <- Module.concat(__ENV__.module, context.template_namespace) do
+          base_opts = [
+            caller: __CALLER__,
             engine: Phoenix.LiveView.TagEngine,
             file: __CALLER__.file,
-            line: __CALLER__.line + 1,
-            caller: __CALLER__,
             indentation: meta[:indentation] || 0,
-            source: expr,
-            tag_handler: LiveViewNative.TagEngine
+            line: __CALLER__.line + 1,
+            persist_class_tree: true,
+            stylesheet: unquote(stylesheet),
+            tag_handler: LiveViewNative.TagEngine,
+            with_stylesheet_wrapper: unquote(role) != :component
           ]
 
-          EEx.compile_string(expr, options)
+          expr = LiveViewNative.Templates.precompile(expr, unquote(platform_id), base_opts)
+          eex_opts = Keyword.put(base_opts, :source, expr)
+
+          EEx.compile_string(expr, eex_opts)
         end
       end
     end

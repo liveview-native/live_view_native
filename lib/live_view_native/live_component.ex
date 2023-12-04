@@ -15,8 +15,8 @@ defmodule LiveViewNative.LiveComponent do
   ```
   """
   defmacro __using__(_opts \\ []) do
-    quote do
-      use LiveViewNative.Extensions
+    quote location: :keep do
+      use LiveViewNative.Extensions, role: :live_component
     end
   end
 end
