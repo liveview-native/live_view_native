@@ -33,6 +33,7 @@ While not necessary for our guides, we also recommend you install the following 
 
 * [Phoenix](https://hexdocs.pm/phoenix/installation.html)
 * [PostgreSQL](https://www.postgresql.org/download/)
+* [LiveView Native VS Code Extension](https://github.com/liveview-native/liveview-native-vscode)
 
 ## Hello World
 
