@@ -59,11 +59,11 @@ import KinoLiveViewNative.Livebook, only: []
 
 ## Create the iOS Application
 
-Open XCode and select Create New Project.
+Open Xcode and select Create New Project.
 
 <!-- livebook:{"break_markdown":true} -->
 
-![XCode Create New Project](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-create-new-project.png?raw=true)
+![Xcode Create New Project](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-create-new-project.png?raw=true)
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -267,7 +267,7 @@ If you encountered any issues with the native application, here are some trouble
 * **Reset Package Caches:** In the Xcode application go to `File -> Packages -> Reset Package Caches`.
 * **Update Packages:** In the Xcode application go to `File -> Packages -> Update to Latest Package Versions`.
 * **Rebuild the Active Scheme**: In the Xcode application, press the `start active scheme` button <i class="ri-play-fill"></i> to rebuild the active scheme and run it on the Xcode simulator.
-* Update your [XCode](https://developer.apple.com/xcode/) version if it is not already the latest version
+* Update your [Xcode](https://developer.apple.com/xcode/) version if it is not already the latest version
 * Check for error messages in the Livebook smart cells.
 
 You can also [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) if you would like support from the LiveView Native team.
