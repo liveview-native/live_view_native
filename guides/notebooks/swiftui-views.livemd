@@ -431,7 +431,7 @@ import KinoLiveViewNative.Livebook, only: []
 
 ## Your Turn: Bottom Text Spacer
 
-In the cell below, use `HStack` and `Spacer` to place text in the bottom of the native view.
+In the cell below, use `VStack` and `Spacer` to place text in the bottom of the native view.
 
 <details style="background-color: lightgreen; padding: 1rem; margin: 1rem 0;">
 <summary>Example Solution</summary>
