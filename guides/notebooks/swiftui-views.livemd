@@ -698,7 +698,7 @@ import KinoLiveViewNative.Livebook, only: []
 
 A Button is a clickable SwiftUI View.
 
-The label of a button can be any view. such as a [Text](https://developer.apple.com/documentation/swiftui/text) element for text-only buttons or [Label](https://developer.apple.com/documentation/swiftui/label) element for buttons with icons.
+The label of a button can be any view, such as a [Text](https://developer.apple.com/documentation/swiftui/text) view for text-only buttons or a [Label](https://developer.apple.com/documentation/swiftui/label) view for buttons with icons.
 
 Evaluate the example below to see the SwiftUI [Button](https://developer.apple.com/documentation/swiftui/button) element.
 
