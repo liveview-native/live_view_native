@@ -4,82 +4,20 @@ defmodule Mix.Tasks.Lvn.Install do
 
   @requirements ["app.config"]
 
-  @template_projects_repo "https://github.com/liveview-native/liveview-native-template-projects"
-  @template_projects_version "0.0.1"
-
   @shortdoc "Installs LiveView Native."
   def run(args) do
     {parsed_args, _, _} = OptionParser.parse(args, strict: [namespace: :string])
 
-    # Define some paths for the host project
-    current_path = File.cwd!()
-    mix_config_path = Path.join(current_path, "mix.exs")
-    app_config_path = Path.join(current_path, "/config/config.exs")
-    app_namespace = parsed_args[:namespace] || infer_app_namespace(mix_config_path)
-    build_path = Path.join(current_path, "_build")
-    libs_path = Path.join(build_path, "dev/lib")
+    # Get all Mix tasks for LiveView Native client libraries
+    valid_mix_tasks = get_installer_mix_tasks()
+    host_project_config = get_host_project_config(parsed_args)
 
-    # Ask the user some questions about their app
-    preferred_route_input =
-      IO.gets(
-        "What path should native clients connect to by default? Leave blank for default: \"/\")\n"
-      )
-
-    preferred_prod_url_input =
-      IO.gets("What URL will you use in production? Leave blank for default: \"example.com\")\n")
-
-    preferred_route = String.trim(preferred_route_input)
-    _preferred_route = if preferred_route == "", do: "/", else: preferred_route
-    preferred_prod_url = String.trim(preferred_prod_url_input)
-    _preferred_prod_url = if preferred_prod_url == "", do: "example.com", else: preferred_prod_url
-
-    # Get a list of compiled libraries
-    libs = File.ls!(libs_path)
-
-    # Clone the liveview-native-template-projects repo. This repo contains
-    # templates for various native platforms in their respective tools
-    # (Xcode, Android Studio, etc.)
-    clone_template_projects()
-    template_projects_path = Path.join(build_path, "lvn_tmp/liveview-native-template-projects")
-    template_libs = File.ls!(template_projects_path)
-
-    # Find libraries compiled for the host project that have available
-    # template projects
-    supported_libs = Enum.filter(libs, &(&1 in template_libs))
-
-    # Run the install script for each template project. Install scripts are
-    # responsible for generating platform-specific template projects and return
-    # information about that platform to be applied to the host project's Mix
-    # configuration.
-    platform_names =
-      Enum.map(supported_libs, fn lib ->
-        status_message("configuring", "#{lib}")
-
-        # Run the project-specific install script, passing info about the host
-        # Phoenix project.
-        lib_path = Path.join(template_projects_path, "/#{lib}")
-        script_path = Path.join(lib_path, "/install.exs")
-
-        cmd_opts = [
-          script_path,
-          "--app-name",
-          app_namespace,
-          "--app-path",
-          current_path,
-          "--platform-lib-path",
-          lib_path
-        ]
-
-        with {platform_name, 0} <- System.cmd("elixir", cmd_opts) do
-          String.trim(platform_name)
-        end
-      end)
-
-    generate_native_exs_if_needed(current_path, platform_names)
-    update_config_exs_if_needed(app_config_path)
-
-    # Clear _build path to ensure it's rebuilt with new Config
-    File.rm_rf(build_path)
+    run_all_install_tasks(valid_mix_tasks, host_project_config)
+    native_config = merge_native_config(valid_mix_tasks)
+    generate_native_exs_if_needed(host_project_config, native_config)
+    update_config_exs_if_needed(host_project_config)
+    clean_build_path(host_project_config)
+    format_config_files()
 
     IO.puts("\nYour Phoenix app is ready to use LiveView Native!\n")
     IO.puts("Platform-specific project files have been placed in the \"native\" directory\n")
@@ -89,21 +27,108 @@ defmodule Mix.Tasks.Lvn.Install do
 
   ###
 
-  defp clone_template_projects do
-    with {:ok, current_path} <- File.cwd(),
-         tmp_path <- Path.join(current_path, "_build/lvn_tmp"),
-         _ <- File.rm_rf(tmp_path),
-         :ok <- File.mkdir(tmp_path) do
-      status_message("downloading", "template project files")
+  defp run_all_install_tasks(mix_tasks, host_project_config) do
+    mix_tasks
+    |> Enum.map(&prompt_task_settings/1)
+    |> Enum.map(&(run_install_task(&1, host_project_config)))
+  end
 
-      System.cmd("git", [
-        "clone",
-        "-b",
-        @template_projects_version,
-        @template_projects_repo,
-        tmp_path <> "/liveview-native-template-projects"
-      ])
+  defp prompt_task_settings(%{client_name: client_name, prompts: [_ | _] = prompts} = task) do
+    prompts
+    |> Enum.reduce_while({:ok, task}, fn {prompt_key, prompt_settings}, {:ok, acc} ->
+      case prompt_task_setting(prompt_settings, client_name) do
+        {:error, message} ->
+          Owl.IO.puts([Owl.Data.tag("#{client_name}: #{message}", :yellow)])
+
+          {:halt, {:error, acc}}
+
+        result ->
+          settings = Map.get(acc, :settings, %{})
+          updated_settings = Map.put(settings, prompt_key, result)
+
+          {:cont, {:ok, Map.put(acc, :settings, updated_settings)}}
+      end
+    end)
+  end
+
+  defp prompt_task_setting(%{ignore: true}, _client_name), do: true
+
+  defp prompt_task_setting(%{type: :confirm, label: label} = task, client_name) do
+    if Owl.IO.confirm(message: "#{client_name}: #{label}", default: true) do
+      if is_function(task[:on_yes]), do: apply(task[:on_yes], [])
+    else
+      if is_function(task[:on_no]), do: apply(task[:on_no], [])
     end
+  end
+
+  defp prompt_task_setting(%{type: :multiselect, label: label, options: options, default: default} = task, client_name) do
+    default_label = Map.get(task, :default_label, inspect(default))
+
+    case Owl.IO.multiselect(options, label: "#{client_name}: #{label} (Space-delimited, leave blank for default: #{default_label})") do
+      [] ->
+        default || []
+
+      result ->
+        result
+    end
+  end
+
+  defp prompt_task_setting(_task, _client_name), do: nil
+
+  defp run_install_task(result, host_project_config) do
+    case result do
+      {:ok, %{client_name: client_name, mix_task: mix_task, settings: settings}} ->
+        Owl.IO.puts([Owl.Data.tag("* generating ", :green), "#{client_name} project files"])
+
+        mix_task.run(["--host-project-config", host_project_config, "--task-settings", settings])
+
+      _ ->
+        :skipped
+    end
+  end
+
+  defp get_installer_mix_tasks do
+    Mix.Task.load_all()
+    |> Enum.filter(&(function_exported?(&1, :lvn_install_config, 0)))
+    |> Enum.map(fn module ->
+      module
+      |> apply(:lvn_install_config, [])
+      |> Map.put(:mix_task, module)
+    end)
+  end
+
+  defp get_host_project_config(parsed_args) do
+    # Define some paths for the host project
+    current_path = File.cwd!()
+    mix_config_path = Path.join(current_path, "mix.exs")
+    build_path = Path.join(current_path, "_build")
+
+    # Ask the user some questiosn about the native project configuration
+    preferred_route = prompt_config_option("What path should native clients connect to by default?", "/")
+    preferred_prod_url = prompt_config_option("What URL will you use in production?", "example.com")
+
+    %{
+      app_config_path: Path.join(current_path, "/config/config.exs"),
+      app_namespace: parsed_args[:namespace] || infer_app_namespace(mix_config_path),
+      build_path: build_path,
+      current_path: current_path,
+      libs_path: Path.join(build_path, "dev/lib"),
+      mix_config_path: mix_config_path,
+      native_path: Path.join(current_path, "native"),
+      preferred_prod_url: preferred_prod_url,
+      preferred_route: preferred_route
+    }
+  end
+
+  defp prompt_config_option(prompt_message, default_value) do
+    "#{prompt_message} (Leave blank for default: \"#{default_value}\")\n"
+    |> IO.gets()
+    |> String.trim()
+    |> default_if_blank(default_value)
+  end
+
+  defp default_if_blank(value, default_value) do
+    if value == "", do: default_value, else: value
   end
 
   def infer_app_namespace(config_path) do
@@ -139,56 +164,74 @@ defmodule Mix.Tasks.Lvn.Install do
     end
   end
 
-  defp generate_native_exs_if_needed(current_path, platform_names) do
-    platform_names_string = Enum.join(platform_names, ",")
+  defp merge_native_config(mix_tasks) do
+    mix_tasks
+    |> Enum.reduce(%{}, fn %{mix_config: mix_config}, acc ->
+      DeepMerge.deep_merge(acc, mix_config)
+    end)
+  end
+
+  defp generate_native_exs_if_needed(%{current_path: current_path}, %{} = native_config) do
     native_config_path = Path.join(current_path, "/config/native.exs")
+    native_config_already_exists? = File.exists?(native_config_path)
+    generate_native_config? = if native_config_already_exists?, do: Owl.IO.confirm(message: "native.exs already exists, regenerate it?", default: false), else: true
 
-    if File.exists?(native_config_path) do
-      IO.puts("native.exs already exists, skipping...")
-    else
-      status_message("creating", "config/native.exs")
-
-      # Generate native.exs and write it to config path
-      lvn_configuration = native_exs_body(platform_names_string)
-      {:ok, native_config} = File.open(native_config_path, [:write])
-      IO.binwrite(native_config, lvn_configuration)
-      File.close(native_config)
+    if generate_native_config? do
+      Owl.IO.puts([ Owl.Data.tag("* creating ", :green), "config/native.exs"])
+      lvn_configuration = native_exs_body(native_config)
+      File.write(native_config_path, lvn_configuration)
 
       :ok
+    else
+      IO.puts("native.exs already exists, skipping...")
     end
   end
 
-  defp update_config_exs_if_needed(app_config_path) do
+  defp native_exs_body(%{} = native_config) do
+    config_body =
+      native_config
+      |> Enum.map(fn {key, config} ->
+        config_value = inspect(config)
+        config_value_formatted = String.slice(config_value, 1, String.length(config_value) - 2)
+
+        "config :#{key}, #{config_value_formatted}"
+      end)
+      |> Enum.join("\n\n")
+
+    """
+    # This file is responsible for configuring LiveView Native.
+    # It is auto-generated when running `mix lvn.install`.
+    import Config
+
+    #{config_body}
+    """
+  end
+
+  defp update_config_exs_if_needed(%{app_config_path: app_config_path}) do
     # Update project's config.exs to import native.exs if needed.
     import_string = "import_config \"native.exs\""
+    full_import_string = Enum.join(["\n", "# Import LiveView Native configuration", import_string], "\n")
     {:ok, app_config_body} = File.read(app_config_path)
 
     if String.contains?(app_config_body, import_string) do
       IO.puts("config.exs already imports native.exs, skipping...")
     else
-      status_message("updating", "config/config.exs")
+      Owl.IO.puts([ Owl.Data.tag("* updating ", :yellow), "config/config.exs"])
 
       {:ok, app_config} = File.open(app_config_path, [:write])
-      updated_app_config_body = app_config_body <> "\n" <> import_string
+      updated_app_config_body = app_config_body <> "\n" <> full_import_string
 
       IO.binwrite(app_config, updated_app_config_body)
       File.close(app_config)
     end
   end
 
-  defp native_exs_body(platform_names_string) do
-    """
-    # This file is responsible for configuring LiveView Native.
-    # It is auto-generated when running `mix lvn.install`.
-    import Config
-
-    config :live_view_native, plugins: [#{platform_names_string}]
-    """
+  defp format_config_files do
+    System.cmd("mix", ["format", "*.exs"], cd: "config")
   end
 
-  defp status_message(label, message) do
-    formatted_message = IO.ANSI.green() <> "* #{label} " <> IO.ANSI.reset() <> message
-
-    IO.puts(formatted_message)
+  defp clean_build_path(%{build_path: build_path}) do
+    # Clear _build path to ensure it's rebuilt with new Config
+    File.rm_rf(build_path)
   end
 end
