@@ -114,7 +114,7 @@ defmodule LiveViewNative.Layouts do
 
   def persist_class_trees(%{} = layouts, opts) do
     layouts
-    |> Enum.map(fn {func_name, %{class_tree: class_tree}} -> {func_name, class_tree} end)
+    |> Enum.map(&extract_class_tree/1)
     |> LiveViewNative.Templates.persist_class_tree_map(opts.caller.module)
 
     layouts
@@ -148,6 +148,16 @@ defmodule LiveViewNative.Layouts do
   end
 
   defp apply_default_layouts(%{} = layouts, _opts), do: layouts
+
+  defp extract_class_tree({func_name, layout}) do
+    case layout do
+      %{class_tree: class_tree} ->
+        {func_name, class_tree}
+
+      _ ->
+        {func_name, %{}}
+    end
+  end
 
   defp format_excluded?({_, %{platform_id: platform_id}}, %{} = opts) do
     case opts do
