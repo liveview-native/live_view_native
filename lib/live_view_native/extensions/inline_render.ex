@@ -59,7 +59,7 @@ defmodule LiveViewNative.Extensions.InlineRender do
             with_stylesheet_wrapper: unquote(role) != :component
           ]
 
-          expr = LiveViewNative.Templates.precompile(expr, unquote(platform_id), base_opts) |> IO.inspect()
+          expr = LiveViewNative.Templates.precompile(expr, unquote(platform_id), base_opts)
           eex_opts = Keyword.put(base_opts, :source, expr)
 
           EEx.compile_string(expr, eex_opts)
