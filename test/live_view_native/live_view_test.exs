@@ -33,6 +33,9 @@ defmodule LiveViewNative.LiveViewTest do
 
     assert web_result.static == ["<div>Hello from the web</div>"]
 
-    assert test_result.static == ["<compiled-lvn-stylesheet", "><Text>Hello from the test platform</Text>\n</compiled-lvn-stylesheet>"]
+    assert test_result.static == [
+             "<compiled-lvn-stylesheet",
+             "><Text>Hello from the test platform</Text>\n</compiled-lvn-stylesheet>"
+           ]
   end
 end

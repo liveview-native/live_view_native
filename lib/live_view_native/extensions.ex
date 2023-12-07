@@ -12,7 +12,8 @@ defmodule LiveViewNative.Extensions do
     compiled_at = :os.system_time(:nanosecond)
     role = opts[:role]
 
-    quote bind_quoted: [caller: Macro.escape(__CALLER__), compiled_at: compiled_at, role: role], location: :keep do
+    quote bind_quoted: [caller: Macro.escape(__CALLER__), compiled_at: compiled_at, role: role],
+          location: :keep do
       Code.put_compiler_option(:ignore_module_conflict, true)
 
       for {platform_id, platform_context} <- LiveViewNative.platforms() do

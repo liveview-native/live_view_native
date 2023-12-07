@@ -35,7 +35,8 @@ defmodule LiveViewNative.Extensions.InlineRender do
             platform_id: opts[:platform_id],
             stylesheet: opts[:stylesheet],
             role: opts[:role]
-          ], location: :keep do
+          ],
+          location: :keep do
       require EEx
 
       defmacro sigil_LVN({:<<>>, meta, [expr]}, modifiers) do

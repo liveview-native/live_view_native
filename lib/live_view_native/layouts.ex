@@ -6,7 +6,7 @@ defmodule LiveViewNative.Layouts do
     |> extract_layouts_recursive(opts)
     |> List.flatten()
     |> Enum.map(fn layout_params -> {layout_params.render_function, layout_params} end)
-    |> Enum.reject(&(format_excluded?(&1, opts)))
+    |> Enum.reject(&format_excluded?(&1, opts))
     |> Enum.into(%{})
     |> apply_default_layouts(opts)
     |> generate_class_trees(opts)
@@ -26,7 +26,8 @@ defmodule LiveViewNative.Layouts do
   def extract_layouts_recursive({_func, _meta, [_ | _] = nodes}, %{} = opts),
     do: Enum.map(nodes, &extract_layouts_recursive(&1, opts))
 
-  def extract_layouts_recursive([do: {:__block__, [], args}], %{} = opts), do: extract_layouts_recursive(args, opts)
+  def extract_layouts_recursive([do: {:__block__, [], args}], %{} = opts),
+    do: extract_layouts_recursive(args, opts)
 
   def extract_layouts_recursive([_ | _] = nodes, %{} = opts),
     do: Enum.map(nodes, &extract_layouts_recursive(&1, opts))
@@ -48,6 +49,7 @@ defmodule LiveViewNative.Layouts do
       |> Path.rootname()
       |> String.replace(".", "_")
       |> String.to_atom()
+
     is_root_template? = "#{func_name}" == "root_#{platform.platform_id}"
 
     %{
@@ -99,7 +101,9 @@ defmodule LiveViewNative.Layouts do
   end
 
   def generate_class_trees(%{} = layouts, %{} = opts) do
-    Enum.reduce(layouts, layouts, fn {func_name, %{template: template, platform_id: platform_id} = layout}, acc ->
+    Enum.reduce(layouts, layouts, fn {func_name,
+                                      %{template: template, platform_id: platform_id} = layout},
+                                     acc ->
       opts = Map.put(opts, :render_function, {layout.render_function, 1})
 
       case LiveViewNative.Templates.compile_class_tree(template, platform_id, opts) do
@@ -125,7 +129,7 @@ defmodule LiveViewNative.Layouts do
 
   defp apply_default_layouts(%{} = layouts, %{default_layouts: true, platforms: platforms} = opts) do
     platforms
-    |> Enum.reject(&(format_excluded?(&1, opts)))
+    |> Enum.reject(&format_excluded?(&1, opts))
     |> Enum.flat_map(fn {format, %{default_layouts: %{} = default_layouts} = platform} ->
       Enum.map(default_layouts, fn {layout_name, layout_source} ->
         {String.to_atom("#{layout_name}_#{format}"), {layout_source, platform}}
@@ -173,7 +177,8 @@ defmodule LiveViewNative.Layouts do
   defmacro __using__(_opts \\ []) do
     compiled_at = :os.system_time(:nanosecond)
 
-    quote bind_quoted: [caller: Macro.escape(__CALLER__), compiled_at: compiled_at], location: :keep do
+    quote bind_quoted: [caller: Macro.escape(__CALLER__), compiled_at: compiled_at],
+          location: :keep do
       use LiveViewNative.Extensions, role: :layouts
 
       layout_templates =
@@ -201,8 +206,15 @@ defmodule LiveViewNative.Layouts do
             persist_class_tree: false,
             tag_handler: layout_params.tag_handler
           ]
-          LiveViewNative.Templates.compile_class_tree(layout_params.template, layout_params.platform_id, eex_opts)
-          expr = LiveViewNative.Templates.with_stylesheet_wrapper(layout_params.template, render_func)
+
+          LiveViewNative.Templates.compile_class_tree(
+            layout_params.template,
+            layout_params.platform_id,
+            eex_opts
+          )
+
+          expr =
+            LiveViewNative.Templates.with_stylesheet_wrapper(layout_params.template, render_func)
 
           EEx.function_from_string(:def, render_func, expr, [:assigns], eex_opts)
         end)

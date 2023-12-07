@@ -53,18 +53,21 @@ defmodule LiveViewNative.Stylesheets do
         branch
         |> get_class_tree(:default)
         |> expand_class_tree()
+
       acc_class_names = acc_contents.class_names ++ branch_class_tree.contents.class_names
-      acc_class_mappings = Map.merge(acc_contents.class_mappings, branch_class_tree.contents.class_mappings)
+
+      acc_class_mappings =
+        Map.merge(acc_contents.class_mappings, branch_class_tree.contents.class_mappings)
 
       %{
-        acc |
-        branches: acc.branches,
-        contents: %{
-          acc_contents |
-          class_names: acc_class_names,
-          class_mappings: acc_class_mappings
-        },
-        expanded_branches: class_tree.expanded_branches ++ [branch]
+        acc
+        | branches: acc.branches,
+          contents: %{
+            acc_contents
+            | class_names: acc_class_names,
+              class_mappings: acc_class_mappings
+          },
+          expanded_branches: class_tree.expanded_branches ++ [branch]
       }
     end)
   end

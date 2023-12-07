@@ -23,8 +23,7 @@ defmodule LiveViewNative.Templates do
     with %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
          class_names <- extract_all_class_names(doc),
          %{} = class_tree_context <- class_tree_context(platform_id, template_module, eex_opts),
-         %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts)
-    do
+         %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts) do
       if eex_opts[:persist_class_tree], do: persist_class_tree_map(%{default: class_tree}, caller)
 
       {:ok, class_tree}
@@ -51,6 +50,7 @@ defmodule LiveViewNative.Templates do
     incremental_mappings = Map.get(class_tree_context, :class_mappings, %{})
     class_names_for_function = Map.get(incremental_mappings, function_tag, []) ++ class_names
     class_mappings = Enum.uniq(class_names_for_function)
+
     class_names =
       class_mappings
       |> Enum.concat(incremental_class_names)
@@ -67,8 +67,7 @@ defmodule LiveViewNative.Templates do
     filename = class_tree_filename(platform_id, template_module)
 
     with {:ok, body} <- File.read(filename),
-         {:ok, %{} = class_tree} <- Jason.decode(body)
-    do
+         {:ok, %{} = class_tree} <- Jason.decode(body) do
       class_mappings = class_tree["class_mappings"] || %{}
       class_names = Map.values(class_mappings)
 
@@ -88,7 +87,8 @@ defmodule LiveViewNative.Templates do
           meta: %{
             compiled_at: compiled_at,
             filename: filename
-          }}
+          }
+        }
     end
   end
 
@@ -112,15 +112,18 @@ defmodule LiveViewNative.Templates do
     Macro.to_string(
       quote location: :keep do
         defmodule unquote(module_name) do
-          def class_tree(stylesheet_key), do: %{
-            branches: unquote(branches),
-            contents: unquote(class_tree_map)[stylesheet_key],
-            expanded_branches: [unquote(module_name)]
-          } || %{
-            branches: [],
-            contents: %{},
-            expanded_branches: [unquote(module_name)]
-          }
+          def class_tree(stylesheet_key),
+            do:
+              %{
+                branches: unquote(branches),
+                contents: unquote(class_tree_map)[stylesheet_key],
+                expanded_branches: [unquote(module_name)]
+              } ||
+                %{
+                  branches: [],
+                  contents: %{},
+                  expanded_branches: [unquote(module_name)]
+                }
         end
       end
     )

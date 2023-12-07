@@ -13,7 +13,8 @@ defmodule LiveViewNative.Extensions.RenderMacro do
             render_macro: opts[:render_macro],
             platform_id: opts[:platform_id],
             role: opts[:role]
-          ], location: :keep do
+          ],
+          location: :keep do
       defmacro unquote(:"#{render_macro}")({:<<>>, meta, [expr]}, _modifiers) do
         unless Macro.Env.has_var?(__CALLER__, {:assigns, nil}) do
           raise "#{unquote(render_macro)} requires a variable named \"assigns\" to exist and be set to a map"
