@@ -41,17 +41,18 @@ defmodule LiveViewNative.Layouts do
     |> compile_layout(template_path, opts)
   end
 
-  def compile_layout({_format, platform}, template_path, _opts) do
+  def compile_layout({_format, platform}, template_path, opts) do
     func_name =
       template_path
       |> Path.basename()
       |> Path.rootname()
       |> String.replace(".", "_")
       |> String.to_atom()
+    is_root_template? = "#{func_name}" == "root_#{platform.platform_id}"
 
     %{
       class_tree: %{},
-      template: File.read!(template_path),
+      template: layout_template(template_path, is_root_template?),
       eex_engine: platform.eex_engine,
       platform_id: platform.platform_id,
       render_function: func_name,
@@ -61,6 +62,31 @@ defmodule LiveViewNative.Layouts do
   end
 
   def compile_layout(_platform, _template_path, _opts), do: nil
+
+  def layout_template(template_path, is_root_template?) do
+    template_path
+    |> File.read!()
+    |> layout_template_with_live_reload(Mix.env())
+    |> layout_template_with_csrf_token(is_root_template?)
+  end
+
+  def layout_template_with_live_reload(template, :dev) do
+    """
+    #{template}
+    <iframe src="/phoenix/live_reload/frame" />
+    """
+  end
+
+  def layout_template_with_live_reload(template, _mix_env), do: template
+
+  def layout_template_with_csrf_token(template, true) do
+    """
+    #{template}
+    <csrf-token value={get_csrf_token()} />
+    """
+  end
+
+  def layout_template_with_csrf_token(template, _is_root_template?), do: template
 
   def matches_template?({_key, %{} = platform}, filename) do
     case platform.template_extension do
