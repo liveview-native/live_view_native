@@ -3,7 +3,7 @@ defmodule LiveViewNative.TestLiveViewInline do
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{platform_id: :lvntest} = assigns) do
+  def render(%{format: :lvntest} = assigns) do
     ~LVN"""
     <Text>Hello from the test platform</Text>
     """lvntest

@@ -10,12 +10,12 @@ defmodule LiveViewNative.ComponentsTest do
     test_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.TestPlatform{})
 
     web_result =
-      render_component(&TestComponents.test_component/1, platform_id: :web, native: web_context)
+      render_component(&TestComponents.test_component/1, format: :web, native: web_context)
       |> Meeseeks.parse(:html)
 
     test_result =
       render_component(&TestComponents.test_component/1,
-        platform_id: :lvntest,
+        format: :lvntest,
         native: test_context
       )
       |> Meeseeks.parse(:xml)

@@ -39,15 +39,7 @@ defmodule LiveViewNative.Templates do
   end
 
   def with_stylesheet_wrapper(expr, stylesheet_key \\ :default) do
-    """
-    <%= case __compiled_stylesheet__(:#{stylesheet_key}) do %>
-      <% "%{}" -> %>
-        #{expr}
-
-      <% stylesheet -> %>
-        <compiled-lvn-stylesheet body={stylesheet}>#{expr}</compiled-lvn-stylesheet>
-    <% end %>
-    """
+    "<compiled-lvn-stylesheet body={__compiled_stylesheet__(:#{stylesheet_key})}>#{expr}</compiled-lvn-stylesheet>"
   end
 
   ###
