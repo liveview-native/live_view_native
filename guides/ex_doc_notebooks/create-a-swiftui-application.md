@@ -12,9 +12,9 @@ In future lessons, you'll use this iOS application to view iOS examples in the X
 
 ## Prerequisites
 
-First, make sure you have followed the [Getting Started](https://hexdocs.pm/live_view_native/getting-started.html) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server runs properly. You should see the text `Hello from LiveView!`
+First, make sure you have followed the [Getting Started](./getting_started.md) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server runs properly. You should see the text `Hello from LiveView!`
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuICBcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPGRpdj5IZWxsbyBmcm9tIExpdmVWaWV3ITwvZGl2PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,325],[438,45],[485,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuICBcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPHA+SGVsbG8gZnJvbSBMaXZlVmlldyE8L3A+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,321],[434,45],[481,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule MyApp.HomeLive do
@@ -32,7 +32,7 @@ defmodule MyApp.HomeLive do
 
   def render(assigns) do
     ~H"""
-    <div>Hello from LiveView!</div>
+    <p>Hello from LiveView!</p>
     """
   end
 end
@@ -62,7 +62,7 @@ Choose options for your new project that match the following image, then click `
 
 * **Product Name:** The name of the application. This can be any valid name. We've chosen `Guides`.
 * **Organization Identifier:** A reverse DNS string that uniquely identifies your organization. If you don't have a company identifier, [Apple recomends](https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app) using `com.example.your_name` where `your_name` is your organization or personal name.
-* **Interface:**: Xcode generates an interface file that includes all your source code's internal and public declarations when using the Assistant editor, the Related Items, or the Navigate menu. Select `SwiftUI` since we're building a SwiftUI application.
+* **Interface:**: The Xcode user interface to use. Select **SwiftUI** to create an app that uses the SwiftUI app lifecycle.
 * **Language:** Determines which language Xcode should use for the project. Select `Swift`.
 
 
@@ -102,7 +102,7 @@ If the following prompt appears, select `Trust & Enable All` to enable the `live
 
 ![Xcode some build plugins are disabled](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-some-build-plugins-are-disabled.png?raw=true)
 
-## Setup the LiveSessionCoordinator and SwiftUI LiveView
+## Setup the SwiftUI LiveView
 
 The [ContentView](https://developer.apple.com/tutorials/swiftui-concepts/exploring-the-structure-of-a-swiftui-app#Content-view) contains the main view of our iOS application.
 
@@ -115,28 +115,20 @@ import SwiftUI
 import LiveViewNative
 
 struct ContentView: View {
-    @StateObject private var coordinator = LiveSessionCoordinator(
-        {
-            let prodURL = Bundle.main.object(forInfoDictionaryKey: "Phoenix Production URL") as? String
-
-            #if DEBUG
-            return URL(string: "http://localhost:4000")!
-            #else
-            return URL(string: URL || "https://example.com")!
-            #endif
-        }(),
-        config: LiveSessionConfiguration(navigationMode: .replaceOnly)
-    )
-    
     var body: some View {
-        LiveView(session: coordinator)
+        LiveView(.localhost)
     }
+}
+
+// Optionally preview the native UI in Xcode
+#Preview {
+    ContentView()
 }
 ```
 
 <!-- livebook:{"break_markdown":true} -->
 
-The code above sets up a [LiveSessionCoordinator](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/livesessioncoordinator), which is a session coordinator object that handles the initial connection and navigation on the iOS app. The code also renders a SwiftUI [LiveView](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/liveview), which renders the content sent by the Phoenix application on a given URL. By default, we've configured it to connect to any Phoenix app on http://localhost:4000.
+The code above sets up the SwiftUI LiveView. By default, the SwiftUI LiveView connects to any Phoenix app running on http://localhost:4000.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -148,14 +140,12 @@ graph LR;
    direction TB
    ContentView
    SL[SwiftUI LiveView]
-   SC[LiveSessionCoordinator]
   end
   subgraph P[Phoenix App]
     LiveView
   end
-  I --> P
+  SL --> P
   ContentView --> SL
-     ContentView --> SC
 
   
 ```
@@ -176,7 +166,7 @@ Click the `start active scheme` button <i class="ri-play-fill"></i> to build the
 > 
 > * https://developer.apple.com/documentation/xcode/build-system
 
-If you encounter an issue with `LiveViewNativeMacros`, select `Trust & Enable` to resolve the problem.
+If you encounter an issue with `LiveViewNativeMacros`, select `Trust & Enable` to resolve the problem. You may need to click on the error in the Xcode error console to see the prompt.
 
 <!-- livebook:{"break_markdown":true} -->
 

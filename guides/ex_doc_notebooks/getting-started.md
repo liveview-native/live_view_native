@@ -22,6 +22,7 @@ While not necessary for our guides, we also recommend you install the following 
 
 * [Phoenix](https://hexdocs.pm/phoenix/installation.html)
 * [PostgreSQL](https://www.postgresql.org/download/)
+* [LiveView Native VS Code Extension](https://github.com/liveview-native/liveview-native-vscode)
 
 ## Hello World
 
@@ -29,7 +30,7 @@ If you are not already running this guide in Livebook, click on the "Run in Live
 
 Then, you can evaluate the following smart cell and visit http://localhost:4000 to ensure this Livebook works correctly.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0PlxuICAgICAgSGVsbG8gQWdhaW4gZnJvbSBMaXZlVmlldyBOYXRpdmUhXG4gICAgPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8ZGl2IHN0eWxlPVwiY29sb3I6IHJlZDtcIj5IZWxsbyBmcm9tIExpdmVWaWV3ITwvZGl2PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,350],[463,45],[510,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0PlxuICAgICAgSGVsbG8gZnJvbSBMaXZlVmlldyBOYXRpdmUhXG4gICAgPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,320],[433,45],[480,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.HomeLive do
@@ -40,14 +41,14 @@ defmodule Server.HomeLive do
   def render(%{platform_id: :swiftui} = assigns) do
     ~SWIFTUI"""
     <Text>
-      Hello Again from LiveView Native!
+      Hello from LiveView Native!
     </Text>
     """
   end
 
   def render(assigns) do
     ~H"""
-    <div style="color: red;">Hello from LiveView!</div>
+    <p>Hello from LiveView!</p>
     """
   end
 end

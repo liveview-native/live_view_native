@@ -79,7 +79,13 @@ defmodule LiveViewNative.MixProject do
       "guides/common-features/handling-events.md",
       "guides/ex_doc_notebooks/getting-started.md",
       "guides/ex_doc_notebooks/create-a-swiftui-application.md",
-      "guides/ex_doc_notebooks/swiftui-views.md"
+      "guides/ex_doc_notebooks/swiftui-views.md",
+      # "guides/ex_doc_notebooks/swiftui-styling.md"
+      # "guides/ex_doc_notebooks/debugging.md"
+      "guides/ex_doc_notebooks/event-bindings.md"
+      # "guides/ex_doc_notebooks/navigation.md"
+      # "guides/ex_doc_notebooks/forms-and-validation.md"
+      # "guides/ex_doc_notebooks/deployment.md"
     ]
   end
 
@@ -104,7 +110,8 @@ defmodule LiveViewNative.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get"]
+      setup: ["deps.get"],
+      docs: ["create_ex_doc_guides", "docs"]
     ]
   end
 
