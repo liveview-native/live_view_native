@@ -11,12 +11,14 @@ defmodule LiveViewNative.Stylesheets do
   (for example, layout modules), otherwise `:default` should be passed.
   """
   def get_class_tree(class_tree_module, tree_key \\ :default, opts \\ []) do
-    result = apply(class_tree_module, :class_tree, [tree_key])
+    expand = Keyword.get(opts, :expand, true)
 
-    if opts[:expand] do
-      %{result | class_names: expand_class_names(result, [class_tree_module])}
-    else
-      result
+    case apply(class_tree_module, :class_tree, [tree_key]) do
+      result when expand ->
+        expand_class_tree(result)
+
+      result ->
+        result
     end
   end
 
@@ -32,9 +34,7 @@ defmodule LiveViewNative.Stylesheets do
   Compiles all stylesheets for the given class tree and returns them
   as a single map.
   """
-  def reduce_stylesheets(class_tree, stylesheet_modules) do
-    class_names = get_class_names(class_tree)
-
+  def reduce_stylesheets(%{contents: %{class_names: class_names}}, stylesheet_modules) do
     stylesheet_modules
     |> Enum.reduce(%{}, fn stylesheet_module, acc ->
       compiled_stylesheet = apply(stylesheet_module, :compile_ast, [class_names])
@@ -45,22 +45,27 @@ defmodule LiveViewNative.Stylesheets do
 
   ###
 
-  defp expand_class_names(%{branches: branches, class_names: class_names}, ignored_modules) do
+  defp expand_class_tree(%{branches: branches} = class_tree) do
     branches
-    |> Enum.reject(&(&1 in ignored_modules))
-    |> Enum.reduce(class_names, fn branch, acc ->
-      branch_class_names =
+    |> Enum.reject(&(&1 in class_tree.expanded_branches))
+    |> Enum.reduce(class_tree, fn branch, %{contents: %{} = acc_contents} = acc ->
+      branch_class_tree =
         branch
         |> get_class_tree(:default)
-        |> expand_class_names(ignored_modules ++ [branch])
+        |> expand_class_tree()
+      acc_class_names = acc_contents.class_names ++ branch_class_tree.contents.class_names
+      acc_class_mappings = Map.merge(acc_contents.class_mappings, branch_class_tree.contents.class_mappings)
 
-      Map.merge(acc, branch_class_names)
+      %{
+        acc |
+        branches: acc.branches,
+        contents: %{
+          acc_contents |
+          class_names: acc_class_names,
+          class_mappings: acc_class_mappings
+        },
+        expanded_branches: class_tree.expanded_branches ++ [branch]
+      }
     end)
-  end
-
-  defp get_class_names(%{class_names: class_names}) do
-    class_names
-    |> Map.values()
-    |> List.flatten()
   end
 end

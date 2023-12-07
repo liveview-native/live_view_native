@@ -22,7 +22,7 @@ defmodule LiveViewNative.Templates do
 
     with %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
          class_names <- extract_all_class_names(doc),
-         %{} = class_tree_context <- class_tree_context(platform_id, template_module),
+         %{} = class_tree_context <- class_tree_context(platform_id, template_module, eex_opts),
          %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts)
     do
       if eex_opts[:persist_class_tree], do: persist_class_tree_map(%{default: class_tree}, caller)
@@ -54,22 +54,49 @@ defmodule LiveViewNative.Templates do
 
   defp build_class_tree(%{} = class_tree_context, class_names, eex_opts) do
     {func_name, func_arity} = eex_opts[:render_function] || eex_opts[:caller].function
+    function_tag = "#{func_name}/#{func_arity}"
+    incremental_class_names = Map.get(class_tree_context, :class_names, [])
+    incremental_mappings = Map.get(class_tree_context, :class_mappings, %{})
+    class_names_for_function = Map.get(incremental_mappings, function_tag, []) ++ class_names
+    class_mappings = Enum.uniq(class_names_for_function)
+    class_names =
+      class_mappings
+      |> Enum.concat(incremental_class_names)
+      |> Enum.uniq()
 
     class_tree_context
-    |> put_in([:class_tree, "#{func_name}/#{func_arity}"], Enum.uniq(class_names))
+    |> Map.put(:class_names, class_names)
+    |> put_in([:class_mappings, function_tag], class_mappings)
     |> persist_to_class_tree()
   end
 
-  defp class_tree_context(platform_id, template_module) do
+  defp class_tree_context(platform_id, template_module, eex_opts) do
+    compiled_at = eex_opts[:compiled_at]
     filename = class_tree_filename(platform_id, template_module)
 
     with {:ok, body} <- File.read(filename),
          {:ok, %{} = class_tree} <- Jason.decode(body)
     do
-      %{class_tree: class_tree, meta: %{filename: filename}}
+      class_mappings = class_tree["class_mappings"] || %{}
+      class_names = Map.values(class_mappings)
+
+      %{
+        class_mappings: class_mappings,
+        class_names: List.flatten(class_names),
+        meta: %{
+          compiled_at: compiled_at,
+          filename: get_in(class_tree, ["meta", "filename"]) || filename
+        }
+      }
     else
       _ ->
-        %{class_tree: %{}, meta: %{filename: filename}}
+        %{
+          class_mappings: %{},
+          class_names: [],
+          meta: %{
+            compiled_at: compiled_at,
+            filename: filename
+          }}
     end
   end
 
@@ -94,11 +121,13 @@ defmodule LiveViewNative.Templates do
       quote location: :keep do
         defmodule unquote(module_name) do
           def class_tree(stylesheet_key), do: %{
-            class_names: unquote(class_tree_map)[stylesheet_key],
-            branches: unquote(branches)
+            branches: unquote(branches),
+            contents: unquote(class_tree_map)[stylesheet_key],
+            expanded_branches: [unquote(module_name)]
           } || %{
-            class_names: %{},
-            branches: []
+            branches: [],
+            contents: %{},
+            expanded_branches: [unquote(module_name)]
           }
         end
       end
@@ -139,7 +168,7 @@ defmodule LiveViewNative.Templates do
     |> Enum.member?({:__compiled_stylesheet__, 1})
   end
 
-  defp persist_to_class_tree(%{class_tree: %{} = class_tree, meta: %{filename: filename}}) do
+  defp persist_to_class_tree(%{meta: %{filename: filename}} = class_tree) do
     with {:ok, encoded_tree} <- Jason.encode(class_tree),
          dirname <- Path.dirname(filename),
          :ok <- File.mkdir_p(dirname),

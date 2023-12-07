@@ -15,7 +15,7 @@ defmodule LiveViewNative.Extensions.Stylesheets do
 
         unquote(module)
         |> LiveViewNative.Stylesheets.get_class_tree_module()
-        |> LiveViewNative.Stylesheets.get_class_tree(stylesheet_key, expand: true)
+        |> LiveViewNative.Stylesheets.get_class_tree(stylesheet_key)
         |> LiveViewNative.Stylesheets.reduce_stylesheets(stylesheet_modules)
         |> inspect(limit: :infinity, charlists: :as_list, printable_limit: :infinity)
       end

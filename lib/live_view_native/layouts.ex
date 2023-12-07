@@ -171,7 +171,9 @@ defmodule LiveViewNative.Layouts do
   end
 
   defmacro __using__(_opts \\ []) do
-    quote bind_quoted: [caller: Macro.escape(__CALLER__)], location: :keep do
+    compiled_at = :os.system_time(:nanosecond)
+
+    quote bind_quoted: [caller: Macro.escape(__CALLER__), compiled_at: compiled_at], location: :keep do
       use LiveViewNative.Extensions, role: :layouts
 
       layout_templates =
@@ -191,6 +193,7 @@ defmodule LiveViewNative.Layouts do
 
           eex_opts = [
             caller: caller,
+            compiled_at: compiled_at,
             engine: layout_params.eex_engine,
             file: __ENV__.file,
             render_function: {render_func, 1},

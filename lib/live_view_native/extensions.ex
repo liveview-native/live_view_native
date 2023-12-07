@@ -9,9 +9,10 @@ defmodule LiveViewNative.Extensions do
   respectively.
   """
   defmacro __using__(opts) do
+    compiled_at = :os.system_time(:nanosecond)
     role = opts[:role]
 
-    quote bind_quoted: [caller: Macro.escape(__CALLER__), role: role], location: :keep do
+    quote bind_quoted: [caller: Macro.escape(__CALLER__), compiled_at: compiled_at, role: role], location: :keep do
       Code.put_compiler_option(:ignore_module_conflict, true)
 
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
@@ -43,10 +44,12 @@ defmodule LiveViewNative.Extensions do
 
         if is_nil(platform_context.render_macro) do
           use LiveViewNative.Extensions.InlineRender,
+            compiled_at: compiled_at,
             platform_id: platform_id,
             role: role
         else
           use LiveViewNative.Extensions.RenderMacro,
+            compiled_at: compiled_at,
             platform_id: platform_id,
             render_macro: platform_context.render_macro,
             role: role
