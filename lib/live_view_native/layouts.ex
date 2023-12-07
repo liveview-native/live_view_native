@@ -41,7 +41,7 @@ defmodule LiveViewNative.Layouts do
     |> compile_layout(template_path, opts)
   end
 
-  def compile_layout({_format, platform}, template_path, opts) do
+  def compile_layout({_format, platform}, template_path, _opts) do
     func_name =
       template_path
       |> Path.basename()
@@ -104,7 +104,8 @@ defmodule LiveViewNative.Layouts do
 
       case LiveViewNative.Templates.compile_class_tree(template, platform_id, opts) do
         {:ok, %{} = class_tree} ->
-          Map.put(acc, func_name, %{layout | class_tree: class_tree})
+          updated_layout = Map.put(layout, :class_tree, class_tree)
+          Map.put(acc, func_name, updated_layout)
 
         _ ->
           acc
@@ -115,7 +116,7 @@ defmodule LiveViewNative.Layouts do
   def persist_class_trees(%{} = layouts, opts) do
     layouts
     |> Enum.map(&extract_class_tree/1)
-    |> LiveViewNative.Templates.persist_class_tree_map(opts.caller.module)
+    |> LiveViewNative.Templates.persist_class_tree_map(opts.caller)
 
     layouts
   end

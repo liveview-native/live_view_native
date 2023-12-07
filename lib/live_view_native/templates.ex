@@ -17,14 +17,15 @@ defmodule LiveViewNative.Templates do
   end
 
   def compile_class_tree(expr, platform_id, eex_opts) do
-    %Macro.Env{module: template_module} = eex_opts[:caller]
+    caller = eex_opts[:caller]
+    %Macro.Env{module: template_module} = caller
 
     with %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
-         [_ | _] = class_names <- extract_all_class_names(doc),
+         class_names <- extract_all_class_names(doc),
          %{} = class_tree_context <- class_tree_context(platform_id, template_module),
          %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts)
     do
-      if eex_opts[:persist_class_tree], do: persist_class_tree_map(%{default: class_tree}, template_module)
+      if eex_opts[:persist_class_tree], do: persist_class_tree_map(%{default: class_tree}, caller)
 
       {:ok, class_tree}
     else
@@ -33,8 +34,8 @@ defmodule LiveViewNative.Templates do
     end
   end
 
-  def persist_class_tree_map(class_tree_map, template_module) do
-    dump_class_tree_bytecode(class_tree_map, template_module)
+  def persist_class_tree_map(class_tree_map, caller) do
+    dump_class_tree_bytecode(class_tree_map, caller)
   end
 
   def with_stylesheet_wrapper(expr, stylesheet_key \\ :default) do
@@ -76,24 +77,42 @@ defmodule LiveViewNative.Templates do
     "#{:code.lib_dir(:live_view_native)}/.lvn/#{platform_id}/#{template_module}.classtree.json"
   end
 
-  defp dump_class_tree_bytecode(class_tree_map, template_module) do
+  defp dump_class_tree_bytecode(class_tree_map, caller) do
     class_tree_map
-    |> generate_class_tree_module(template_module)
+    |> generate_class_tree_module(caller)
     |> Code.compile_string()
 
     :ok
   end
 
-  defp generate_class_tree_module(class_tree_map, template_module) do
-    module_name = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
+  defp generate_class_tree_module(class_tree_map, caller) do
+    %Macro.Env{module: template_module, requires: requires} = caller
+    module_name = generate_class_tree_module_name(template_module)
+    branches = get_class_tree_branches(requires)
 
     Macro.to_string(
       quote location: :keep do
         defmodule unquote(module_name) do
-          def class_tree(stylesheet_key), do: unquote(class_tree_map)[stylesheet_key] || %{}
+          def class_tree(stylesheet_key), do: %{
+            class_names: unquote(class_tree_map)[stylesheet_key],
+            branches: unquote(branches)
+          } || %{
+            class_names: %{},
+            branches: []
+          }
         end
       end
     )
+  end
+
+  defp generate_class_tree_module_name(module) do
+    Module.concat([LiveViewNative, Internal, ClassTree, module])
+  end
+
+  defp get_class_tree_branches(requires) do
+    requires
+    |> Enum.filter(&module_has_stylesheet?/1)
+    |> Enum.map(&generate_class_tree_module_name/1)
   end
 
   defp extract_all_class_names(doc) do
@@ -112,6 +131,12 @@ defmodule LiveViewNative.Templates do
       _ ->
         []
     end
+  end
+
+  defp module_has_stylesheet?(module) do
+    :functions
+    |> module.__info__()
+    |> Enum.member?({:__compiled_stylesheet__, 1})
   end
 
   defp persist_to_class_tree(%{class_tree: %{} = class_tree, meta: %{filename: filename}}) do

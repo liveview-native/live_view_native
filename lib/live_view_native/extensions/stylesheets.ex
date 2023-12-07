@@ -11,22 +11,12 @@ defmodule LiveViewNative.Extensions.Stylesheets do
 
     quote bind_quoted: [module: module], location: :keep do
       def __compiled_stylesheet__(stylesheet_key) do
-        class_tree_module =
-          Module.safe_concat([LiveViewNative, Internal, ClassTree, unquote(module)])
+        stylesheet_modules = __stylesheet_modules__()
 
-        class_tree = apply(class_tree_module, :class_tree, [stylesheet_key])
-
-        class_names =
-          class_tree
-          |> Map.values()
-          |> List.flatten()
-
-        __stylesheet_modules__()
-        |> Enum.reduce(%{}, fn stylesheet_module, acc ->
-          compiled_stylesheet = apply(stylesheet_module, :compile_ast, [class_names])
-
-          Map.merge(acc, compiled_stylesheet)
-        end)
+        unquote(module)
+        |> LiveViewNative.Stylesheets.get_class_tree_module()
+        |> LiveViewNative.Stylesheets.get_class_tree(stylesheet_key, expand: true)
+        |> LiveViewNative.Stylesheets.reduce_stylesheets(stylesheet_modules)
         |> inspect(limit: :infinity, charlists: :as_list, printable_limit: :infinity)
       end
 
