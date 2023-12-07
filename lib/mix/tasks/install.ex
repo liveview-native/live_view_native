@@ -106,6 +106,7 @@ defmodule Mix.Tasks.Lvn.Install do
     # Ask the user some questiosn about the native project configuration
     preferred_route = prompt_config_option("What path should native clients connect to by default?", "/")
     preferred_prod_url = prompt_config_option("What URL will you use in production?", "example.com")
+    preferred_route = if String.starts_with?(preferred_route, "/"), do: preferred_route, else: "/#{preferred_route}"
 
     %{
       app_config_path: Path.join(current_path, "/config/config.exs"),
