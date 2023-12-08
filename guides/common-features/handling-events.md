@@ -18,7 +18,7 @@ basic example of sharing a `handle_event/3` callback in this way:
 # hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def mount(_params, _session, socket) do

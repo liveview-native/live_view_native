@@ -19,7 +19,7 @@ First create a new LiveView somewhere in your app that inherits `LiveViewNative.
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{} = assigns) do
@@ -75,7 +75,7 @@ with the `:live_view_native_swift_ui` dependency, which covers iOS, iPadOS and m
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{format: :swiftui} = assigns) do

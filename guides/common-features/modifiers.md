@@ -22,7 +22,7 @@ Here's a simple example of calling modifier functions inline for elements with t
 ```elixir
 defmodule MyAppWeb.ModifiersExampleLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{format: :swiftui} = assigns) do
@@ -78,7 +78,7 @@ Here's the previous example, adjusted to use modifier classes defined in a separ
 ```elixir
 defmodule MyAppWeb.ModifiersExampleLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   import MyAppWeb.Modclasses, only: [modclass: 3]
 
@@ -143,7 +143,7 @@ An element can have any number of modifier classes, providing some composability
 ```elixir
 defmodule MyAppWeb.ModifiersExampleLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   import MyAppWeb.Modclasses, only: [modclass: 3]
 

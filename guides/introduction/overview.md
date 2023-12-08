@@ -10,7 +10,7 @@ LiveView Native is a framework for building native applications using Elixir and
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{format: :swiftui} = assigns) do

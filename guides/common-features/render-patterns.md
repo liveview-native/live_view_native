@@ -12,7 +12,7 @@ Each function clause matches on the `:format`, allowing each platform to define 
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{format: :swiftui} = assigns) do
@@ -85,7 +85,7 @@ template files are namespaced according to their `:format`:
 ```elixir
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{} = assigns) do
