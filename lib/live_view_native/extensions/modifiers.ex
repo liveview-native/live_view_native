@@ -100,7 +100,8 @@ defmodule LiveViewNative.Extensions.Modifiers do
             modifiers_struct: opts[:modifiers_struct],
             platform_modifiers: opts[:platform_modifiers],
             platform_module: opts[:platform_module]
-          ], location: :keep do
+          ],
+          location: :keep do
       all_modifiers = Keyword.merge(platform_modifiers, custom_modifiers)
 
       if is_nil(platform_module) do

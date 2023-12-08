@@ -2,18 +2,18 @@ defmodule LiveViewNative.TestComponents do
   use Phoenix.Component
   use LiveViewNative.Component
 
-  attr :platform_id, :atom
+  attr :format, :atom
 
-  def test_component(%{platform_id: :lvntest} = assigns) do
+  def test_component(%{format: :lvntest} = assigns) do
     ~LVN"""
     <Container>
-      <.local_component_example platform_id={:lvntest} />
-      <LiveViewNative.TestComponents.remote_component_example platform_id={:lvntest} />
-      <.imported_component_example platform_id={:lvntest} />
-      <.component_with_inner_block_example platform_id={:lvntest}>
+      <.local_component_example format={:lvntest} />
+      <LiveViewNative.TestComponents.remote_component_example format={:lvntest} />
+      <.imported_component_example format={:lvntest} />
+      <.component_with_inner_block_example format={:lvntest}>
         <Text id="inner-block-test">Inner Block Rendered</Text>
       </.component_with_inner_block_example>
-      <.component_with_slot_example platform_id={:lvntest}>
+      <.component_with_slot_example format={:lvntest}>
       <:item>
         <Text id="slot-test">Slot Rendered</Text>
       </:item>
@@ -28,34 +28,34 @@ defmodule LiveViewNative.TestComponents do
     """
   end
 
-  attr :platform_id, :atom
+  attr :format, :atom
 
-  def local_component_example(%{platform_id: :lvntest} = assigns) do
+  def local_component_example(%{format: :lvntest} = assigns) do
     ~LVN"""
     <Text id="local-component-test">Local Component Rendered</Text>
     """lvntest
   end
 
-  attr :platform_id, :atom
+  attr :format, :atom
 
-  def remote_component_example(%{platform_id: :lvntest} = assigns) do
+  def remote_component_example(%{format: :lvntest} = assigns) do
     ~LVN"""
     <Text id="remote-component-test">Remote Component Rendered</Text>
     """lvntest
   end
 
-  attr :platform_id, :atom
+  attr :format, :atom
 
-  def imported_component_example(%{platform_id: :lvntest} = assigns) do
+  def imported_component_example(%{format: :lvntest} = assigns) do
     ~LVN"""
     <Text id="imported-component-test">Imported Component Rendered</Text>
     """lvntest
   end
 
-  attr :platform_id, :atom
+  attr :format, :atom
   slot :inner_block
 
-  def component_with_inner_block_example(%{platform_id: :lvntest} = assigns) do
+  def component_with_inner_block_example(%{format: :lvntest} = assigns) do
     ~LVN"""
     <Container id="component-with-inner-block-test">
       <Text id="content">Component With Inner Block Rendered</Text>
@@ -64,10 +64,10 @@ defmodule LiveViewNative.TestComponents do
     """lvntest
   end
 
-  attr :platform_id, :atom
+  attr :format, :atom
   slot :item
 
-  def component_with_slot_example(%{platform_id: :lvntest} = assigns) do
+  def component_with_slot_example(%{format: :lvntest} = assigns) do
     ~LVN"""
     <Container id="component-with-slot-test">
       <Text id="content">Component With Slot Rendered</Text>

@@ -17,14 +17,14 @@ defmodule LiveViewNative.Templates do
   end
 
   def compile_class_tree(expr, platform_id, eex_opts) do
-    %Macro.Env{module: template_module} = eex_opts[:caller]
+    caller = eex_opts[:caller]
+    %Macro.Env{module: template_module} = caller
 
     with %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
-         [_ | _] = class_names <- extract_all_class_names(doc),
-         %{} = class_tree_context <- class_tree_context(platform_id, template_module),
-         %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts)
-    do
-      if eex_opts[:persist_class_tree], do: persist_class_tree_map(%{default: class_tree}, template_module)
+         class_names <- extract_all_class_names(doc),
+         %{} = class_tree_context <- class_tree_context(platform_id, template_module, eex_opts),
+         %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts) do
+      if eex_opts[:persist_class_tree], do: persist_class_tree_map(%{default: class_tree}, caller)
 
       {:ok, class_tree}
     else
@@ -33,34 +33,62 @@ defmodule LiveViewNative.Templates do
     end
   end
 
-  def persist_class_tree_map(class_tree_map, template_module) do
-    dump_class_tree_bytecode(class_tree_map, template_module)
+  def persist_class_tree_map(class_tree_map, caller) do
+    dump_class_tree_bytecode(class_tree_map, caller)
   end
 
   def with_stylesheet_wrapper(expr, stylesheet_key \\ :default) do
-    "<compiled-lvn-stylesheet body={__compiled_stylesheet__(:#{stylesheet_key})}>\n" <> expr <> "\n</compiled-lvn-stylesheet>"
+    "<compiled-lvn-stylesheet body={__compiled_stylesheet__(:#{stylesheet_key})}>#{expr}</compiled-lvn-stylesheet>"
   end
 
   ###
 
   defp build_class_tree(%{} = class_tree_context, class_names, eex_opts) do
     {func_name, func_arity} = eex_opts[:render_function] || eex_opts[:caller].function
+    function_tag = "#{func_name}/#{func_arity}"
+    incremental_class_names = Map.get(class_tree_context, :class_names, [])
+    incremental_mappings = Map.get(class_tree_context, :class_mappings, %{})
+    class_names_for_function = Map.get(incremental_mappings, function_tag, []) ++ class_names
+    class_mappings = Enum.uniq(class_names_for_function)
+
+    class_names =
+      class_mappings
+      |> Enum.concat(incremental_class_names)
+      |> Enum.uniq()
 
     class_tree_context
-    |> put_in([:class_tree, "#{func_name}/#{func_arity}"], Enum.uniq(class_names))
+    |> Map.put(:class_names, class_names)
+    |> put_in([:class_mappings, function_tag], class_mappings)
     |> persist_to_class_tree()
   end
 
-  defp class_tree_context(platform_id, template_module) do
+  defp class_tree_context(platform_id, template_module, eex_opts) do
+    compiled_at = eex_opts[:compiled_at]
     filename = class_tree_filename(platform_id, template_module)
 
     with {:ok, body} <- File.read(filename),
-         {:ok, %{} = class_tree} <- Jason.decode(body)
-    do
-      %{class_tree: class_tree, meta: %{filename: filename}}
+         {:ok, %{} = class_tree} <- Jason.decode(body) do
+      class_mappings = class_tree["class_mappings"] || %{}
+      class_names = Map.values(class_mappings)
+
+      %{
+        class_mappings: class_mappings,
+        class_names: List.flatten(class_names),
+        meta: %{
+          compiled_at: compiled_at,
+          filename: get_in(class_tree, ["meta", "filename"]) || filename
+        }
+      }
     else
       _ ->
-        %{class_tree: %{}, meta: %{filename: filename}}
+        %{
+          class_mappings: %{},
+          class_names: [],
+          meta: %{
+            compiled_at: compiled_at,
+            filename: filename
+          }
+        }
     end
   end
 
@@ -68,24 +96,47 @@ defmodule LiveViewNative.Templates do
     "#{:code.lib_dir(:live_view_native)}/.lvn/#{platform_id}/#{template_module}.classtree.json"
   end
 
-  defp dump_class_tree_bytecode(class_tree_map, template_module) do
+  defp dump_class_tree_bytecode(class_tree_map, caller) do
     class_tree_map
-    |> generate_class_tree_module(template_module)
+    |> generate_class_tree_module(caller)
     |> Code.compile_string()
 
     :ok
   end
 
-  defp generate_class_tree_module(class_tree_map, template_module) do
-    module_name = Module.concat([LiveViewNative, Internal, ClassTree, template_module])
+  defp generate_class_tree_module(class_tree_map, caller) do
+    %Macro.Env{module: template_module, requires: requires} = caller
+    module_name = generate_class_tree_module_name(template_module)
+    branches = get_class_tree_branches(requires)
 
     Macro.to_string(
       quote location: :keep do
         defmodule unquote(module_name) do
-          def class_tree(stylesheet_key), do: unquote(class_tree_map)[stylesheet_key] || %{}
+          def class_tree(stylesheet_key),
+            do:
+              %{
+                branches: unquote(branches),
+                contents: unquote(class_tree_map)[stylesheet_key],
+                expanded_branches: [unquote(module_name)]
+              } ||
+                %{
+                  branches: [],
+                  contents: %{},
+                  expanded_branches: [unquote(module_name)]
+                }
         end
       end
     )
+  end
+
+  defp generate_class_tree_module_name(module) do
+    Module.concat([LiveViewNative, Internal, ClassTree, module])
+  end
+
+  defp get_class_tree_branches(requires) do
+    requires
+    |> Enum.filter(&module_has_stylesheet?/1)
+    |> Enum.map(&generate_class_tree_module_name/1)
   end
 
   defp extract_all_class_names(doc) do
@@ -106,7 +157,13 @@ defmodule LiveViewNative.Templates do
     end
   end
 
-  defp persist_to_class_tree(%{class_tree: %{} = class_tree, meta: %{filename: filename}}) do
+  defp module_has_stylesheet?(module) do
+    :functions
+    |> module.__info__()
+    |> Enum.member?({:__compiled_stylesheet__, 1})
+  end
+
+  defp persist_to_class_tree(%{meta: %{filename: filename}} = class_tree) do
     with {:ok, encoded_tree} <- Jason.encode(class_tree),
          dirname <- Path.dirname(filename),
          :ok <- File.mkdir_p(dirname),

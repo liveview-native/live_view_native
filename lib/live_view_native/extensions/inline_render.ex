@@ -31,10 +31,12 @@ defmodule LiveViewNative.Extensions.InlineRender do
   """
   defmacro __using__(opts \\ []) do
     quote bind_quoted: [
+            compiled_at: opts[:compiled_at],
             platform_id: opts[:platform_id],
             stylesheet: opts[:stylesheet],
             role: opts[:role]
-          ], location: :keep do
+          ],
+          location: :keep do
       require EEx
 
       defmacro sigil_LVN({:<<>>, meta, [expr]}, modifiers) do
@@ -47,6 +49,7 @@ defmodule LiveViewNative.Extensions.InlineRender do
              platform_module <- Module.concat(__ENV__.module, context.template_namespace) do
           base_opts = [
             caller: __CALLER__,
+            compiled_at: unquote(compiled_at),
             engine: Phoenix.LiveView.TagEngine,
             file: __CALLER__.file,
             indentation: meta[:indentation] || 0,
