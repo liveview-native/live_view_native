@@ -15,7 +15,7 @@ defmodule LiveViewNative.Extensions.InlineRender do
     @impl true
     def render(%{platform_id: :swiftui} = assigns) do
       ~LVN\"\"\"
-      <Text modifiers={@native |> foreground_style(primary: {:color, :mint})}>
+      <Text class="color-mint">
         Hello from iOS!
       </Text>
       \"\"\"swiftui
