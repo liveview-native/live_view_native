@@ -1,67 +1,144 @@
 # Overview
 
-LiveView Native is a framework for building native applications using Elixir and Phoenix LiveView. It allows a single application to serve a multitude of clients by transforming platform-specific template code into native user interfaces. Here's a basic example that serves web, iOS, iPadOS and macOS clients natively:
+LiveView Native is a framework for building native applications using Elixir and Phoenix LiveView.
+It upgrades your existing Phoenix project with the ability to write truly native user interfaces that
+run on devices and platforms beyond the web.
+
+Here's an example of a simple LiveView that renders both HTML and native SwiftUI views:
 
 <!-- tabs-open -->
 
-### Source
+### hello_live.ex
 
 ```elixir
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
+  use MyAppWeb.HelloStyles
 
   @impl true
   def render(%{format: :swiftui} = assigns) do
-    # This UI renders on the iPhone / iPad app
+    # This render function serves native SwiftUI views
+    # It uses the `~SWIFTUI` sigil instead of `~H`
     ~SWIFTUI"""
-    <VStack>
-      <Text>
-        Hello native!
-      </Text>
+    <VStack spacing={8}>
+      <Button phx-click="hello">
+        <Image class="fg-color-purple font-size-48 p-8" system-name="sparkles"></Image>
+      </Button>
+      <VStack spacing={4}>
+        Hello world on <Text class="bold"><%= device_name(assigns) %></Text>!
+      </VStack>
     </VStack>
     """
   end
 
   @impl true
   def render(%{} = assigns) do
-    # This UI renders on the web
+    # This render function serves HTML
     ~H"""
     <div class="flex w-full h-screen items-center">
-      <span class="w-full text-center">
-        Hello web!
-      </span>
+      <ul class="w-full text-center">
+        <li>
+          <button phx-click="hello">
+            <.icon name="hero-sparkles-solid" class="text-purple-500 w-24 h-24 m-4" />
+          </button>
+        </li>
+        <li>Hello world on <span class="font-bold"><%= device_name(assigns) %></span>!</li>
+      </ul>
     </div>
     """
   end
+
+  @impl true
+  def handle_event("hello", _params, socket) do
+    # This event handler can be shared across all platforms
+    IO.puts "Hello world!"
+
+    {:noreply, socket}
+  end
+
+  ###
+
+  # This function can be called from both HTML and SwiftUI templates
+  # The native device type is available as the `@target` assign
+  defp device_name(%{target: :phone}), do: "iOS"
+  defp device_name(%{target: :pad}), do: "iPadOS"
+  defp device_name(%{target: :mac}), do: "macOS"
+  defp device_name(%{target: :watch}), do: "watchOS"
+  defp device_name(_), do: "the web"
 end
 ```
 
-### iOS
+### hello_styles.ex
 
-![Hello World - iOS](./assets/images/hello-iphone.png)
+```elixir
+# lib/my_app_web/live/hello_styles.ex
+defmodule MyAppWeb.HelloStyles do
+  use LiveViewNative.Stylesheet, :swiftui
 
-### iPadOS
-![Hello World - iPadOS](./assets/images/hello-ipad.png)
+  ~SHEET"""
+  "bold" do
+    fontWeight(.bold)
+  end
 
-### macOS
+  "fg-color-" <> color do
+    foregroundStyle(to_ime(color))
+  end
+
+  "font-size-" <> font_size do
+    font(system(size: to_integer(font_size)))
+  end
+
+  "p-" <> padding do
+    padding(to_integer(padding))
+  end
+  """
+
+  def class(_other, _), do: {:unmatched, ""}
+end
+```
+
+<!-- tabs-close -->
+
+This code serves users whether they're using a web browser or native app running on an iPhone,
+iPad, macOS desktop or Apple Watch. Each platform renders its own native widgets and UI elements,
+allowing state, event callbacks and business logic to be shared.
+
+<!-- tabs-open -->
+
+### iPhone
+
+![Hello World - iPhone](./assets/images/hello-iphone.png)
+
+### iPad
+![Hello World - iPad](./assets/images/hello-ipad.png)
+
+###  Watch
+![Hello World - macOS](./assets/images/hello-watch.png)
+
+### Desktop (macOS)
 ![Hello World - macOS](./assets/images/hello-mac.png)
 
-### Web
+### Desktop (Web)
 ![Hello World - Web](./assets/images/hello-web.png)
 
 <!-- tabs-close -->
 
-By using LiveView Native in an existing Phoenix project, developers are able to deliver rich, real-time UIs for a multitude of web and non-web clients generated entirely by the server. Live sessions, state, event callbacks and glue code can be shared across all target platforms, with each platform having its own custom-tailored template or function component.
-
-LiveView Native officially supports using LiveView for the following native clients:
+The following native platforms are officially supported, and support for other platforms
+can be provided by third-party platform libraries.
 
 - iOS 16+
 - macOS 13+
 - watchOS 9+
 - Android
 
-LiveView Native requires some foundational knowledge to use. You should already be familiar with [Elixir](https://elixir-lang.org/), the [Phoenix Framework](https://www.phoenixframework.org/) and [Phoenix LiveView](https://github.com/phoenixframework/phoenix_live_view). If you're looking to learn more about any of these subjects, there are a lot of great resources available. Some recommended materials include the [Elixir guides](https://elixir-lang.org/getting-started/introduction.html), [Elixir learning resources page](https://elixir-lang.org/learning.html), [Phoenix guides](https://hexdocs.pm/phoenix/overview.html), [Phoenix community page](https://hexdocs.pm/phoenix/community.html) and the [Phoenix LiveView HexDocs](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html). 
+LiveView Native requires some foundational knowledge to use. You should already be familiar with
+[Elixir](https://elixir-lang.org/), the [Phoenix Framework](https://www.phoenixframework.org/) and
+[Phoenix LiveView](https://github.com/phoenixframework/phoenix_live_view). If you're looking to learn
+more about any of these subjects, there are a lot of great resources available. Some recommended
+materials include the [Elixir guides](https://elixir-lang.org/getting-started/introduction.html),
+[Elixir learning resources page](https://elixir-lang.org/learning.html), [Phoenix guides](https://hexdocs.pm/phoenix/overview.html),
+[Phoenix community page](https://hexdocs.pm/phoenix/community.html) and the [Phoenix LiveView HexDocs](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html). 
 
 With those prerequisites out of the way, [let's get LiveView Native installed](./installation.md)!

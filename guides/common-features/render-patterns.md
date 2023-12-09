@@ -12,7 +12,7 @@ Each function clause matches on the `:format`, allowing each platform to define 
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{format: :swiftui} = assigns) do
@@ -50,8 +50,6 @@ defmodule MyAppWeb.SharedComponents do
   use Phoenix.Component
   use LiveViewNative.Component
 
-  import ElixirconfChatWeb.Modclasses.SwiftUi, only: [modclass: 3]
-
   def logo(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
     <VStack>
@@ -85,7 +83,7 @@ template files are namespaced according to their `:format`:
 ```elixir
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{} = assigns) do
@@ -106,7 +104,7 @@ end
 ### hello_live.swiftui.heex
 ```heex
 <VStack id="template-ios">
-  <HStack modifiers={padding(5)}>
+  <HStack class="p-5">
     <Text>A SwiftUI template, courtesy of hello_live.swiftui.heex</Text>
   </HStack>
 </VStack>
@@ -125,19 +123,17 @@ defmodule MyAppWeb.SharedComponents do
   use Phoenix.Component
   use LiveViewNative.Component
 
-  import ElixirconfChatWeb.Modclasses.SwiftUi, only: [modclass: 3]
-
   def logo(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
     <VStack>
-      <%= case @native.platform_config.user_interface_idiom do %>
-        <% "mac" -> %>
+      <%= case @target do %>
+        <% :mac -> %>
           <Text>Hello macOS!</Text>
-        <% "pad" -> %>
+        <% :pad -> %>
           <Text>Hello iPadOS!</Text>
-        <% "watch" -> %>
+        <% :watch -> %>
           <Text>Hello watchOS!</Text>
-        <% "tv" -> %>
+        <% :tv -> %>
           <Text>Hello tvOS!</Text>
         <% _ -> %>
           <Text>Hello iOS!</Text>

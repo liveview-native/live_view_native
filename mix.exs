@@ -76,7 +76,6 @@ defmodule LiveViewNative.MixProject do
       "guides/introduction/your-first-native-liveview.md",
       "guides/introduction/troubleshooting.md",
       "guides/common-features/template-syntax.md",
-      "guides/common-features/modifiers.md",
       "guides/common-features/render-patterns.md",
       "guides/common-features/handling-events.md"
     ]
