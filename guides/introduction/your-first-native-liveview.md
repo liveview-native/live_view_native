@@ -69,7 +69,7 @@ platform you want to support. This is done by extending LiveView's standard `ren
 Each platform will have its own custom `:format`, render sigil and HEEx syntax, which are
 all pulled in by the `LiveViewNative.LiveView` macro inherited toward the top of your LiveView.
 The following example demonstrates handling the `:swiftui` platform for LiveView Native apps
-with the `:live_view_native_swift_ui` dependency, which covers iOS, iPadOS and macOS support:
+with the `:live_view_native_swiftui` dependency, which covers iOS, iPadOS and macOS support:
 
 ```elixir
 # lib/my_app_web/live/hello_live.ex
@@ -133,7 +133,7 @@ are some recommended resources for the SwiftUI and Jetpack platforms:
 
 Covers iOS 16+, macOS 13+ and watchOS 9+.
 
-- [Platform library HexDocs](https://hexdocs.pm/live_view_native_swift_ui/)
+- [Platform library HexDocs](https://hexdocs.pm/live_view_native_swiftui/)
 - [Swift library docs](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/)
 - [SwiftUI docs](https://developer.apple.com/documentation/swiftui/)
 - [SwiftUI tutorials](https://developer.apple.com/tutorials/swiftui)

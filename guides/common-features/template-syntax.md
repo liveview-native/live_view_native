@@ -90,7 +90,7 @@ your app to support.
 
 Covers iOS 16+, macOS 13+ and watchOS 9+.
 
-- [Platform library HexDocs](https://hexdocs.pm/live_view_native_swift_ui/)
+- [Platform library HexDocs](https://hexdocs.pm/live_view_native_swiftui/)
 - [Swift library docs](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/)
 - [SwiftUI docs](https://developer.apple.com/documentation/swiftui/)
 - [SwiftUI tutorials](https://developer.apple.com/tutorials/swiftui)

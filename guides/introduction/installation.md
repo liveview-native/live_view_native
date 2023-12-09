@@ -55,7 +55,7 @@ end
 
 The `:live_view_native` dependency isn't useful on its own. You'll also need to add any _platform libraries_ you want your project to be compatible with. These libraries provide the platform-specific code that allows them to connect to your app and render LiveViews within their native environments.
 
-This guide covers installation for the officially supported platforms, [SwiftUI](https://hexdocs.pm/live_view_native_swift_ui) (iOS, macOS and watchOS) and [Jetpack](https://hexdocs.pm/live_view_native_jetpack) (Android).
+This guide covers installation for the officially supported platforms, [SwiftUI](https://hexdocs.pm/live_view_native_swiftui) (iOS, macOS and watchOS) and [Jetpack](https://hexdocs.pm/live_view_native_jetpack) (Android).
 
 <!-- tabs-open -->
 
@@ -66,7 +66,7 @@ Adds compatibility for iOS 16+, macOS 13+ and watchOS 9+.
 def deps do
   [
     # other dependencies here...
-    {:live_view_native_swift_ui, "~> 0.2"}
+    {:live_view_native_swiftui, "~> 0.2"}
   ]
 end
 ```

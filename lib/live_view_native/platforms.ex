@@ -1,10 +1,6 @@
 defmodule LiveViewNative.Platforms do
   @moduledoc false
 
-  @type env_platforms_map() :: %{
-          String.t() => %LiveViewNativePlatform.Env{}
-        }
-
   @default_platforms [LiveViewNative.Platforms.HTML]
 
   @env_platforms :live_view_native
