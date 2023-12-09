@@ -3,7 +3,12 @@ defmodule LiveViewNative.ComponentsTest do
 
   import Phoenix.LiveViewTest
   alias LiveViewNative.TestComponents
-  import Meeseeks.CSS
+
+  defp one(fragment, selector) do
+    [element | tail] = Floki.find(fragment, selector)
+
+    element
+  end
 
   test "test_component/1 renders as expected" do
     html_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.HTML{})
@@ -11,43 +16,43 @@ defmodule LiveViewNative.ComponentsTest do
 
     html_result =
       render_component(&TestComponents.test_component/1, format: :html, native: html_context)
-      |> Meeseeks.parse(:html)
+      |> Floki.parse_document!()
 
     test_result =
       render_component(&TestComponents.test_component/1,
         format: :lvntest,
         native: test_context
       )
-      |> Meeseeks.parse(:xml)
+      |> Floki.parse_document!()
 
-    local_component_result = Meeseeks.one(test_result, css("#local-component-test"))
-    remote_component_result = Meeseeks.one(test_result, css("#remote-component-test"))
-    imported_component_result = Meeseeks.one(test_result, css("#imported-component-test"))
+    local_component_result = one(test_result, "#local-component-test")
+    remote_component_result = one(test_result, "#remote-component-test")
+    imported_component_result = one(test_result, "#imported-component-test")
 
     component_with_inner_block_result_content =
-      Meeseeks.one(test_result, css("#component-with-inner-block-test #content"))
+      one(test_result, "#component-with-inner-block-test #content")
 
     component_with_inner_block_result_inner_block =
-      Meeseeks.one(test_result, css("#component-with-inner-block-test #inner-block-test"))
+      one(test_result, "#component-with-inner-block-test #inner-block-test")
 
     component_with_slot_result_content =
-      Meeseeks.one(test_result, css("#component-with-slot-test #content"))
+      one(test_result, "#component-with-slot-test #content")
 
     component_with_slot_result_slot =
-      Meeseeks.one(test_result, css("#component-with-slot-test #slot-test"))
+      one(test_result, "#component-with-slot-test #slot-test")
 
-    html_element_result = Meeseeks.one(html_result, css("#html-element-test"))
+    html_element_result = one(html_result, "#html-element-test")
 
-    assert Meeseeks.text(local_component_result) == "Local Component Rendered"
-    assert Meeseeks.text(remote_component_result) == "Remote Component Rendered"
-    assert Meeseeks.text(imported_component_result) == "Imported Component Rendered"
+    assert Floki.text(local_component_result) == "Local Component Rendered"
+    assert Floki.text(remote_component_result) == "Remote Component Rendered"
+    assert Floki.text(imported_component_result) == "Imported Component Rendered"
 
-    assert Meeseeks.text(component_with_inner_block_result_content) ==
+    assert Floki.text(component_with_inner_block_result_content) ==
              "Component With Inner Block Rendered"
 
-    assert Meeseeks.text(component_with_inner_block_result_inner_block) == "Inner Block Rendered"
-    assert Meeseeks.text(component_with_slot_result_content) == "Component With Slot Rendered"
-    assert Meeseeks.text(component_with_slot_result_slot) == "Slot Rendered"
-    assert Meeseeks.text(html_element_result) == "HTML Element Rendered"
+    assert Floki.text(component_with_inner_block_result_inner_block) == "Inner Block Rendered"
+    assert Floki.text(component_with_slot_result_content) == "Component With Slot Rendered"
+    assert Floki.text(component_with_slot_result_slot) == "Slot Rendered"
+    assert Floki.text(html_element_result) == "HTML Element Rendered"
   end
 end

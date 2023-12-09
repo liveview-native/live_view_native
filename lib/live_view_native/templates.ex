@@ -20,7 +20,7 @@ defmodule LiveViewNative.Templates do
     caller = eex_opts[:caller]
     %Macro.Env{module: template_module} = caller
 
-    with %Meeseeks.Document{} = doc <- Meeseeks.parse(expr, :html),
+    with doc <- Floki.parse_document!(expr),
          class_names <- extract_all_class_names(doc),
          %{} = class_tree_context <- class_tree_context(platform_id, template_module, eex_opts),
          %{} = class_tree <- build_class_tree(class_tree_context, class_names, eex_opts) do
@@ -140,10 +140,10 @@ defmodule LiveViewNative.Templates do
   end
 
   defp extract_all_class_names(doc) do
-    Enum.flat_map(doc.nodes, &extract_class_names/1)
+    Enum.flat_map(doc, &extract_class_names/1)
   end
 
-  defp extract_class_names({_key, node}) do
+  defp extract_class_names({_key, _, node}) do
     case node do
       %{attributes: [_ | _] = attributes} ->
         attributes
