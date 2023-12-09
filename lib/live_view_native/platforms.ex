@@ -27,7 +27,6 @@ defmodule LiveViewNative.Platforms do
   which is responsible for determining which platform (web, iOS, etc.) a
   session originates from.
   """
-  @spec env_platforms() :: env_platforms_map()
   def env_platforms do
     @env_platforms
     |> Enum.map(&expand_env_platform/1)
