@@ -30,7 +30,7 @@ defmodule Mix.Tasks.Lvn.Install do
   defp run_all_install_tasks(mix_tasks, host_project_config) do
     mix_tasks
     |> Enum.map(&prompt_task_settings/1)
-    |> Enum.map(&(run_install_task(&1, host_project_config)))
+    |> Enum.map(&run_install_task(&1, host_project_config))
   end
 
   defp prompt_task_settings(%{client_name: client_name, prompts: [_ | _] = prompts} = task) do
@@ -89,7 +89,7 @@ defmodule Mix.Tasks.Lvn.Install do
 
   defp get_installer_mix_tasks do
     Mix.Task.load_all()
-    |> Enum.filter(&(function_exported?(&1, :lvn_install_config, 0)))
+    |> Enum.filter(&function_exported?(&1, :lvn_install_config, 0))
     |> Enum.map(fn module ->
       module
       |> apply(:lvn_install_config, [])
@@ -178,7 +178,7 @@ defmodule Mix.Tasks.Lvn.Install do
     generate_native_config? = if native_config_already_exists?, do: Owl.IO.confirm(message: "native.exs already exists, regenerate it?", default: false), else: true
 
     if generate_native_config? do
-      Owl.IO.puts([ Owl.Data.tag("* creating ", :green), "config/native.exs"])
+      Owl.IO.puts([Owl.Data.tag("* creating ", :green), "config/native.exs"])
       lvn_configuration = native_exs_body(native_config)
       File.write(native_config_path, lvn_configuration)
 
@@ -217,7 +217,7 @@ defmodule Mix.Tasks.Lvn.Install do
     if String.contains?(app_config_body, import_string) do
       IO.puts("config.exs already imports native.exs, skipping...")
     else
-      Owl.IO.puts([ Owl.Data.tag("* updating ", :yellow), "config/config.exs"])
+      Owl.IO.puts([Owl.Data.tag("* updating ", :yellow), "config/config.exs"])
 
       {:ok, app_config} = File.open(app_config_path, [:write])
       updated_app_config_body = app_config_body <> "\n" <> full_import_string

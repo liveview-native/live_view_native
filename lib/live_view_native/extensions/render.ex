@@ -22,9 +22,7 @@ defmodule LiveViewNative.Extensions.Render do
         end
       end
 
-      EEx.function_from_string(:def, :render_blank, "", [:assigns],
-        engine: Phoenix.LiveView.Engine
-      )
+      EEx.function_from_string(:def, :render_blank, "", [:assigns], engine: Phoenix.LiveView.Engine)
     end
   end
 end

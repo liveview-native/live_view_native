@@ -101,9 +101,7 @@ defmodule LiveViewNative.Layouts do
   end
 
   def generate_class_trees(%{} = layouts, %{} = opts) do
-    Enum.reduce(layouts, layouts, fn {func_name,
-                                      %{template: template, platform_id: platform_id} = layout},
-                                     acc ->
+    Enum.reduce(layouts, layouts, fn {func_name, %{template: template, platform_id: platform_id} = layout}, acc ->
       opts = Map.put(opts, :render_function, {layout.render_function, 1})
 
       case LiveViewNative.Templates.compile_class_tree(template, platform_id, opts) do

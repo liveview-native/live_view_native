@@ -50,7 +50,7 @@ defmodule LiveViewNative.MixProject do
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:owl, "~> 0.8", runtime: false},
       {:deep_merge, "~> 1.0", only: :dev},
-      {:live_view_native_platform, "0.2.0-beta.2"},
+      {:live_view_native_platform, "0.2.0-beta.2"}
     ]
   end
 
