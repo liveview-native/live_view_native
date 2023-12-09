@@ -26,7 +26,7 @@ defmodule MyAppWeb.MyComponents do
         <HStack>
           <Image name={@album.cover} />
           <VStack alignment="leading">
-            <Text modifiers={font_weight(:bold)}><%= song.title %></Text>
+            <Text class="bold"><%= song.title %></Text>
             <Text><%= song.artist.name %></Text>
           </VStack>
         </HStack>
@@ -71,7 +71,6 @@ Here we can observe various semantic changes to port SwiftUI code to EEx:
 2. The struct value `album` is an assign, `@album`, instead.
 3. Instead of passing `album.songs` as an argument, we use a comprehension.
     - `<Text>` elements take their arguments as values, similar to HTML.
-4. We can't call a function on an element like in SwiftUI, so the `.fontWeight(.bold)` modifier function is called as `font_weight(:bold)` and passed to the `modifiers` attribute.
 
 These conventions can generally be applied to all sorts of examples when using LiveView Native to build SwiftUI views.
 Because LiveView Native is modular, each platform library will have its own way of "bridging the gap" between the Elixir

@@ -59,7 +59,7 @@ end
 Then, run your app and navigate to your local development server in a web browser.
 You should see the LiveView you created.
 
-![Hello World - Web](./assets/images/hello-web.png)
+![Hello World - Web](./assets/images/first-web.png)
 
 ## A native LiveView
 
@@ -104,24 +104,9 @@ end
 ```
 
 Loading the native project at `native/swiftui/MyApp/MyApp.xcodeproj` and running it in
-Simulator will render the native template in various devices for the SwiftUI platform:
+Simulator will render the native template as a native SwiftUI app:
 
-<!-- tabs-open -->
-
-### iOS
-
-![Hello World - iOS](./assets/images/hello-iphone.png)
-
-### iPadOS
-![Hello World - iPadOS](./assets/images/hello-ipad.png)
-
-### macOS
-![Hello World - macOS](./assets/images/hello-mac.png)
-
-### Web
-![Hello World - Web](./assets/images/hello-web.png)
-
-<!-- tabs-close -->
+![Hello World - iOS](./assets/images/first-ios.png)
 
 If everything looks as it should, congratulations! Your app is now using LiveView Native to
 serve multiple platform-specific templates to both web and non-web clients.
