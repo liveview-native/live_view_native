@@ -5,7 +5,7 @@ defmodule LiveViewNative.ComponentsTest do
   alias LiveViewNative.TestComponents
 
   defp one(fragment, selector) do
-    [element | tail] = Floki.find(fragment, selector)
+    [element | _tail] = Floki.find(fragment, selector)
 
     element
   end
