@@ -6,11 +6,11 @@ defmodule LiveViewNative.ComponentsTest do
   import Meeseeks.CSS
 
   test "test_component/1 renders as expected" do
-    web_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.Web{})
+    html_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.Platforms.HTML{})
     test_context = LiveViewNativePlatform.Kit.compile(%LiveViewNative.TestPlatform{})
 
-    web_result =
-      render_component(&TestComponents.test_component/1, format: :web, native: web_context)
+    html_result =
+      render_component(&TestComponents.test_component/1, format: :html, native: html_context)
       |> Meeseeks.parse(:html)
 
     test_result =
@@ -36,7 +36,7 @@ defmodule LiveViewNative.ComponentsTest do
     component_with_slot_result_slot =
       Meeseeks.one(test_result, css("#component-with-slot-test #slot-test"))
 
-    html_element_result = Meeseeks.one(web_result, css("#html-element-test"))
+    html_element_result = Meeseeks.one(html_result, css("#html-element-test"))
 
     assert Meeseeks.text(local_component_result) == "Local Component Rendered"
     assert Meeseeks.text(remote_component_result) == "Remote Component Rendered"

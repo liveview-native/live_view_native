@@ -27,7 +27,7 @@ defmodule LiveViewNativeTest do
 
       assert platform_struct
       assert platform_struct.platform_id == :html
-      assert platform_struct.platform_config == %LiveViewNative.Platforms.Web{}
+      assert platform_struct.platform_config == %LiveViewNative.Platforms.HTML{}
     end
   end
 
@@ -37,7 +37,7 @@ defmodule LiveViewNativeTest do
 
       assert platform_struct
       assert platform_struct.platform_id == :html
-      assert platform_struct.platform_config == %LiveViewNative.Platforms.Web{}
+      assert platform_struct.platform_config == %LiveViewNative.Platforms.HTML{}
     end
 
     test "when platform_id is invalid" do
