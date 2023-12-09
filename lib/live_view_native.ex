@@ -10,7 +10,7 @@ defmodule LiveViewNative do
 
   Used to introspect platforms at compile-time or runtime.
   """
-  @spec platform(atom) :: {:ok, %LiveViewNativePlatform.Env{}} | :error
+  @spec platform(atom | String.t()) :: {:ok, %LiveViewNativePlatform.Env{}} | :error
   def platform(platform_id) when is_atom(platform_id) and not is_nil(platform_id),
     do: platform("#{platform_id}")
 
@@ -51,6 +51,6 @@ defmodule LiveViewNative do
   @doc """
   Returns a list of environment structs for all LiveView Native platforms.
   """
-  @spec platforms() :: list(%LiveViewNativePlatform.Env{})
+  @spec platforms() :: LiveViewNative.Platforms.env_platforms_map()
   def platforms, do: env_platforms()
 end
