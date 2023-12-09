@@ -22,11 +22,6 @@ defmodule LiveViewNative.Extensions do
         platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
         defmodule :"#{platform_module}" do
-          use LiveViewNative.Extensions.Modifiers,
-            custom_modifiers: platform_context.custom_modifiers || [],
-            modifiers_struct: platform_context.modifiers_struct,
-            platform_modifiers: platform_context.platform_modifiers || []
-
           use LiveViewNative.Extensions.Templates,
             caller: caller,
             eex_engine: platform_context.eex_engine,
@@ -36,12 +31,6 @@ defmodule LiveViewNative.Extensions do
             template_directory: Path.dirname(__ENV__.file),
             template_extension: platform_context.template_extension || ".#{platform_id}.heex"
         end
-
-        use LiveViewNative.Extensions.Modifiers,
-          custom_modifiers: platform_context.custom_modifiers || [],
-          modifiers_struct: platform_context.modifiers_struct,
-          platform_modifiers: platform_context.platform_modifiers || [],
-          platform_module: platform_module
 
         if is_nil(platform_context.render_macro) do
           use LiveViewNative.Extensions.InlineRender,
