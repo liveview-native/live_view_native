@@ -3,18 +3,7 @@ defmodule LiveViewNative.Platforms do
 
   @default_platforms [LiveViewNative.Platforms.HTML]
 
-  @env_platforms :live_view_native
-                 |> Application.compile_env(:plugins, [])
-                 |> Enum.flat_map(fn plugin_mod -> apply(plugin_mod, :platforms, []) end)
-                 |> Enum.concat(@default_platforms)
-                 |> Enum.uniq()
-                 |> Enum.map(fn platform_mod ->
-                   platform_config = Application.compile_env(:live_view_native, platform_mod, [])
-                   platform_params = Enum.into(platform_config, %{})
-
-                   {platform_mod, platform_params}
-                 end)
-                 |> Enum.into(%{})
+  @platforms_table :live_view_native_platforms
 
   @doc """
   Provides configuration constants about all platforms supported by an
@@ -24,9 +13,25 @@ defmodule LiveViewNative.Platforms do
   session originates from.
   """
   def env_platforms do
-    @env_platforms
-    |> Enum.map(&expand_env_platform/1)
-    |> Enum.into(%{})
+    case fetch_platforms() do
+      :none -> 
+        :live_view_native
+        |> Application.get_env(:plugins, [])
+        |> Enum.flat_map(fn plugin_mod -> apply(plugin_mod, :platforms, []) end)
+        |> Enum.concat(@default_platforms)
+        |> Enum.uniq()
+        |> Enum.map(fn platform_mod ->
+          platform_config = Application.get_env(:live_view_native, platform_mod, [])
+          platform_params = Enum.into(platform_config, %{})
+
+          {platform_mod, platform_params}
+        end)
+        |> Enum.into(%{})
+        |> Enum.map(&expand_env_platform/1)
+        |> Enum.into(%{})
+        |> store_platforms()
+      platforms -> platforms
+    end
   end
 
   def env_platform(platform_id) do
@@ -35,6 +40,23 @@ defmodule LiveViewNative.Platforms do
   end
 
   ###
+
+  defp fetch_platforms do
+    case :ets.info(@platforms_table) do
+      :undefined -> :ets.new(@platforms_table, [:named_table, :public])
+      _ -> nil
+    end
+
+    case :ets.lookup(@platforms_table, :all) do
+      [all: platforms] -> platforms
+      _ -> :none
+    end
+  end
+
+  defp store_platforms(platforms) do
+    :ets.insert(:live_view_native_platforms, {:all, platforms})
+    platforms
+  end
 
   defp expand_env_platform({platform_mod, %{} = platform_params}) do
     platform_config = struct!(platform_mod, platform_params)
