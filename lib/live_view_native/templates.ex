@@ -150,11 +150,17 @@ defmodule LiveViewNative.Templates do
     new_acc =
       node
       |> Floki.attribute("class")
+      |> split_class_names()
       |> Enum.reduce(acc, fn(class_name, acc) ->
         Map.put(acc, class_name, true)
       end)
 
       {nil, new_acc}
+  end
+
+  defp split_class_names([]), do: []
+  defp split_class_names([class_names | _tail]) do
+    String.split(class_names, " ")
   end
 
   defp module_has_stylesheet?(module) do
