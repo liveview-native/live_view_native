@@ -156,34 +156,6 @@ defmodule LiveViewNative.Templates do
 
       {nil, new_acc}
   end
-  # defp extract_all_class_names(nodes, acc \\ %{})
-
-  # defp extract_all_class_names([], acc), do: acc
-  # # defp extract_all_class_names(nodes, acc) when is_list(nodes) do
-
-  # #   Enum.flat_map(doc, &extract_class_names/1)
-  # # end
-
-  # # defp extract_all_class_names(node, acc) when is_tuple(node) do
-  # #   extract_class_names(node, acc)
-  # # end
-
-  # defp extract_class_names(doc) when is_binary(doc), do: []
-  # defp extract_class_names({_key, _, node} = other) do
-  #   require IEx
-  #   IEx.pry()
-  #   case node do
-  #     %{attributes: [_ | _] = attributes} ->
-  #       attributes
-  #       |> Enum.into(%{})
-  #       |> Map.get("class", "")
-  #       |> String.split(" ")
-  #       |> Enum.filter(&(&1 != ""))
-
-  #     _ ->
-  #       []
-  #   end
-  # end
 
   defp module_has_stylesheet?(module) do
     :functions
