@@ -144,7 +144,6 @@ defmodule LiveViewNative.Templates do
     |> Floki.traverse_and_update(%{}, &extract_class_names/2)
     |> elem(1)
     |> Map.keys()
-    |> IO.inspect()
   end
 
   defp extract_class_names(node, acc) do
