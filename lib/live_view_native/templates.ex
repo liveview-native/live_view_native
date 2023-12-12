@@ -97,11 +97,7 @@ defmodule LiveViewNative.Templates do
   end
 
   defp dump_class_tree_bytecode(class_tree_map, caller) do
-    class_tree_map
-    |> generate_class_tree_module(caller)
-    |> Code.compile_string()
-
-    :ok
+    generate_class_tree_module(class_tree_map, caller)
   end
 
   defp generate_class_tree_module(class_tree_map, caller) do
@@ -109,33 +105,24 @@ defmodule LiveViewNative.Templates do
     module_name = generate_class_tree_module_name(template_module)
     branches = get_class_tree_branches(requires)
 
-    try do
-      :ets.new(:live_view_native_class_maps, [:public, :named_table])
-    rescue
-      _ -> :already_defined
+    ast = quote location: :keep do
+      def class_tree(stylesheet_key) do
+        %{
+          branches: unquote(branches),
+          contents: unquote(Macro.escape(class_tree_map))[stylesheet_key],
+          expanded_branches: [unquote(module_name)]
+        } ||
+          %{
+            branches: [],
+            contents: %{},
+            expanded_branches: [unquote(module_name)]
+          }
+      end
     end
 
-    :ets.insert(:live_view_native_class_maps, {module_name, class_tree_map})
+    Module.create(module_name, ast, Macro.Env.location(__ENV__))
 
-    Macro.to_string(
-      quote location: :keep do
-        defmodule unquote(module_name) do
-          def class_tree(stylesheet_key) do
-            [_key, class_tree_map] = :ets.lookup(:live_view_native_class_maps, unquote(module_name))
-            %{
-              branches: unquote(branches),
-              contents: class_tree_map[stylesheet_key],
-              expanded_branches: [unquote(module_name)]
-            } ||
-              %{
-                branches: [],
-                contents: %{},
-                expanded_branches: [unquote(module_name)]
-              }
-          end
-        end
-      end
-    )
+    :ok
   end
 
   defp generate_class_tree_module_name(module) do
