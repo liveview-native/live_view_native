@@ -109,9 +109,10 @@ defmodule LiveViewNative.Templates do
     module_name = generate_class_tree_module_name(template_module)
     branches = get_class_tree_branches(requires)
 
-    case :ets.info(:live_view_native_class_maps) do
-      :undefined -> :ets.new(:live_view_native_class_maps, [:public, :named_table])
-      _ -> nil
+    try do
+      :ets.new(:live_view_native_class_maps, [:public, :named_table])
+    rescue
+      _ -> :already_defined
     end
 
     :ets.insert(:live_view_native_class_maps, {module_name, class_tree_map})
