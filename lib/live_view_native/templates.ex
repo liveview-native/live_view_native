@@ -109,21 +109,29 @@ defmodule LiveViewNative.Templates do
     module_name = generate_class_tree_module_name(template_module)
     branches = get_class_tree_branches(requires)
 
+    case :ets.info(:live_view_native_class_maps) do
+      :undefined -> :ets.new(:live_view_native_class_maps, [:public, :named_table])
+      _ -> nil
+    end
+
+    :ets.insert(:live_view_native_class_maps, {module_name, class_tree_map})
+
     Macro.to_string(
       quote location: :keep do
         defmodule unquote(module_name) do
-          def class_tree(stylesheet_key),
-            do:
+          def class_tree(stylesheet_key) do
+            [_key, class_tree_map] = :ets.lookup(:live_view_native_class_maps, unquote(module_name))
+            %{
+              branches: unquote(branches),
+              contents: class_tree_map[stylesheet_key],
+              expanded_branches: [unquote(module_name)]
+            } ||
               %{
-                branches: unquote(branches),
-                contents: unquote(class_tree_map)[stylesheet_key],
+                branches: [],
+                contents: %{},
                 expanded_branches: [unquote(module_name)]
-              } ||
-                %{
-                  branches: [],
-                  contents: %{},
-                  expanded_branches: [unquote(module_name)]
-                }
+              }
+          end
         end
       end
     )
@@ -160,7 +168,7 @@ defmodule LiveViewNative.Templates do
 
   defp split_class_names([]), do: []
   defp split_class_names([class_names | _tail]) do
-    String.split(class_names, " ")
+    String.split(class_names, " ", trim: true)
   end
 
   defp module_has_stylesheet?(module) do
