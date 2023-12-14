@@ -188,10 +188,10 @@ defmodule MyAppWeb do
       use Phoenix.LiveView,
         layout: {MyAppWeb.Layouts, :app}
 
+      unquote(html_helpers())
+
       # LiveView Native support
       use LiveViewNative.LiveView
-
-      unquote(html_helpers())
     end
   end
 
@@ -199,10 +199,10 @@ defmodule MyAppWeb do
     quote do
       use Phoenix.LiveComponent
 
+      unquote(html_helpers())
+
       # LiveView Native support
       use LiveViewNative.LiveComponent
-
-      unquote(html_helpers())
     end
   end
 
