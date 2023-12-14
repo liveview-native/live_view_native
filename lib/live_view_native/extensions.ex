@@ -17,32 +17,34 @@ defmodule LiveViewNative.Extensions do
       Code.put_compiler_option(:ignore_module_conflict, true)
 
       for {platform_id, platform_context} <- LiveViewNative.platforms() do
-        require EEx
+        if platform_id != "html" do
+          require EEx
 
-        platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
+          platform_module = Module.concat(__ENV__.module, platform_context.template_namespace)
 
-        defmodule :"#{platform_module}" do
-          use LiveViewNative.Extensions.Templates,
-            caller: caller,
-            eex_engine: platform_context.eex_engine,
-            platform_module: platform_module,
-            tag_handler: platform_context.tag_handler,
-            template_basename: Path.basename(__ENV__.file) |> String.split(".") |> List.first(),
-            template_directory: Path.dirname(__ENV__.file),
-            template_extension: platform_context.template_extension || ".#{platform_id}.heex"
-        end
+          defmodule :"#{platform_module}" do
+            use LiveViewNative.Extensions.Templates,
+              caller: caller,
+              eex_engine: platform_context.eex_engine,
+              platform_module: platform_module,
+              tag_handler: platform_context.tag_handler,
+              template_basename: Path.basename(__ENV__.file) |> String.split(".") |> List.first(),
+              template_directory: Path.dirname(__ENV__.file),
+              template_extension: platform_context.template_extension || ".#{platform_id}.heex"
+          end
 
-        if is_nil(platform_context.render_macro) do
-          use LiveViewNative.Extensions.InlineRender,
-            compiled_at: compiled_at,
-            platform_id: platform_id,
-            role: role
-        else
-          use LiveViewNative.Extensions.RenderMacro,
-            compiled_at: compiled_at,
-            platform_id: platform_id,
-            render_macro: platform_context.render_macro,
-            role: role
+          if is_nil(platform_context.render_macro) do
+            use LiveViewNative.Extensions.InlineRender,
+              compiled_at: compiled_at,
+              platform_id: platform_id,
+              role: role
+          else
+            use LiveViewNative.Extensions.RenderMacro,
+              compiled_at: compiled_at,
+              platform_id: platform_id,
+              render_macro: platform_context.render_macro,
+              role: role
+          end
         end
       end
 
