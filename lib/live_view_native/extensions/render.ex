@@ -12,17 +12,15 @@ defmodule LiveViewNative.Extensions.Render do
 
       def render_native(assigns) do
         case assigns do
-          %{native: %LiveViewNativePlatform.Env{} = platform_context} ->
-            render_module = Module.safe_concat([__MODULE__, platform_context.template_namespace])
+          %{format: format, native: %LiveViewNativePlatform.Env{} = platform_context} ->
+            render_function = String.to_existing_atom("render_#{format}")
 
-            apply(render_module, :render, [assigns])
+            apply(__MODULE__, render_function, [assigns])
 
           _ ->
-            render_blank(assigns)
+            apply(__MODULE__, :render_html, [assigns])
         end
       end
-
-      EEx.function_from_string(:def, :render_blank, "", [:assigns], engine: Phoenix.LiveView.Engine)
     end
   end
 end

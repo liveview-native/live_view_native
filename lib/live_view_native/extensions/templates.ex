@@ -18,7 +18,7 @@ defmodule LiveViewNative.Extensions.Templates do
     quote bind_quoted: [
             caller: opts[:caller],
             eex_engine: opts[:eex_engine],
-            platform_module: opts[:platform_module],
+            render_function: opts[:render_function],
             stylesheet: opts[:stylesheet],
             tag_handler: opts[:tag_handler],
             template_basename: opts[:template_basename],
@@ -29,11 +29,9 @@ defmodule LiveViewNative.Extensions.Templates do
       template_path = Path.join(template_directory, template_basename) <> template_extension
 
       if is_binary(template_path) and File.exists?(template_path) do
-        require EEx
-
         EEx.function_from_file(
           :def,
-          :render,
+          render_function,
           template_path,
           [:assigns],
           caller: caller,
