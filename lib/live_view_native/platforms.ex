@@ -42,7 +42,7 @@ defmodule LiveViewNative.Platforms do
   ###
 
   defp fetch_platforms do
-    case :ets.info(@platforms_table) do
+    case :ets.whereis(@platforms_table) do
       :undefined -> :ets.new(@platforms_table, [:named_table, :public])
       _ -> nil
     end
