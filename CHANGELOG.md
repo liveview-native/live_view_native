@@ -2,6 +2,9 @@
 
 ### New Features and Improvements
 
+* Fix ets table generation
+* Fix regression with external HTML templates when using `render_native/1`
+* Use default Phoenix context for non-LVN render
 * Added support for LiveView Native stylesheets (PR [#64](https://github.com/liveview-native/live_view_native/pull/64))
 * Added support for Phoenix layouts to native platforms (PR [#68](https://github.com/liveview-native/live_view_native/pull/68))
 * Improved `mix lvn.install` task (PR [#75](https://github.com/liveview-native/live_view_native/pull/75))
