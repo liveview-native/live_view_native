@@ -42,7 +42,7 @@ defmodule LiveViewNative.Layouts do
     |> compile_layout(template_path, opts)
   end
 
-  def compile_layout({_format, platform}, template_path, _opts) do
+  def compile_layout({_format, platform}, template_path, opts) do
     func_name =
       template_path
       |> Path.basename()
@@ -54,7 +54,7 @@ defmodule LiveViewNative.Layouts do
 
     %{
       class_tree: %{},
-      template: layout_template(template_path, is_root_template?),
+      template: layout_template(template_path, is_root_template?, opts[:env]),
       eex_engine: platform.eex_engine,
       platform_id: platform.platform_id,
       render_function: func_name,
@@ -65,10 +65,10 @@ defmodule LiveViewNative.Layouts do
 
   def compile_layout(_platform, _template_path, _opts), do: nil
 
-  def layout_template(template_path, is_root_template?) do
+  def layout_template(template_path, is_root_template?, env) do
     template_path
     |> File.read!()
-    |> layout_template_with_live_reload(Mix.env())
+    |> layout_template_with_live_reload(env)
     |> layout_template_with_csrf_token(is_root_template?)
   end
 
@@ -172,10 +172,10 @@ defmodule LiveViewNative.Layouts do
     end
   end
 
-  defmacro __using__(_opts \\ []) do
+  defmacro __using__(opts \\ []) do
     compiled_at = :os.system_time(:nanosecond)
 
-    quote bind_quoted: [caller: Macro.escape(__CALLER__), compiled_at: compiled_at],
+    quote bind_quoted: [caller: Macro.escape(__CALLER__), compiled_at: compiled_at, opts: opts],
           location: :keep do
       use LiveViewNative.Extensions, role: :layouts
 
@@ -186,7 +186,8 @@ defmodule LiveViewNative.Layouts do
           dirname: Path.dirname(__ENV__.file),
           exclude: [:html],
           file: __ENV__.file,
-          platforms: LiveViewNative.platforms()
+          platforms: LiveViewNative.platforms(),
+          env: opts[:env] || Mix.env()
         }
         |> LiveViewNative.Layouts.extract_layouts()
         |> Enum.map(fn {render_func, %{} = layout_params} ->
