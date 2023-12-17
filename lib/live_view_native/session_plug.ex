@@ -13,16 +13,37 @@ defmodule LiveViewNative.SessionPlug do
         } = conn,
         _default
       ) do
+    called(conn, lvn_platform, root_layout_mod, root_layout_func)
+  end
+
+  def call(
+        %Plug.Conn{
+          params: %{"_lvn" => %{"format" => lvn_platform}},
+          private: %{
+            :phoenix_format => "html",
+            :phoenix_root_layout => %{} = phoenix_root_layout
+          }
+        } = conn,
+        _default
+      ) do
+    
+    {root_layout_mod, root_layout_func} = Map.values(phoenix_root_layout) |> List.first()
+    
+    called(conn, lvn_platform, root_layout_mod, root_layout_func)
+  end
+
+  def call(conn, _default), do: conn
+
+  defp called(conn, lvn_platform, root_layout_mod, root_layout_func) do
     root_layout_func = String.to_existing_atom("#{root_layout_func}_#{lvn_platform}")
     root_layout = {root_layout_mod, root_layout_func}
 
     conn
+    |> Phoenix.Controller.put_root_layout(false)
     |> Phoenix.Controller.put_format(lvn_platform)
     |> Phoenix.Controller.put_root_layout(html: root_layout)
     |> live_reload()
   end
-
-  def call(conn, _default), do: conn
 
   defp live_reload(conn) do
     endpoint = conn.private.phoenix_endpoint
