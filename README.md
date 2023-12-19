@@ -46,4 +46,4 @@ To use LiveView Native in your Phoenix application, follow the instructions in t
   * Guides: https://hexdocs.pm/live_view_native/overview.html
   * Docs: https://hexdocs.pm/live_view_native
   * Forum: https://elixirforum.com/c/elixir-framework-forums/liveview-native-forum
-  * Source: https://github.com/liveview-native/elixirconf_chat
+  * Source: https://github.com/liveview-native/live_view_native
