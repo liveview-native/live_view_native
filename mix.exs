@@ -1,7 +1,7 @@
 defmodule LiveViewNative.MixProject do
   use Mix.Project
 
-  @version "0.2.0-beta.2"
+  @version "0.2.0-beta.3"
 
   def project do
     [
