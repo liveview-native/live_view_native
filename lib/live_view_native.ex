@@ -1,53 +1,39 @@
 defmodule LiveViewNative do
-  @moduledoc """
-  A module providing supporting functions for LiveView Native.
-  """
-  import LiveViewNative.Platforms, only: [env_platform: 1, env_platforms: 0]
-
-  @doc """
-  Returns an environment struct for a LiveView Native platform given its
-  `platform_id` or `:error` if not found.
-
-  Used to introspect platforms at compile-time or runtime.
-  """
-  def platform(platform_id) when is_atom(platform_id) and not is_nil(platform_id),
-    do: platform("#{platform_id}")
-
-  def platform(platform_id) when is_binary(platform_id) do
-    case env_platform(platform_id) do
-      %{} = platform_struct ->
-        {:ok, platform_struct}
-
-      _ ->
-        :error
-    end
+  def plugin_for(format) when is_atom(format) do
+    format
+    |> Atom.to_string()
+    |> plugin_for()
   end
 
-  @doc """
-  Returns an environment struct for a LiveView Native platform given its
-  `platform_id` or raises if not found.
+  def plugin_for(format) when is_binary(format) do
+    Map.get(plugins(), format)
+  end
 
-  Same as `platform/1` but raises `RuntimeError` instead of returning
-  `:error` if no platform exists for the given `platform_id`
-  """
-  def platform!(platform_id) do
-    case platform(platform_id) do
-      {:ok, %{} = platform} ->
-        platform
-
+  def plugins() do
+    case Application.fetch_env(:live_view_native, :plugins_map) do
+      {:ok, plugins} -> plugins
       :error ->
-        platform_ids = env_platforms() |> Map.keys() |> Enum.map(&":#{&1}") |> Enum.join(", ")
+        plugins =
+          Application.fetch_env(:live_view_native, :plugins)
+          |> case do
+            {:ok, plugins} -> plugins
+            :error -> []
+          end
+          |> Enum.into(%{}, &({Atom.to_string(&1.format()), &1}))
 
-        error_message_no_platform = "No LiveView Native platform for #{inspect(platform_id)}"
-
-        error_message_valid_platforms_hint = "The valid platforms are: #{platform_ids}"
-
-        raise error_message_no_platform <> ". " <> error_message_valid_platforms_hint
+        :ok = Application.put_env(:live_view_native, :plugins_map, plugins)
+        plugins
     end
   end
 
-  @doc """
-  Returns a list of environment structs for all LiveView Native platforms.
-  """
-  def platforms, do: env_platforms()
+  def available_formats() do
+    case Application.fetch_env(:live_view_native, :plugins) do
+      {:ok, plugins} ->
+        Enum.map(plugins, &(&1.format()))
+      :error ->
+        IO.warn("No LiveView Native plugins registered")
+
+        []
+    end
+  end
 end
