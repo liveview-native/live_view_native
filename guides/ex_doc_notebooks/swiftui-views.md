@@ -459,7 +459,7 @@ end
 
 ## Your Turn: Bottom Text Spacer
 
-In the cell below, use `HStack` and `Spacer` to place text in the bottom of the native view.
+In the cell below, use `VStack` and `Spacer` to place text in the bottom of the native view.
 
 ### Example Solution
 
@@ -640,7 +640,7 @@ Then evaluate the following example and you should see this image in your simula
 
 ![LiveView Native Logo](https://github.com/liveview-native/documentation_assets/blob/main/logo.png?raw=true)
 
-Likely, you will need to **rebuild the native application** to pick up the changes to the assets catalogue.
+You will need to **rebuild the native application** to pick up the changes to the assets catalogue.
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxJbWFnZSBuYW1lPVwiSW1hZ2VcIi8+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxwPkhlbGxvIGZyb20gTGl2ZVZpZXchPC9wPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,289],[402,45],[449,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
@@ -668,7 +668,7 @@ end
 
 A Button is a clickable SwiftUI View.
 
-The label of a button can be any view. such as a [Text](https://developer.apple.com/documentation/swiftui/text) element for text-only buttons or [Label](https://developer.apple.com/documentation/swiftui/label) element for buttons with icons.
+The label of a button can be any view, such as a [Text](https://developer.apple.com/documentation/swiftui/text) view for text-only buttons or a [Label](https://developer.apple.com/documentation/swiftui/label) view for buttons with icons.
 
 Evaluate the example below to see the SwiftUI [Button](https://developer.apple.com/documentation/swiftui/button) element.
 

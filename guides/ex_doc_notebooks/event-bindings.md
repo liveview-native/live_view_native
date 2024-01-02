@@ -1,4 +1,4 @@
-# Event Bindings
+# Interactive SwiftUI Views
 
 [![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%2Fnotebooks%event-bindings.livemd)
 
@@ -8,9 +8,7 @@ In this guide, you'll learn how to build interactive LiveView Native application
 
 This guide assumes some existing familiarity with [Phoenix Bindings](https://hexdocs.pm/phoenix_live_view/bindings.html).
 
-<!-- livebook:{"break_markdown":true} -->
-
-### Event Bindings with `phx-*`
+## Event Bindings
 
 We can bind any available `phx-*` [Phoenix Binding](https://hexdocs.pm/phoenix_live_view/bindings.html) to a SwiftUI Element. However certain events are not available on native.
 
@@ -26,7 +24,7 @@ LiveView Native currently supports the following events on all SwiftUI views:
 
 There is also a [Pull Request](https://github.com/liveview-native/liveview-client-swiftui/issues/1095) to add Key Events which may have been merged since this guide was published.
 
-## "click" Events
+## Basic Click Example
 
 The `phx-click` event triggers a corresponding [handle_event/3](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#c:handle_event/3) callback function whenever a SwiftUI view is pressed.
 
@@ -99,7 +97,7 @@ defmodule Server.CounterLive do
 end
 ```
 
-## `phx-change` with Controls and Indicators
+## Controls and Indicators
 
 In Phoenix, the `phx-change` event must be applied to a parent form. However in SwiftUI there is no similar concept of forms. Instead, SwiftUI provides [Controls and Indicators](https://developer.apple.com/documentation/swiftui/controls-and-indicators) views. We can apply the `phx-change` binding to any of these views.
 
@@ -109,7 +107,7 @@ The params of the message are based on the name of the [Binding](https://develop
 
 For example, many views use the `value` binding argument, so the params will be sent as `%{"value" => value}`. However, certain views such as `TextField` and `Toggle` deviate from this pattern as you can see in the examples below.
 
-<!-- livebook:{"branch_parent_index":2} -->
+<!-- livebook:{"branch_parent_index":3} -->
 
 ## Text Field
 
@@ -144,7 +142,9 @@ defmodule Server.TextFieldLive do
 end
 ```
 
-### Slider
+<!-- livebook:{"branch_parent_index":3} -->
+
+## Slider
 
 This code example renders a SwiftUI [Slider](https://developer.apple.com/documentation/swiftui/slider). It triggers the change event when the slider is moved and sends a `"slide"` message. The `"slide"` event handler then logs the value to the console.
 
@@ -185,9 +185,9 @@ defmodule Server.HomeLive do
 end
 ```
 
-### Stepper
+<!-- livebook:{"branch_parent_index":3} -->
 
-<!-- livebook:{"break_markdown":true} -->
+## Stepper
 
 This code example renders a SwiftUI [Slider](https://developer.apple.com/documentation/swiftui/slider). It triggers the change event and sends a `"change-tickets"` message when the stepper increments or decrements. The `"change-tickets"` event handler then updates the number of tickets stored in state, which appears in the UI.
 
@@ -231,7 +231,9 @@ defmodule Server.TicketsLive do
 end
 ```
 
-### Toggle
+<!-- livebook:{"branch_parent_index":3} -->
+
+## Toggle
 
 This code example renders a SwiftUI [Toggle](https://developer.apple.com/documentation/swiftui/toggle). It triggers the change event and sends a `"toggle"` message when toggled. The `"toggle"` event handler then updates the `:on` field in state, which allows the `Toggle` view to be toggled on. Without providing the `is-on` attribute, the `Toggle` view could not be flipped on and off.
 
@@ -267,21 +269,61 @@ defmodule Server.ToggleLive do
 end
 ```
 
-### Date Picker
+<!-- livebook:{"branch_parent_index":3} -->
 
-## Native Bindings
+## DatePicker
 
-When using any of the available event-bindings, they are translated under the hood into a native-event. For example, the `click` event is translated into an [OnTapGesture](https://developer.apple.com/documentation/swiftui/view/ontapgesture(count:perform:)) event.
+The SwiftUI Date Picker provides a native view for selecting a date. The date is selected by the user and sent back as a string.
 
-TODO: Native Events Require Stylesheet Syntax
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5EYXRlUGlja2VyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBkZWYgbW91bnQoX3BhcmFtcywgX3Nlc3Npb24sIHNvY2tldCkgZG9cbiAgICB7Om9rLCBhc3NpZ24oc29ja2V0LCA6ZGF0ZSwgbmlsKX1cbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7cGxhdGZvcm1faWQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8RGF0ZVBpY2tlciBwaHgtY2hhbmdlPVwicGljay1kYXRlXCIvPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwicGljay1kYXRlXCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLmluc3BlY3QocGFyYW1zKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,419],[532,45],[579,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
-## LongPress
+```elixir
+defmodule Server.DatePickerLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
 
-## Swipe
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :date, nil)}
+  end
 
-## Scroll Events
+  @impl true
+  def render(%{platform_id: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <DatePicker phx-change="pick-date"/>
+    """
+  end
 
-## Further Resources
+  def handle_event("pick-date", params, socket) do
+    IO.inspect(params)
+    {:noreply, socket}
+  end
+end
+```
 
-See the [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui) for a complete list of SwiftUI elements and the [LiveView Native SwiftUI Documentation](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/) for LiveView Native examples of the SwiftUI elements.
+You can customize the [DatePicker](https://developer.apple.com/documentation/swiftui/datepicker) view's `displayedComponents` attribute to display different date information such as the full date or just the day and hour.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5EYXRlUGlja2VySG91ckFuZERheUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgZGVmIG1vdW50KF9wYXJhbXMsIF9zZXNzaW9uLCBzb2NrZXQpIGRvXG4gICAgezpvaywgYXNzaWduKHNvY2tldCwgOmRhdGUsIG5pbCl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPERhdGVQaWNrZXIgcGh4LWNoYW5nZT1cInBpY2stZGF0ZVwiIGRpc3BsYXllZC1jb21wb25lbnRzPXtbOlwiaG91ckFuZE1pbnV0ZVwiXX0vPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwicGljay1kYXRlXCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLmluc3BlY3QocGFyYW1zKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,471],[584,45],[631,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule Server.DatePickerHourAndDayLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :date, nil)}
+  end
+
+  @impl true
+  def render(%{platform_id: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <DatePicker phx-change="pick-date" displayed-components={[:"hourAndMinute"]}/>
+    """
+  end
+
+  def handle_event("pick-date", params, socket) do
+    IO.inspect(params)
+    {:noreply, socket}
+  end
+end
+```
 
