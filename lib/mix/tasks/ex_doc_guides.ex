@@ -1,5 +1,5 @@
 
-defmodule Mix.Tasks.CreateExDocGuides do
+defmodule Mix.Tasks.ExDocGuides do
   @moduledoc "Generates ex_doc friendly guides from Livebook notebooks"
   use Mix.Task
   def run(_args) do
@@ -31,7 +31,8 @@ defmodule Mix.Tasks.CreateExDocGuides do
     import Kernel, except: [defmodule: 2]
 
     """, "")
-    |> String.replace(~r/\|\> KinoLiveViewNative\.register\(\".+\, \".+\"\)\n\nimport KinoLiveViewNative\.Livebook, only: \[\]\n:ok\n/, "")
+    # TODO There's a bug in the regex below that's causing it to not match on all scenarios.
+    |> String.replace(~r/\|\> KinoLiveViewNative\.register\(\".+\, \".+\"\)\n\nimport KinoLiveViewNative\.Livebook, only: \[\]\nimport Kernel\n:ok\n/, "")
   end
 
   defp remove_navigation(content) do

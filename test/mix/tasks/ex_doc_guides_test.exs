@@ -1,6 +1,6 @@
-defmodule Mix.Tasks.CreateExDocGuidesTest do
+defmodule Mix.Tasks.ExDocGuidesTest do
   use ExUnit.Case
-  alias Mix.Tasks.CreateExDocGuides
+  alias Mix.Tasks.ExDocGuides
 
   test "make_ex_doc_friendly/1 removes Mix.install/2 section and adds Run in Livebook badge" do
     content = """
@@ -18,7 +18,7 @@ defmodule Mix.Tasks.CreateExDocGuidesTest do
     ```
     """
 
-    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") =~
+    assert ExDocGuides.make_ex_doc_friendly(content, "filename.livemd") =~
              "[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%2Fnotebooks%filename.livemd)"
   end
 
@@ -30,7 +30,7 @@ defmodule Mix.Tasks.CreateExDocGuidesTest do
 
     """
 
-    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
+    assert ExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
            """
   end
 
@@ -42,10 +42,11 @@ defmodule Mix.Tasks.CreateExDocGuidesTest do
     |> KinoLiveViewNative.register("#{url}", "#{action}")
 
     import KinoLiveViewNative.Livebook, only: []
+    import Kernel
     :ok
     """
 
-    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
+    assert ExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
            """
   end
 
@@ -66,7 +67,7 @@ defmodule Mix.Tasks.CreateExDocGuidesTest do
     """
 
     # We currently clear any code below navigation to make the regex easier.
-    assert CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
+    assert ExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
            ## Section Above
 
            """
@@ -83,7 +84,7 @@ defmodule Mix.Tasks.CreateExDocGuidesTest do
     * **Language:** Determines which language Xcode should use for the project. Select `Swift`.
     </details>
     """
-    result = CreateExDocGuides.make_ex_doc_friendly(content, "filename.livemd")
+    result = ExDocGuides.make_ex_doc_friendly(content, "filename.livemd")
     refute result =~ "details"
     assert result =~ """
             ### What do these options mean?
