@@ -8,7 +8,7 @@ Our interactive guides provide a step-by-step tutorial for learning LiveView Nat
 
 For the best experience, we recommend using Livebook to run these guides. Simply click on the "Run in Livebook" badge to import the guide into Livebook.
 
-Each guide is designed to be completed independently, but we suggest following them chronologically for the most comprehensive learning experience.
+Each guide can be completed independently, but we suggest following them chronologically for the most comprehensive learning experience.
 
 ## Prerequisites
 
@@ -30,19 +30,17 @@ If you are not already running this guide in Livebook, click on the "Run in Live
 
 Then, you can evaluate the following smart cell and visit http://localhost:4000 to ensure this Livebook works correctly.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0PlxuICAgICAgSGVsbG8gZnJvbSBMaXZlVmlldyBOYXRpdmUhXG4gICAgPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,320],[433,45],[480,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"e30","chunks":[[0,109],[111,306],[419,45],[466,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-defmodule Server.HomeLive do
+defmodule Server.ExampleLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
-    <Text>
-      Hello from LiveView Native!
-    </Text>
+    <Text>Hello from LiveView Native!</Text>
     """
   end
 
@@ -54,7 +52,7 @@ defmodule Server.HomeLive do
 end
 ```
 
-Change `Hello from LiveView!` to `Hello again from LiveView!` in the above LiveView. Notice the application live reloads and automatically updates in the browser.
+Change `Hello from LiveView!` to `Hello again from LiveView!` in the above LiveView. Re-evaluate the cell and notice the application live reloads and automatically updates in the browser.
 
 ## Troubleshooting
 
@@ -64,7 +62,11 @@ Some common issues you may encounter are:
 * Your version of Livebook needs to be updated.
 * Your version of Elixir/Erlang needs to be updated.
 * Your version of Xcode needs to be updated.
+* This Livebook has cached outdated versions of dependencies
 
 Ensure you have the latest versions of all necessary software installed, and ensure no other servers are running on port 4000.
+
+To clear the cache, you can click the `Setup without cache` button revealed by clicking the dropdown next to the `setup` button at the top of the Livebook.
+
 If that does not resolve the issue, you can [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) to receive support from the LiveView Native team.
 
