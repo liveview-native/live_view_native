@@ -31,7 +31,6 @@ defmodule Mix.Tasks.ExDocGuides do
     import Kernel, except: [defmodule: 2]
 
     """, "")
-    # TODO There's a bug in the regex below that's causing it to not match on all scenarios.
     |> String.replace(~r/\|\> KinoLiveViewNative\.register\(\".+\, \".+\"\)\n\nimport KinoLiveViewNative\.Livebook, only: \[\]\nimport Kernel\n:ok\n/, "")
   end
 
