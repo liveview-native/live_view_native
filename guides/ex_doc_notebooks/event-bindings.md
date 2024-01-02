@@ -6,7 +6,7 @@
 
 In this guide, you'll learn how to build interactive LiveView Native applications using event bindings.
 
-This guide assumes some familiarity with [Phoenix Bindings](https://hexdocs.pm/phoenix_live_view/bindings.html) and
+This guide assumes some existing familiarity with [Phoenix Bindings](https://hexdocs.pm/phoenix_live_view/bindings.html).
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -28,13 +28,13 @@ There is also a [Pull Request](https://github.com/liveview-native/liveview-clien
 
 ## "click" Events
 
-Bind the `phx-click` event to any SwiftUI view and define a corresponding [handle_event/3](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#c:handle_event/3) callback function based on the message sent.
+The `phx-click` event triggers a corresponding [handle_event/3](https://hexdocs.pm/phoenix_live_view/Phoenix.LiveView.html#c:handle_event/3) callback function whenever a SwiftUI view is pressed.
 
 In the example below, the client sends a `"ping"` event to the server, and trigger's the LiveView's `"ping"` event handler.
 
 Evaluate the example below, then click the `"Click me!"` button. Notice `"Pong"` is printed in the server logs below.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DbGlja0V4YW1wbGVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEJ1dHRvbiBwaHgtY2xpY2s9XCJwaW5nXCI+Q2xpY2sgbWUhPC9CdXR0b24+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPHA+SGVsbG8gZnJvbSBMaXZlVmlldyE8L3A+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiBoYW5kbGVfZXZlbnQoXCJwaW5nXCIsIF9wYXJhbXMsIHNvY2tldCkgZG9cbiAgICB7Om5vcmVwbHksIHNvY2tldH1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,409],[522,45],[569,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DbGlja0V4YW1wbGVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEJ1dHRvbiBwaHgtY2xpY2s9XCJwaW5nXCI+UHJlc3MgbWUgb24gbmF0aXZlITwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxidXR0b24gcGh4LWNsaWNrPVwicGluZ1wiPkNsaWNrIG1lIG9uIHdlYiE8L2J1dHRvbj5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIGhhbmRsZV9ldmVudChcInBpbmdcIiwgX3BhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLnB1dHMoXCJQb25nXCIpXG4gICAgezpub3JlcGx5LCBzb2NrZXR9XG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,462],[575,45],[622,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.ClickExampleLive do
@@ -44,26 +44,22 @@ defmodule Server.ClickExampleLive do
   @impl true
   def render(%{platform_id: :swiftui} = assigns) do
     ~SWIFTUI"""
-    <Button phx-click="ping">Click me!</Button>
+    <Button phx-click="ping">Press me on native!</Button>
     """
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <p>Hello from LiveView!</p>
+    <button phx-click="ping">Click me on web!</button>
     """
   end
 
   def handle_event("ping", _params, socket) do
+    IO.puts("Pong")
     {:noreply, socket}
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
-
-import KinoLiveViewNative.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Click Events Updating State
@@ -72,7 +68,7 @@ Event handlers in LiveView can update the LiveView's state in the socket.
 
 Evaluate the cell below to see an example of incrementing a count.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Db3VudGVyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDpjb3VudCwgMCl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEJ1dHRvbiBwaHgtY2xpY2s9XCJpbmNyZW1lbnRcIj5Db3VudDogPCU9IEBjb3VudCAlPjwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIGhhbmRsZV9ldmVudChcImluY3JlbWVudFwiLCBfcGFyYW1zLCBzb2NrZXQpIGRvXG4gICAgezpub3JlcGx5LCBhc3NpZ24oc29ja2V0LCA6Y291bnQsIHNvY2tldC5hc3NpZ25zLmNvdW50ICsgMSl9XG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,553],[666,45],[713,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Db3VudGVyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDpjb3VudCwgMCl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEJ1dHRvbiBwaHgtY2xpY2s9XCJpbmNyZW1lbnRcIj5Db3VudDogPCU9IEBjb3VudCAlPjwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8YnV0dG9uIHBoeC1jbGljaz1cImluY3JlbWVudFwiPkNvdW50OiA8JT0gQGNvdW50ICU+PC9idXR0b24+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiBoYW5kbGVfZXZlbnQoXCJpbmNyZW1lbnRcIiwgX3BhcmFtcywgc29ja2V0KSBkb1xuICAgIHs6bm9yZXBseSwgYXNzaWduKHNvY2tldCwgOmNvdW50LCBzb2NrZXQuYXNzaWducy5jb3VudCArIDEpfVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,585],[698,45],[745,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.CounterLive do
@@ -93,7 +89,7 @@ defmodule Server.CounterLive do
 
   def render(assigns) do
     ~H"""
-    <p>Hello from LiveView!</p>
+    <button phx-click="increment">Count: <%= @count %></button>
     """
   end
 
@@ -101,14 +97,9 @@ defmodule Server.CounterLive do
     {:noreply, assign(socket, :count, socket.assigns.count + 1)}
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
-
-import KinoLiveViewNative.Livebook, only: []
-import Kernel
-:ok
 ```
 
-## phx-change with Controls and Indicators
+## `phx-change` with Controls and Indicators
 
 In Phoenix, the `phx-change` event must be applied to a parent form. However in SwiftUI there is no similar concept of forms. Instead, SwiftUI provides [Controls and Indicators](https://developer.apple.com/documentation/swiftui/controls-and-indicators) views. We can apply the `phx-change` binding to any of these views.
 
@@ -118,9 +109,9 @@ The params of the message are based on the name of the [Binding](https://develop
 
 For example, many views use the `value` binding argument, so the params will be sent as `%{"value" => value}`. However, certain views such as `TextField` and `Toggle` deviate from this pattern as you can see in the examples below.
 
-<!-- livebook:{"break_markdown":true} -->
+<!-- livebook:{"branch_parent_index":2} -->
 
-### TextField
+## Text Field
 
 This code example defines a LiveView module that renders a SwiftUI TextField. It triggers the change event when text is entered and logs the entered text to the console.
 
@@ -151,11 +142,6 @@ defmodule Server.TextFieldLive do
     {:noreply, socket}
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
-
-import KinoLiveViewNative.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Slider
@@ -197,11 +183,6 @@ defmodule Server.HomeLive do
     {:noreply, socket}
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
-
-import KinoLiveViewNative.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Stepper
@@ -248,11 +229,6 @@ defmodule Server.TicketsLive do
     {:noreply, assign(socket, :tickets, tickets)}
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
-
-import KinoLiveViewNative.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Toggle
@@ -289,12 +265,9 @@ defmodule Server.ToggleLive do
     {:noreply, assign(socket, :on, on)}
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
-
-import KinoLiveViewNative.Livebook, only: []
-import Kernel
-:ok
 ```
+
+### Date Picker
 
 ## Native Bindings
 
