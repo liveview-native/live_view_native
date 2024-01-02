@@ -6,7 +6,8 @@ Mix.install(
     {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
   ],
   config: [
-    live_view_native: [plugins: [LiveViewNativeSwiftUi]]
+    live_view_native: [plugins: [LiveViewNative.SwiftUI]],
+    live_view_native_style_sheet: [parsers: [swiftui: LiveViewNative.SwiftUI.RulesParser]]
   ]
 )
 
@@ -25,23 +26,21 @@ In future lessons, you'll use this iOS application to view iOS examples in the X
 
 First, make sure you have followed the [Getting Started](./getting_started.md) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server runs properly. You should see the text `Hello from LiveView!`
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuICBcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPHA+SGVsbG8gZnJvbSBMaXZlVmlldyE8L3A+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,321],[434,45],[481,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"e30","chunks":[[0,109],[111,306],[419,45],[466,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule MyApp.HomeLive do
+defmodule Server.ExampleLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
-    <Text>
-      Hello from LiveView Native!
-    </Text>
+    <Text>Hello from LiveView Native!</Text>
     """
   end
 
@@ -54,6 +53,7 @@ end
 |> KinoLiveViewNative.register("/", ":index")
 
 import KinoLiveViewNative.Livebook, only: []
+import Kernel
 :ok
 ```
 
@@ -63,7 +63,7 @@ Open Xcode and select Create New Project.
 
 <!-- livebook:{"break_markdown":true} -->
 
-![Xcode Create New Project](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-create-new-project.png?raw=true)
+![Xcode Create New Project](https://github.com/liveview-native/documentation_assets/blob/main/xcode-create-new-project.png?raw=true)
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -71,7 +71,7 @@ Select the `iOS` and `App` options to create an iOS application. Then click `Nex
 
 <!-- livebook:{"break_markdown":true} -->
 
-![Xcode Create Template For New Project](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-create-template-for-new-project.png?raw=true)
+![Xcode Create Template For New Project](https://github.com/liveview-native/documentation_assets/blob/main/xcode-create-template-for-new-project.png?raw=true)
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -88,7 +88,7 @@ Choose options for your new project that match the following image, then click `
 
 <!-- livebook:{"break_markdown":true} -->
 
-![Xcode Choose Options For Your New Project](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-choose-options-for-your-new-project.png?raw=true)
+![Xcode Choose Options For Your New Project](https://github.com/liveview-native/documentation_assets/blob/main/xcode-choose-options-for-your-new-project.png?raw=true)
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -96,15 +96,17 @@ Select an appropriate folder location where you would like to store the iOS proj
 
 <!-- livebook:{"break_markdown":true} -->
 
-![Xcode select folder location](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-select-folder-location.png?raw=true)
+![Xcode select folder location](https://github.com/liveview-native/documentation_assets/blob/main/xcode-select-folder-location.png?raw=true)
 
 ## Add the LiveView Client SwiftUI Package
 
 In Xcode from the project you just created, select `File -> Add Package Dependencies`. Then, search for `liveview-client-swiftui`. Once you have selected the package, click `Add Package`.
 
+The image below was created using version `0.1.2`. You should select whichever is the latest version of LiveView Native.
+
 <!-- livebook:{"break_markdown":true} -->
 
-![](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-select-liveview-client-swiftui-package.png?raw=true)
+![](https://github.com/liveview-native/documentation_assets/blob/main/xcode-select-liveview-client-swiftui-package.png?raw=true)
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -112,15 +114,32 @@ Choose the Package Products for `liveview-client-swiftui`. Select the iOS app yo
 
 <!-- livebook:{"break_markdown":true} -->
 
-![](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-choose-package-products-for-liveview-client-swiftui.png?raw=true)
+![](https://github.com/liveview-native/documentation_assets/blob/main/xcode-choose-package-products-for-liveview-client-swiftui.png?raw=true)
 
 <!-- livebook:{"break_markdown":true} -->
 
-If the following prompt appears, select `Trust & Enable All` to enable the `liveview-client-swiftui` package we just added.
+At this point, you'll need to enable permissions for plugins used by LiveView Native.
+You should see the following prompt. Click `Show in Issues Navigator`.
 
 <!-- livebook:{"break_markdown":true} -->
 
-![Xcode some build plugins are disabled](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-some-build-plugins-are-disabled.png?raw=true)
+![Xcode some build plugins are disabled](https://github.com/liveview-native/documentation_assets/blob/main/xcode-some-build-plugins-are-disabled.png?raw=true)
+
+<!-- livebook:{"break_markdown":true} -->
+
+If you do not see the prompt, manually navigate to the issues section of the Xcode Navigator and you'll see the plugins with permission issues.
+
+<!-- livebook:{"break_markdown":true} -->
+
+![Xcode Issues Navigator displaying disabled plugins](https://github.com/liveview-native/documentation_assets/blob/main/xcode-build-in-plugin-errors.png?raw=true)
+
+<!-- livebook:{"break_markdown":true} -->
+
+The specific plugins are subject to change. Click on each plugin that needs to be enabled. You'll see the following prompt. Select `Trust & Enable All` to enable the plugin.
+
+<!-- livebook:{"break_markdown":true} -->
+
+![CasePathMacros was disabled prompt](https://github.com/liveview-native/documentation_assets/blob/main/xcode-casepathsmacros-was-disabled.png?raw=true)
 
 ## Setup the SwiftUI LiveView
 
@@ -176,7 +195,7 @@ To avoid confusion in the step above, here's how our `ContentView` should now lo
 
 <!-- livebook:{"break_markdown":true} -->
 
-![](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-replace-content-view.png?raw=true)
+![](https://github.com/liveview-native/documentation_assets/blob/main/xcode-replace-content-view.png?raw=true)
 
 ## Start the Active Scheme
 
@@ -190,7 +209,7 @@ If you encounter an issue with `LiveViewNativeMacros`, select `Trust & Enable` t
 
 <!-- livebook:{"break_markdown":true} -->
 
-![](https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-live-view-native-macros-was-disabled.png?raw=true)
+![](https://github.com/liveview-native/documentation_assets/blob/main/xcode-live-view-native-macros-was-disabled.png?raw=true)
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -199,7 +218,7 @@ The iOS Xcode simulator should start. If you encounter any issues, make sure you
 <!-- livebook:{"break_markdown":true} -->
 
 <div style="height: 800; width: 100%; display: flex; height: 800px; justify-content: center; align-items: center;">
-<img style="width: 100%; height: 100%; object-fit: contain" src="https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-ios-simulator-no-connection.png?raw=true"/>
+<img style="width: 100%; height: 100%; object-fit: contain" src="https://github.com/liveview-native/documentation_assets/blob/main/xcode-ios-simulator-no-connection.png?raw=true"/>
 </div>
 
 <!-- livebook:{"break_markdown":true} -->
@@ -209,7 +228,7 @@ After you start the active scheme, the simulator should open the iOS application
 <!-- livebook:{"break_markdown":true} -->
 
 <div style="height: 800; width: 100%; display: flex; height: 800px; justify-content: center; align-items: center;">
-<img style="width: 100%; height: 100%; object-fit: contain" src="https://github.com/BrooklinJazz/live_view_native_assets/blob/main/xcode-hello-from-liveview-native.png?raw=true"/>
+<img style="width: 100%; height: 100%; object-fit: contain" src="https://github.com/liveview-native/documentation_assets/blob/main/xcode-hello-from-liveview-native.png?raw=true"/>
 </div>
 
 ## Live Reloading
@@ -218,7 +237,7 @@ The SwiftUI application will reload whenever changes occur on the connected Phoe
 
 Evaluate the following smart cell. The Xcode simulator should update automatically to display `Hello again from LiveView Native!`
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBhZ2FpbiBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxkaXY+SGVsbG8gYWdhaW4gZnJvbSBMaXZlVmlldyE8L2Rpdj5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,335],[448,45],[495,49]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIE15QXBwLkhvbWVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHQ+XG4gICAgICBIZWxsbyBhZ2FpbiBmcm9tIExpdmVWaWV3IE5hdGl2ZSFcbiAgICA8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxkaXY+SGVsbG8gYWdhaW4gZnJvbSBMaXZlVmlldyE8L2Rpdj5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,335],[448,45],[495,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
@@ -247,6 +266,7 @@ end
 |> KinoLiveViewNative.register("/", ":index")
 
 import KinoLiveViewNative.Livebook, only: []
+import Kernel
 :ok
 ```
 
