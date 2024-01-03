@@ -26,9 +26,9 @@ defmodule MyAppWeb.HelloLive do
       <Button phx-click="hello">
         <Image class="fg-color-purple font-size-48 p-8" system-name="sparkles"></Image>
       </Button>
-      <VStack spacing={4}>
+      <HStack spacing={4}>
         Hello world on <Text class="bold"><%= device_name(assigns) %></Text>!
-      </VStack>
+      </HStack>
     </VStack>
     """
   end
