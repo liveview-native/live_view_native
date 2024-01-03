@@ -87,7 +87,7 @@ defmodule LiveViewNative.MixProject do
       "guides/common-features/handling-events.md",
       "guides/ex_doc_notebooks/getting-started.md",
       "guides/ex_doc_notebooks/create-a-swiftui-application.md",
-      "guides/ex_doc_notebooks/swiftui-views.md",
+      "guides/ex_doc_notebooks/common-swiftui-views.md",
       "guides/ex_doc_notebooks/interactive-swiftui-views.md"
       # "guides/ex_doc_notebooks/swiftui-styling.md"
       # "guides/ex_doc_notebooks/navigation.md"

@@ -6,7 +6,7 @@
 
 In this guide, you'll learn how to build interactive LiveView Native applications using event bindings.
 
-This guide assumes some existing familiarity with [Phoenix Bindings](https://hexdocs.pm/phoenix_live_view/bindings.html).
+This guide assumes some existing familiarity with [Phoenix Bindings](https://hexdocs.pm/phoenix_live_view/bindings.html) and how to set/access state stored in the LiveView's socket assigns. To get the most out of this material, you should already understand the `assign/3`/`assign/2` function, and how event bindings such as `phx-click` interact with the `handle_event/3` callback function.
 
 ## Event Bindings
 
@@ -32,7 +32,7 @@ In the example below, the client sends a `"ping"` event to the server, and trigg
 
 Evaluate the example below, then click the `"Click me!"` button. Notice `"Pong"` is printed in the server logs below.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DbGlja0V4YW1wbGVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEJ1dHRvbiBwaHgtY2xpY2s9XCJwaW5nXCI+UHJlc3MgbWUgb24gbmF0aXZlITwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxidXR0b24gcGh4LWNsaWNrPVwicGluZ1wiPkNsaWNrIG1lIG9uIHdlYiE8L2J1dHRvbj5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIGhhbmRsZV9ldmVudChcInBpbmdcIiwgX3BhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLnB1dHMoXCJQb25nXCIpXG4gICAgezpub3JlcGx5LCBzb2NrZXR9XG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,462],[575,45],[622,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DbGlja0V4YW1wbGVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxCdXR0b24gcGh4LWNsaWNrPVwicGluZ1wiPlByZXNzIG1lIG9uIG5hdGl2ZSE8L0J1dHRvbj5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8YnV0dG9uIHBoeC1jbGljaz1cInBpbmdcIj5DbGljayBtZSBvbiB3ZWIhPC9idXR0b24+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiBoYW5kbGVfZXZlbnQoXCJwaW5nXCIsIF9wYXJhbXMsIHNvY2tldCkgZG9cbiAgICBJTy5wdXRzKFwiUG9uZ1wiKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,457],[570,45],[617,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.ClickExampleLive do
@@ -66,7 +66,7 @@ Event handlers in LiveView can update the LiveView's state in the socket.
 
 Evaluate the cell below to see an example of incrementing a count.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Db3VudGVyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDpjb3VudCwgMCl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEJ1dHRvbiBwaHgtY2xpY2s9XCJpbmNyZW1lbnRcIj5Db3VudDogPCU9IEBjb3VudCAlPjwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8YnV0dG9uIHBoeC1jbGljaz1cImluY3JlbWVudFwiPkNvdW50OiA8JT0gQGNvdW50ICU+PC9idXR0b24+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiBoYW5kbGVfZXZlbnQoXCJpbmNyZW1lbnRcIiwgX3BhcmFtcywgc29ja2V0KSBkb1xuICAgIHs6bm9yZXBseSwgYXNzaWduKHNvY2tldCwgOmNvdW50LCBzb2NrZXQuYXNzaWducy5jb3VudCArIDEpfVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,585],[698,45],[745,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Db3VudGVyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDpjb3VudCwgMCl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxCdXR0b24gcGh4LWNsaWNrPVwiaW5jcmVtZW50XCI+Q291bnQ6IDwlPSBAY291bnQgJT48L0J1dHRvbj5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPGJ1dHRvbiBwaHgtY2xpY2s9XCJpbmNyZW1lbnRcIj5Db3VudDogPCU9IEBjb3VudCAlPjwvYnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwiaW5jcmVtZW50XCIsIF9wYXJhbXMsIHNvY2tldCkgZG9cbiAgICB7Om5vcmVwbHksIGFzc2lnbihzb2NrZXQsIDpjb3VudCwgc29ja2V0LmFzc2lnbnMuY291bnQgKyAxKX1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,580],[693,45],[740,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.CounterLive do
@@ -97,6 +97,40 @@ defmodule Server.CounterLive do
 end
 ```
 
+## Selectable Lists
+
+`List` views support selecting items within the list based on their id. To select an item, provide the `selection` attribute with the item's id.
+
+Pressing a child item in the `List` on a native device triggers the `phx-change` event. In the example below we've bound the `phx-change` event to send the `"selection-changed"` event. This event is then handled by the `handle_event/3` callback function and used to change the selected item.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TZWxlY3Rpb25MaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIHNlbGVjdGlvbjogXCIxXCIpfVxuICBlbmRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxMaXN0IHNlbGVjdGlvbj17QHNlbGVjdGlvbn0gcGh4LWNoYW5nZT1cInNlbGVjdGlvbi1jaGFuZ2VkXCI+XG4gICAgICA8JT0gZm9yIGkgPC0gMS4uMTAgZG8gJT5cbiAgICAgICAgPFRleHQgaWQ9e1wiI3tpfVwifT5JdGVtIDwlPSBpICU+PC9UZXh0PlxuICAgICAgPCUgZW5kICU+XG4gICAgPC9MaXN0PlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwic2VsZWN0aW9uLWNoYW5nZWRcIiwgJXsgXCJzZWxlY3Rpb25cIiA9PiBzZWxlY3Rpb24gfSwgc29ja2V0KSBkb1xuICAgIHs6bm9yZXBseSwgYXNzaWduKHNvY2tldCwgc2VsZWN0aW9uOiBzZWxlY3Rpb24pfVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,563],[676,45],[723,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule Server.SelectionLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, selection: "1")}
+  end
+
+  @impl true
+  def render(assigns) do
+    ~SWIFTUI"""
+    <List selection={@selection} phx-change="selection-changed">
+      <%= for i <- 1..10 do %>
+        <Text id={"#{i}"}>Item <%= i %></Text>
+      <% end %>
+    </List>
+    """
+  end
+
+  def handle_event("selection-changed", %{"selection" => selection}, socket) do
+    {:noreply, assign(socket, selection: selection)}
+  end
+end
+```
+
 ## Controls and Indicators
 
 In Phoenix, the `phx-change` event must be applied to a parent form. However in SwiftUI there is no similar concept of forms. Instead, SwiftUI provides [Controls and Indicators](https://developer.apple.com/documentation/swiftui/controls-and-indicators) views. We can apply the `phx-change` binding to any of these views.
@@ -107,7 +141,7 @@ The params of the message are based on the name of the [Binding](https://develop
 
 For example, many views use the `value` binding argument, so the params will be sent as `%{"value" => value}`. However, certain views such as `TextField` and `Toggle` deviate from this pattern as you can see in the examples below.
 
-<!-- livebook:{"branch_parent_index":3} -->
+<!-- livebook:{"branch_parent_index":4} -->
 
 ## Text Field
 
@@ -115,7 +149,7 @@ This code example defines a LiveView module that renders a SwiftUI TextField. It
 
 Evaluate the example and enter some text in your iOS simulator. Notice the inspected `params` appear in the console below as a map of `%{"text" => value}`.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5UZXh0RmllbGRMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFRleHRGaWVsZCBwaHgtY2hhbmdlPVwidHlwZVwiPkVudGVyIHRleHQgaGVyZTwvVGV4dEZpZWxkPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICBcbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIGhhbmRsZV9ldmVudChcInR5cGVcIiwgJXtcInRleHRcIiA9PiB2YWx1ZX0sIHNvY2tldCkgZG9cbiAgICBJTy5pbnNwZWN0KHZhbHVlKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,412],[525,45],[572,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5UZXh0RmllbGRMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0RmllbGQgcGh4LWNoYW5nZT1cInR5cGVcIj5FbnRlciB0ZXh0IGhlcmU8L1RleHRGaWVsZD5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgXG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiBoYW5kbGVfZXZlbnQoXCJ0eXBlXCIsICV7XCJ0ZXh0XCIgPT4gdmFsdWV9LCBzb2NrZXQpIGRvXG4gICAgSU8uaW5zcGVjdCh2YWx1ZSlcbiAgICB7Om5vcmVwbHksIHNvY2tldH1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,407],[520,45],[567,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.TextFieldLive do
@@ -142,7 +176,7 @@ defmodule Server.TextFieldLive do
 end
 ```
 
-<!-- livebook:{"branch_parent_index":3} -->
+<!-- livebook:{"branch_parent_index":4} -->
 
 ## Slider
 
@@ -150,7 +184,7 @@ This code example renders a SwiftUI [Slider](https://developer.apple.com/documen
 
 Evaluate the example and enter some text in your iOS simulator. Notice the inspected `params` appear in the console below as a map of `%{"value" => value}`.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxTbGlkZXJcbiAgICAgIGxvd2VyLWJvdW5kPXswfVxuICAgICAgdXBwZXItYm91bmQ9ezEwfVxuICAgICAgc3RlcD17MX1cbiAgICAgIHBoeC1jaGFuZ2U9XCJzbGlkZVwiXG4gICAgPlxuICAgICAgPFRleHQgdGVtcGxhdGU9ezpsYWJlbH0+UGVyY2VudCBDb21wbGV0ZWQ8L1RleHQ+XG4gICAgICA8VGV4dCB0ZW1wbGF0ZT17OlwibWluaW11bS12YWx1ZS1sYWJlbFwifT4wJTwvVGV4dD5cbiAgICAgIDxUZXh0IHRlbXBsYXRlPXs6XCJtYXhpbXVtLXZhbHVlLWxhYmVsXCJ9PjEwMCU8L1RleHQ+XG4gICAgPC9TbGlkZXI+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwic2xpZGVcIiwgcGFyYW1zLCBzb2NrZXQpIGRvXG4gICAgSU8uaW5zcGVjdChwYXJhbXMpXG4gICAgezpub3JlcGx5LCBzb2NrZXR9XG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,617],[730,45],[777,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2xpZGVyXG4gICAgICBsb3dlci1ib3VuZD17MH1cbiAgICAgIHVwcGVyLWJvdW5kPXsxMH1cbiAgICAgIHN0ZXA9ezF9XG4gICAgICBwaHgtY2hhbmdlPVwic2xpZGVcIlxuICAgID5cbiAgICAgIDxUZXh0IHRlbXBsYXRlPXs6bGFiZWx9PlBlcmNlbnQgQ29tcGxldGVkPC9UZXh0PlxuICAgICAgPFRleHQgdGVtcGxhdGU9ezpcIm1pbmltdW0tdmFsdWUtbGFiZWxcIn0+MCU8L1RleHQ+XG4gICAgICA8VGV4dCB0ZW1wbGF0ZT17OlwibWF4aW11bS12YWx1ZS1sYWJlbFwifT4xMDAlPC9UZXh0PlxuICAgIDwvU2xpZGVyPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIGhhbmRsZV9ldmVudChcInNsaWRlXCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLmluc3BlY3QocGFyYW1zKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,612],[725,45],[772,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.HomeLive do
@@ -185,7 +219,7 @@ defmodule Server.HomeLive do
 end
 ```
 
-<!-- livebook:{"branch_parent_index":3} -->
+<!-- livebook:{"branch_parent_index":4} -->
 
 ## Stepper
 
@@ -193,7 +227,7 @@ This code example renders a SwiftUI [Slider](https://developer.apple.com/documen
 
 Evaluate the example and increment/decrement the step.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5UaWNrZXRzTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDp0aWNrZXRzLCAwKX1cbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7cGxhdGZvcm1faWQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U3RlcHBlclxuICAgICAgbG93ZXItYm91bmQ9ezB9XG4gICAgICB1cHBlci1ib3VuZD17MTZ9XG4gICAgICBzdGVwPXsxfVxuICAgICAgcGh4LWNoYW5nZT1cImNoYW5nZS10aWNrZXRzXCJcbiAgICA+XG4gICAgICBUaWNrZXRzIDwlPSBAdGlja2V0cyAlPlxuICAgIDwvU3RlcHBlcj5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPHA+SGVsbG8gZnJvbSBMaXZlVmlldyE8L3A+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiBoYW5kbGVfZXZlbnQoXCJjaGFuZ2UtdGlja2V0c1wiLCAle1widmFsdWVcIiA9PiB0aWNrZXRzfSwgc29ja2V0KSBkb1xuICAgIHs6bm9yZXBseSwgYXNzaWduKHNvY2tldCwgOnRpY2tldHMsIHRpY2tldHMpfVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,653],[766,45],[813,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5UaWNrZXRzTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDp0aWNrZXRzLCAwKX1cbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFN0ZXBwZXJcbiAgICAgIGxvd2VyLWJvdW5kPXswfVxuICAgICAgdXBwZXItYm91bmQ9ezE2fVxuICAgICAgc3RlcD17MX1cbiAgICAgIHBoeC1jaGFuZ2U9XCJjaGFuZ2UtdGlja2V0c1wiXG4gICAgPlxuICAgICAgVGlja2V0cyA8JT0gQHRpY2tldHMgJT5cbiAgICA8L1N0ZXBwZXI+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxwPkhlbGxvIGZyb20gTGl2ZVZpZXchPC9wPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwiY2hhbmdlLXRpY2tldHNcIiwgJXtcInZhbHVlXCIgPT4gdGlja2V0c30sIHNvY2tldCkgZG9cbiAgICB7Om5vcmVwbHksIGFzc2lnbihzb2NrZXQsIDp0aWNrZXRzLCB0aWNrZXRzKX1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,648],[761,45],[808,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.TicketsLive do
@@ -231,7 +265,7 @@ defmodule Server.TicketsLive do
 end
 ```
 
-<!-- livebook:{"branch_parent_index":3} -->
+<!-- livebook:{"branch_parent_index":4} -->
 
 ## Toggle
 
@@ -239,7 +273,7 @@ This code example renders a SwiftUI [Toggle](https://developer.apple.com/documen
 
 Evaluate the example below and click on the toggle.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ub2dnbGVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDpvbiwgZmFsc2UpfVxuICBlbmRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUb2dnbGUgcGh4LWNoYW5nZT1cInRvZ2dsZVwiIGlzLW9uPXtAb259Pk9uL09mZjwvVG9nZ2xlPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIGhhbmRsZV9ldmVudChcInRvZ2dsZVwiLCAle1wiaXMtb25cIiA9PiBvbn0sIHNvY2tldCkgZG9cbiAgICB7Om5vcmVwbHksIGFzc2lnbihzb2NrZXQsIDpvbiwgb24pfVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,517],[630,45],[677,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ub2dnbGVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDpvbiwgZmFsc2UpfVxuICBlbmRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8VG9nZ2xlIHBoeC1jaGFuZ2U9XCJ0b2dnbGVcIiBpcy1vbj17QG9ufT5Pbi9PZmY8L1RvZ2dsZT5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPHA+SGVsbG8gZnJvbSBMaXZlVmlldyE8L3A+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiBoYW5kbGVfZXZlbnQoXCJ0b2dnbGVcIiwgJXtcImlzLW9uXCIgPT4gb259LCBzb2NrZXQpIGRvXG4gICAgezpub3JlcGx5LCBhc3NpZ24oc29ja2V0LCA6b24sIG9uKX1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,512],[625,45],[672,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.ToggleLive do
@@ -269,13 +303,13 @@ defmodule Server.ToggleLive do
 end
 ```
 
-<!-- livebook:{"branch_parent_index":3} -->
+<!-- livebook:{"branch_parent_index":4} -->
 
 ## DatePicker
 
 The SwiftUI Date Picker provides a native view for selecting a date. The date is selected by the user and sent back as a string.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5EYXRlUGlja2VyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBkZWYgbW91bnQoX3BhcmFtcywgX3Nlc3Npb24sIHNvY2tldCkgZG9cbiAgICB7Om9rLCBhc3NpZ24oc29ja2V0LCA6ZGF0ZSwgbmlsKX1cbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7cGxhdGZvcm1faWQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8RGF0ZVBpY2tlciBwaHgtY2hhbmdlPVwicGljay1kYXRlXCIvPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwicGljay1kYXRlXCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLmluc3BlY3QocGFyYW1zKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,419],[532,45],[579,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5EYXRlUGlja2VyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBkZWYgbW91bnQoX3BhcmFtcywgX3Nlc3Npb24sIHNvY2tldCkgZG9cbiAgICB7Om9rLCBhc3NpZ24oc29ja2V0LCA6ZGF0ZSwgbmlsKX1cbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPERhdGVQaWNrZXIgcGh4LWNoYW5nZT1cInBpY2stZGF0ZVwiLz5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIGhhbmRsZV9ldmVudChcInBpY2stZGF0ZVwiLCBwYXJhbXMsIHNvY2tldCkgZG9cbiAgICBJTy5pbnNwZWN0KHBhcmFtcylcbiAgICB7Om5vcmVwbHksIHNvY2tldH1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,414],[527,45],[574,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.DatePickerLive do
@@ -302,7 +336,7 @@ end
 
 You can customize the [DatePicker](https://developer.apple.com/documentation/swiftui/datepicker) view's `displayedComponents` attribute to display different date information such as the full date or just the day and hour.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5EYXRlUGlja2VySG91ckFuZERheUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgZGVmIG1vdW50KF9wYXJhbXMsIF9zZXNzaW9uLCBzb2NrZXQpIGRvXG4gICAgezpvaywgYXNzaWduKHNvY2tldCwgOmRhdGUsIG5pbCl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPERhdGVQaWNrZXIgcGh4LWNoYW5nZT1cInBpY2stZGF0ZVwiIGRpc3BsYXllZC1jb21wb25lbnRzPXtbOlwiaG91ckFuZE1pbnV0ZVwiXX0vPlxuICAgIFwiXCJcIlxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwicGljay1kYXRlXCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLmluc3BlY3QocGFyYW1zKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,471],[584,45],[631,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5EYXRlUGlja2VySG91ckFuZERheUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgZGVmIG1vdW50KF9wYXJhbXMsIF9zZXNzaW9uLCBzb2NrZXQpIGRvXG4gICAgezpvaywgYXNzaWduKHNvY2tldCwgOmRhdGUsIG5pbCl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxEYXRlUGlja2VyIHBoeC1jaGFuZ2U9XCJwaWNrLWRhdGVcIiBkaXNwbGF5ZWQtY29tcG9uZW50cz17WzpcImhvdXJBbmRNaW51dGVcIl19Lz5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgZGVmIGhhbmRsZV9ldmVudChcInBpY2stZGF0ZVwiLCBwYXJhbXMsIHNvY2tldCkgZG9cbiAgICBJTy5pbnNwZWN0KHBhcmFtcylcbiAgICB7Om5vcmVwbHksIHNvY2tldH1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,466],[579,45],[626,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule Server.DatePickerHourAndDayLive do

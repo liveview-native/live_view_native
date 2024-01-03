@@ -1,4 +1,4 @@
-# SwiftUI Views
+# Common SwiftUI Views
 
 ```elixir
 Mix.install(
