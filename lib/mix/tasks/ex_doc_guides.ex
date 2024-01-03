@@ -3,6 +3,10 @@ defmodule Mix.Tasks.ExDocGuides do
   @moduledoc "Generates ex_doc friendly guides from Livebook notebooks"
   use Mix.Task
   def run(_args) do
+    # clean up old notebooks
+    File.rm_rf("guides/ex_doc_notebooks")
+    File.mkdir("guides/ex_doc_notebooks")
+
     File.ls!("guides/notebooks") |> Enum.filter(fn file_name -> file_name =~ ".livemd" end)
     |> Enum.each(fn file_name ->
       ex_doc_friendly_content = make_ex_doc_friendly(File.read!("guides/notebooks/#{file_name}"), file_name)
