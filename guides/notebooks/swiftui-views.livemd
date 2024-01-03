@@ -81,14 +81,14 @@ We've already seen the [Text](https://developer.apple.com/documentation/swiftui/
 
 Evaluate the cell below, then in Xcode, Start the iOS application you created in the [Create a SwiftUI Application](https://hexdocs.pm/live_view_native/create-a-swiftui-application.html) lesson and ensure you see the `"Hello, World!"` text.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0PkhlbGxvIGZyb20gTGl2ZVZpZXcgTmF0aXZlITwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,226],[339,45],[386,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5UZXh0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8VGV4dD5IZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSE8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,221],[334,45],[381,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.TextLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -139,14 +139,14 @@ end
 
 Evaluate the example below and view the working 3X3 layout in your Xcode simulator.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxWU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgPC9WU3RhY2s+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,508],[621,45],[668,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TdGFja0V4YW1wbGVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxWU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgPC9WU3RhY2s+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,511],[624,45],[671,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.StackExampleLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -208,7 +208,7 @@ end
 <summary>Example Solution</summary>
 
 ```elixir
-defmodule Server.HomeLive do
+defmodule Server.BoardLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -239,14 +239,14 @@ end
 
 </details>
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDwhLS0gRW50ZXIgc29sdXRpb24gYmVsb3cgLS0+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,215],[328,45],[375,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Cb2FyZExpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPCEtLSBFbnRlciBzb2x1dGlvbiBiZWxvdyAtLT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,211],[324,45],[371,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.BoardLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -268,14 +268,14 @@ import Kernel
 
 `VStack` and `HStack` do not provide vertical-alignment between horizontal rows. Notice in the following example that the rows/columns of the 3X3 board are not aligned, just centered.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxWU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgPC9WU3RhY2s+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,462],[575,45],[622,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5BbGlnbm1lbnRFeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8VlN0YWNrPlxuICAgICAgPEhTdGFjaz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgIDwvSFN0YWNrPlxuICAgICAgPEhTdGFjaz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+TzwvVGV4dD5cbiAgICAgICAgPFRleHQ+TzwvVGV4dD5cbiAgICAgIDwvSFN0YWNrPlxuICAgICAgPEhTdGFjaz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+TzwvVGV4dD5cbiAgICAgIDwvSFN0YWNrPlxuICAgIDwvVlN0YWNrPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,469],[582,45],[629,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.AlignmentExampleLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -316,14 +316,14 @@ A grid layout vertically and horizontally aligns elements in the grid based on t
 
 Evaluate the example below and notice that rows and columns are aligned.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxHcmlkPlxuICAgICAgPEdyaWRSb3c+XG4gICAgICAgIDxUZXh0PlhYPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9HcmlkUm93PlxuICAgICAgPEdyaWRSb3c+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0dyaWRSb3c+XG4gICAgICA8R3JpZFJvdz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgIDwvR3JpZFJvdz5cbiAgICA8L0dyaWQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,488],[601,45],[648,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5HcmlkTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8R3JpZD5cbiAgICAgIDxHcmlkUm93PlxuICAgICAgICA8VGV4dD5YWDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgIDwvR3JpZFJvdz5cbiAgICAgIDxHcmlkUm93PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9HcmlkUm93PlxuICAgICAgPEdyaWRSb3c+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0dyaWRSb3c+XG4gICAgPC9HcmlkPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,483],[596,45],[643,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.GridLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -368,14 +368,14 @@ Here's an example using a `ScrollView` and a `HStack` to create scrollable text 
 
 There's no issue when only rendering a few children such as in the example below.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Pkl0ZW0gMTwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSAyPC9UZXh0PlxuICAgICAgICA8VGV4dD5JdGVtIDM8L1RleHQ+XG4gICAgICAgIDxUZXh0Pkl0ZW0gNDwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSA1PC9UZXh0PlxuICAgICAgICA8VGV4dD5JdGVtIDY8L1RleHQ+XG4gICAgICAgIDxUZXh0Pkl0ZW0gNzwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSA4PC9UZXh0PlxuICAgICAgICA8VGV4dD5JdGVtIDk8L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,497],[610,45],[657,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TY3JvbGxWaWV3RXhhbXBsZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5JdGVtIDE8L1RleHQ+XG4gICAgICAgIDxUZXh0Pkl0ZW0gMjwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSAzPC9UZXh0PlxuICAgICAgICA8VGV4dD5JdGVtIDQ8L1RleHQ+XG4gICAgICAgIDxUZXh0Pkl0ZW0gNTwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSA2PC9UZXh0PlxuICAgICAgICA8VGV4dD5JdGVtIDc8L1RleHQ+XG4gICAgICAgIDxUZXh0Pkl0ZW0gODwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSA5PC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,507],[620,45],[667,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ExampleLive do
+defmodule Server.ScrollViewExampleLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -407,14 +407,14 @@ import Kernel
 
 However, for large amounts of data this becomes a problem since every child view is rendered. You should experience lag in your simulator while scrolling after evaluating the next example.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxWU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L1ZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,335],[448,45],[495,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MYWdFeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxWU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L1ZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,338],[451,45],[498,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ExampleLive do
+defmodule Server.LagExampleLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -440,20 +440,18 @@ import Kernel
 
 ### Optimized ScrollView with LazyHStack and LazyVStack
 
-<!-- livebook:{"break_markdown":true} -->
-
 To resolve the performance problem for large amounts of data, you can use the Lazy views. Lazy views only create items as needed. Items won't be rendered until they are present on the screen.
 
 The next example demonstrates how using `LazyVStack` instead of `VStack` resolves the performance issue.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxMYXp5VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwMCBkbyAlPlxuICAgICAgICAgIDxUZXh0Pkl0ZW0gPCU9IG4gJT48L1RleHQ+XG4gICAgICAgIDwlIGVuZCAlPlxuICAgICAgPC9MYXp5VlN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,343],[456,45],[503,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5PcHRpbWl6ZWRTY3JvbGxWaWV3TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxMYXp5VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwMCBkbyAlPlxuICAgICAgICAgIDxUZXh0Pkl0ZW0gPCU9IG4gJT48L1RleHQ+XG4gICAgICAgIDwlIGVuZCAlPlxuICAgICAgPC9MYXp5VlN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,355],[468,45],[515,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ExampleLive do
+defmodule Server.OptimizedScrollViewLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -510,15 +508,78 @@ import Kernel
 :ok
 ```
 
-### [TODO] Supporting Selection
+### Supporting Hierarchical Content
 
-<!-- livebook:{"break_markdown":true} -->
+`List` views support hierarchical content using the `DisclosureGroup` view. Nest `DisclosureGroup` views within a list to create multiple levels of content as seen in the example below.
 
-### [TODO] Refreshing List Content
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5IaWVyYXJjaGljYWxMaXN0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8TGlzdD5cbiAgICAgIDxEaXNjbG9zdXJlR3JvdXA+XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwibGFiZWxcIj5MZXZlbCAxPC9UZXh0PlxuICAgICAgICA8RGlzY2xvc3VyZUdyb3VwPlxuICAgICAgICAgIDxUZXh0IHRlbXBsYXRlPVwibGFiZWxcIj5MZXZlbCAyPC9UZXh0PlxuICAgICAgICAgIDxEaXNjbG9zdXJlR3JvdXA+XG4gICAgICAgICAgICA8VGV4dCB0ZW1wbGF0ZT1cImxhYmVsXCI+TGV2ZWwgMzwvVGV4dD5cbiAgICAgICAgICAgIENvbnRlbnRcbiAgICAgICAgICA8L0Rpc2Nsb3N1cmVHcm91cD5cbiAgICAgICAgPC9EaXNjbG9zdXJlR3JvdXA+XG4gICAgICA8L0Rpc2Nsb3N1cmVHcm91cD5cbiAgICA8L0xpc3Q+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,534],[647,45],[694,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
-<!-- livebook:{"break_markdown":true} -->
+```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
 
-### [TODO] Supporting Hierarchical Content
+defmodule Server.HierarchicalListLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <List>
+      <DisclosureGroup>
+        <Text template="label">Level 1</Text>
+        <DisclosureGroup>
+          <Text template="label">Level 2</Text>
+          <DisclosureGroup>
+            <Text template="label">Level 3</Text>
+            Content
+          </DisclosureGroup>
+        </DisclosureGroup>
+      </DisclosureGroup>
+    </List>
+    """
+  end
+end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
+```
+
+Alternatively we can separate children within a `List` view in a `Section` view as seen in the example below. Views in the `Section` can have the `template` attribute with a `"header"` or `"footer"` value which controlls how the content is displayed above or below the section.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MaXN0U2VjdGlvbnNMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxMaXN0PlxuICAgICAgPFNlY3Rpb24+XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwiaGVhZGVyXCI+SGVhZGVyPC9UZXh0PlxuICAgICAgICBDb250ZW50XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwiZm9vdGVyXCI+Rm9vdGVyPC9UZXh0PlxuICAgICAgPC9TZWN0aW9uPlxuICAgIDwvTGlzdD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,348],[461,45],[508,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
+defmodule Server.ListSectionsLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <List>
+      <Section>
+        <Text template="header">Header</Text>
+        Content
+        <Text template="footer">Footer</Text>
+      </Section>
+    </List>
+    """
+  end
+end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
+```
 
 ## Spacers
 
@@ -530,7 +591,7 @@ import Kernel
 
 Evaluate the following example and notice the `Text` element is pushed to the right by the `Spacer`.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TcGFjZXJMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle3BsYXRmb3JtX2lkOiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEhTdGFjaz5cbiAgICAgIDxTcGFjZXIvPlxuICAgICAgPFRleHQ+VGhpcyB0ZXh0IGlzIHB1c2hlZCB0byB0aGUgcmlnaHQ8L1RleHQ+XG4gICAgPC9IU3RhY2s+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,278],[391,45],[438,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TcGFjZXJMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxIU3RhY2s+XG4gICAgICA8U3BhY2VyLz5cbiAgICAgIDxUZXh0PlRoaXMgdGV4dCBpcyBwdXNoZWQgdG8gdGhlIHJpZ2h0PC9UZXh0PlxuICAgIDwvSFN0YWNrPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,273],[386,45],[433,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
@@ -584,7 +645,7 @@ end
 
 </details>
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Cb3R0b21UZXh0U3BhY2VyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDwhLS0gRW50ZXIgc29sdXRpb24gYmVsb3cgLS0+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,227],[340,45],[387,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Cb3R0b21UZXh0U3BhY2VyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8IS0tIEVudGVyIHNvbHV0aW9uIGJlbG93IC0tPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,222],[335,45],[382,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
@@ -615,14 +676,14 @@ import Kernel
 
 Here's an example of `AsyncImage` with a lorem picsum image from https://picsum.photos/400/600.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxBc3luY0ltYWdlIHVybD1cImh0dHBzOi8vcGljc3VtLnBob3Rvcy80MDAvNDAwXCI+PC9Bc3luY0ltYWdlPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,247],[360,45],[407,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Bc3luY0ltYWdlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8QXN5bmNJbWFnZSB1cmw9XCJodHRwczovL3BpY3N1bS5waG90b3MvNDAwLzQwMFwiPjwvQXN5bmNJbWFnZT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,248],[361,45],[408,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.AsyncImageLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -644,14 +705,14 @@ import Kernel
 
 `AsyncImage` displays a loading spinner while loading the image. Here's an example of using `AsyncImage` without a URL so that it loads forever.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxBc3luY0ltYWdlIHVybD1cIlwiPjwvQXN5bmNJbWFnZT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,218],[331,45],[378,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Mb2FkaW5nU3Bpbm5lckxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEFzeW5jSW1hZ2UgdXJsPVwiXCI+PC9Bc3luY0ltYWdlPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,223],[336,45],[383,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.LoadingSpinnerLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -677,14 +738,14 @@ For example, the path `/images/logo.png` evaluates as http://localhost:4000/imag
 
 Evaluate the example below to see the LiveView Native logo in the iOS simulator.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxBc3luY0ltYWdlIHVybD1cIi9pbWFnZXMvbG9nby5wbmdcIi8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,222],[335,45],[382,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5SZWxhdGl2ZVBhdGhMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxBc3luY0ltYWdlIHVybD1cIi9pbWFnZXMvbG9nby5wbmdcIi8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,225],[338,45],[385,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.RelativePathLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -716,14 +777,14 @@ For the full list of SF Symbols you can download Apple's [Symbols 5](https://dev
 
 Evaluate the cell below to see an example using the `square.and.arrow.up` symbol.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxJbWFnZSBzeXN0ZW0tbmFtZT1cInNxdWFyZS5hbmQuYXJyb3cudXBcIiAvPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,229],[342,45],[389,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5JbWFnZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEltYWdlIHN5c3RlbS1uYW1lPVwic3F1YXJlLmFuZC5hcnJvdy51cFwiIC8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,225],[338,45],[385,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.ImageLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -753,14 +814,14 @@ Then evaluate the following example and you should see this image in your simula
 
 You will need to **rebuild the native application** to pick up the changes to the assets catalogue.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxJbWFnZSBuYW1lPVwiSW1hZ2VcIi8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,207],[320,45],[367,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Bc3NldENhdGFsb2d1ZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEltYWdlIG5hbWU9XCJJbWFnZVwiLz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,212],[325,45],[372,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.AssetCatalogueLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
@@ -786,14 +847,14 @@ The label of a button can be any view, such as a [Text](https://developer.apple.
 
 Evaluate the example below to see the SwiftUI [Button](https://developer.apple.com/documentation/swiftui/button) element.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Ib21lTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtwbGF0Zm9ybV9pZDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxCdXR0b24+PFRleHQ+VGV4dCBCdXR0b248L1RleHQ+PC9CdXR0b24+XG4gICAgPEJ1dHRvbj48TGFiZWwgc3lzdGVtLWltYWdlPVwiYm9sdC5maWxsXCI+SWNvbiBCdXR0b248L0xhYmVsPjwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,300],[413,45],[460,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5CdXR0b25MaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxCdXR0b24+PFRleHQ+VGV4dCBCdXR0b248L1RleHQ+PC9CdXR0b24+XG4gICAgPEJ1dHRvbj48TGFiZWwgc3lzdGVtLWltYWdlPVwiYm9sdC5maWxsXCI+SWNvbiBCdXR0b248L0xhYmVsPjwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,297],[410,45],[457,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.HomeLive do
+defmodule Server.ButtonLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
 
