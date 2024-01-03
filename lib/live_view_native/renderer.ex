@@ -1,20 +1,10 @@
 defmodule LiveViewNative.Renderer do
-  defmacro __using__(opts) do
-    quote do
-      Module.register_attribute(__MODULE__, :liveview_native_opts, persist: true)
-      Module.put_attribute(__MODULE__, :liveview_native_opts, %{
-        format: unquote(opts[:format]),
-        layout: unquote(opts[:layout])
-      })
-
-      @before_compile LiveViewNative.Renderer
-    end
-  end
-
-  defmacro __before_compile__(%{module: module, file: file} = env) do
+  defmacro __before_compile__(%{module: module} = env) do
     render? = Module.defines?(module, {:render, 1})
     suppress_render_warning? = Application.get_env(:live_view_native, :suppress_render_warning, false)
-    format = Module.get_attribute(module, :liveview_native_opts)[:format]
+    opts = Module.get_attribute(module, :native_opts)
+    format = opts[:format]
+    root = opts[:template_path]
 
     render_1_ast =
       if render? and !suppress_render_warning? do
@@ -36,7 +26,6 @@ defmodule LiveViewNative.Renderer do
       end
 
     render_target? = Module.defines?(module, {:render, 2})
-    root = Path.dirname(file)
     filename = template_filename(module, format)
     templates = Phoenix.Template.find_all(root, filename)
 
@@ -103,10 +92,21 @@ defmodule LiveViewNative.Renderer do
   end
 
   defp template_filename(module, format) do
-    module
-    |> Module.split()
-    |> List.last()
-    |> Macro.underscore()
-    |> Kernel.<>(".#{format}*")
+    case LiveViewNative.fetch_plugin(format) do
+      {:ok, plugin} ->
+        module_suffix =
+          plugin.module_suffix()
+          |> Atom.to_string()
+
+        module
+        |> Module.split()
+        |> Enum.reject(&(&1 == module_suffix))
+        |> List.last()
+        |> Macro.underscore()
+        |> Kernel.<>(".#{format}*")
+      :error ->
+        IO.warn("missing LiveViewNative plugin for format #{inspect(format)}")
+
+    end
   end
 end

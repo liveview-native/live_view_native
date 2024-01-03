@@ -36,7 +36,20 @@ defmodule LiveViewNative.Engine do
         [format, target] -> {format, target}
       end
 
-    plugin = LiveViewNative.plugin_for(format)
-    plugin.tag_handler(target)
+    case LiveViewNative.fetch_plugin(format) do
+      {:ok, plugin} -> plugin.tag_handler(target)
+      :error ->
+        IO.warn("could not find the LiveViewNative plugin for #{inspect(format)}")
+    end
+  end
+
+  def annotate_tagged_content(%Macro.Env{} = caller) do
+    %Macro.Env{module: mod, function: {func, _}, file: file, line: line} = caller
+    line = if line == 0, do: 1, else: line
+    file = Path.relative_to_cwd(file)
+
+    before = "<#{inspect(mod)}.#{func}> #{file}:#{line}"
+    aft = "</#{inspect(mod)}.#{func}>"
+    {"<!-- #{before} -->", "<!-- #{aft} -->"}
   end
 end

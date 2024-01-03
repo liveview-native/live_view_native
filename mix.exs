@@ -40,7 +40,7 @@ defmodule LiveViewNative.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.7"},
+      {:phoenix, path: "../phoenix", override: true},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_view, path: "../phoenix_live_view"},
       {:phoenix_live_reload, "~> 1.4", only: :test},

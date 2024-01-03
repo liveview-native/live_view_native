@@ -3,10 +3,17 @@ defmodule LiveViewNative.ContentNegotiator do
   import Phoenix.LiveView, only: [render_with: 2]
   import LiveViewNative.Utils, only: [get_format: 1]
 
-  def on_mount(:call, _params, _session, socket) do
-    case get_format(socket) do
-      "html" -> {:cont, socket}
-      format -> {:cont, build_render_with(socket, format), layout: build_layout(socket, format)}
+  def on_mount(:call, _params, _session, %Socket{view: view} = socket) do
+    skip? = Enum.member?(view.__native__()[:formats], :html)
+
+    case {get_format(socket), skip?} do
+      {"html", false} -> {:cont, socket}
+      {format, _} ->
+        {
+          :cont,
+          build_render_with(socket, format),
+          layout: build_layout(socket, format)
+        }
     end
   end
 

@@ -8,6 +8,6 @@ defmodule LiveViewNative.Utils do
   def get_target(%Socket{private: %{connect_info: %{params: %{"target" => target}}}}), do: target
   def get_target(_socket), do: nil
 
-  def normalize_format(format) when is_binary(format), do: format
-  def normalize_format(format) when is_atom(format), do: Atom.to_string(format)
+  def stringify_format(format) when is_binary(format), do: format
+  def stringify_format(format) when is_atom(format), do: Atom.to_string(format)
 end

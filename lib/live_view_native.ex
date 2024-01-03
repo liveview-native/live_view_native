@@ -1,12 +1,15 @@
 defmodule LiveViewNative do
-  def plugin_for(format) when is_atom(format) do
-    format
-    |> Atom.to_string()
-    |> plugin_for()
-  end
+  @callback format() :: atom
+  @callback module_suffix() :: atom
+  @callback template_engine() :: Macro.t()
+  @callback tag_handler(target :: atom) :: module()
+  @callback component() :: module()
 
-  def plugin_for(format) when is_binary(format) do
-    Map.get(plugins(), format)
+  import LiveViewNative.Utils, only: [stringify_format: 1]
+
+  def fetch_plugin(:html), do: {:ok, LiveViewNative.HTML}
+  def fetch_plugin(format) do
+    Map.fetch(plugins(), stringify_format(format))
   end
 
   def plugins() do
