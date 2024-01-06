@@ -1,10 +1,16 @@
 defmodule LiveViewNative.Renderer do
   defmacro __before_compile__(%{module: module} = env) do
-    render? = Module.defines?(module, {:render, 1})
-    suppress_render_warning? = Application.get_env(:live_view_native, :suppress_render_warning, false)
     opts = Module.get_attribute(module, :native_opts)
     format = opts[:format]
     root = opts[:template_path]
+
+    embed_templates(pattern, root: root, name: name)
+  end
+
+  defmacro embed_templates(pattern, opts \\ [])
+    name = opts[:name]
+    render? = Module.defines?(module, {name, 1})
+    suppress_render_warning? = Application.get_env(:live_view_native, :suppress_render_warning, false)
 
     render_1_ast =
       if render? and !suppress_render_warning? do
@@ -18,9 +24,9 @@ defmodule LiveViewNative.Renderer do
 
       else
         quote do
-          def render(%{socket: socket} = var!(assigns)) do
+          def unquote(name)(%{socket: socket} = var!(assigns)) do
             target = LiveViewNative.Utils.get_target(socket)
-            render(var!(assigns), %{target: target})
+            unquote(name)(var!(assigns), %{target: target})
           end
         end
       end
@@ -63,7 +69,7 @@ defmodule LiveViewNative.Renderer do
                 quote do
                   @file unquote(template)
                   @external_resource unquote(template)
-                  def render(var!(assigns), _) do
+                  def unquote(name)(var!(assigns), _) do
                     unquote(ast)
                   end
                 end
@@ -72,7 +78,7 @@ defmodule LiveViewNative.Renderer do
                 quote do
                   @file unquote(template)
                   @external_resource unquote(template)
-                  def render(var!(assigns), %{target: unquote(target)}) do
+                  def unquote(name)(var!(assigns), %{target: unquote(target)}) do
                     unquote(ast)
                   end
                 end

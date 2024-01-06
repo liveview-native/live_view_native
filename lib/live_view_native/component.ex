@@ -10,6 +10,10 @@ defmodule LiveViewNative.Component do
       |> Path.dirname()
       |> Path.join(stringify_format(format))
 
+    pattern = path_to_pattern(opts[:template_path] || fallback_template_path)
+
+    embed? = !!opts[:embed]
+
     case LiveViewNative.fetch_plugin(format) do
       {:ok, plugin} ->
         quote do
@@ -21,7 +25,9 @@ defmodule LiveViewNative.Component do
             template_path: unquote(opts[:template_path] || fallback_template_path)
           })
 
-          @before_compile LiveViewNative.Renderer
+          if (unquote(embed?)) do
+            @before_compile LiveViewNative.Renderer
+          end
         end
 
       :error ->
@@ -29,6 +35,10 @@ defmodule LiveViewNative.Component do
 
         []
     end
+  end
+
+  defp path_to_pattern(path) do
+
   end
 
   defmacro embed_sigil(modifiers, plugin) do

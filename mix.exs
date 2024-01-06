@@ -27,7 +27,7 @@ defmodule LiveViewNative.MixProject do
   def application do
     [
       mod: {LiveViewNative.Application, []},
-      extra_applications: [:logger, :live_view_native_platform]
+      extra_applications: [:logger]
     ]
   end
 
@@ -40,11 +40,11 @@ defmodule LiveViewNative.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, path: "../phoenix", override: true},
+      {:phoenix, "~> 1.7.0"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_view, path: "../phoenix_live_view"},
+      {:phoenix_live_view, path: "../phoenix_live_view", override: true},
       {:phoenix_live_reload, "~> 1.4", only: :test},
-      {:phoenix_template, path: "../phoenix_template", override: true},
+      {:phoenix_template, "~> 1.0.4"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
       {:floki, ">= 0.30.0"},
@@ -52,7 +52,7 @@ defmodule LiveViewNative.MixProject do
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:owl, "~> 0.8", runtime: false},
       {:deep_merge, "~> 1.0"},
-      {:live_view_native_platform, "0.2.0"}
+      {:live_view_native_test, path: "../live_view_native_test", only: :test}
     ]
   end
 

@@ -4,16 +4,20 @@ defmodule LiveViewNative.ContentNegotiator do
   import LiveViewNative.Utils, only: [get_format: 1]
 
   def on_mount(:call, _params, _session, %Socket{view: view} = socket) do
-    skip? = Enum.member?(view.__native__()[:formats], :html)
+    formats =
+      view.__native__()[:formats]
+      |> Enum.map(&Atom.to_string(&1))
 
-    case {get_format(socket), skip?} do
-      {"html", false} -> {:cont, socket}
-      {format, _} ->
-        {
-          :cont,
-          build_render_with(socket, format),
-          layout: build_layout(socket, format)
-        }
+    format = get_format(socket)
+
+    if Enum.member?(formats, format) do
+      {
+        :cont,
+        build_render_with(socket, format),
+        layout: build_layout(socket, format)
+      }
+    else
+      {:cont, socket}
     end
   end
 
