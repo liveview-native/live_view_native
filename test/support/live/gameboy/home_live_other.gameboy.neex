@@ -1,0 +1,1 @@
+<GameBoy>Hello, Other GameBoy! <%= @foo %></GameBoy>  

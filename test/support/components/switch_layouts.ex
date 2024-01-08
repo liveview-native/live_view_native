@@ -1,5 +1,6 @@
 defmodule LiveViewNativeTest.SwitchLayouts do
-  use Phoenix.Component
+  use LiveViewNative.Component,
+    format: :switch
 
   import Phoenix.Controller,
     only: [get_csrf_token: 0]

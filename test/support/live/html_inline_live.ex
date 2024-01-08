@@ -1,6 +1,7 @@
 defmodule LiveViewNativeTest.HTMLInlineLive.HTML do
   use LiveViewNative.Component,
-    format: :html
+    format: :html,
+    as: :render
 
   def render(assigns, %{target: "mobile"}) do
     ~H"""

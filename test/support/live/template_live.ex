@@ -1,12 +1,14 @@
 defmodule LiveViewNativeTest.TemplateLive.GameBoy do
   use LiveViewNative.Component,
     format: :gameboy,
+    as: :render,
     layout: {LiveViewNativeTest.GameBoyLayouts, :app}
 end
 
 defmodule LiveViewNativeTest.TemplateLive.Switch do
   use LiveViewNative.Component,
     format: :switch,
+    as: :render,
     layout: {LiveViewNativeTest.SwitchLayouts, :app}
 end
 

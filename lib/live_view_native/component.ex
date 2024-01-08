@@ -1,33 +1,43 @@
 defmodule LiveViewNative.Component do
-  import LiveViewNative.Utils, only: [
-    stringify_format: 1
-  ]
-
   defmacro __using__(opts) do
+    %{module: module} = __CALLER__
     format = opts[:format]
-    fallback_template_path =
-      __CALLER__.file
-      |> Path.dirname()
-      |> Path.join(stringify_format(format))
 
-    pattern = path_to_pattern(opts[:template_path] || fallback_template_path)
+    Module.put_attribute(module, :native_opts, %{
+      as: opts[:as],
+      format: format,
+      layout: opts[:layout],
+      root: opts[:root]
+    })
 
-    embed? = !!opts[:embed]
+    declarative_opts = Keyword.drop(opts, [:as, :format, :layout, :root])
 
     case LiveViewNative.fetch_plugin(format) do
       {:ok, plugin} ->
         quote do
-          use unquote(plugin.component())
-          Module.register_attribute(__MODULE__, :native_opts, persist: true)
-          Module.put_attribute(__MODULE__, :native_opts, %{
-            format: unquote(opts[:format]),
-            layout: unquote(opts[:layout]),
-            template_path: unquote(opts[:template_path] || fallback_template_path)
-          })
+          import(Phoenix.LiveView.Helpers)
+          import Kernel, except: [def: 2, defp: 2]
+          import Phoenix.Component, except: [embed_templates: 1, embed_templates: 2]
+          import Phoenix.Component.Declarative
+          require Phoenix.Template
+  
+          for {prefix_match, value} <- Phoenix.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
+            @doc false
+            def __global__?(prefix_match), do: value
+          end
 
-          if (unquote(embed?)) do
+          use unquote(plugin.component())
+          import LiveViewNative.Renderer, only: [
+            delegate_to_target: 1,
+            delegate_to_target: 2,
+            embed_templates: 1,
+            embed_templates: 2
+          ]
+
+          if (unquote(opts[:as])) do
             @before_compile LiveViewNative.Renderer
           end
+          @before_compile LiveViewNative.Component
         end
 
       :error ->
@@ -37,8 +47,10 @@ defmodule LiveViewNative.Component do
     end
   end
 
-  defp path_to_pattern(path) do
-
+  defmacro __before_compile__(_env) do
+    quote do
+      delegate_to_target :render, supress_warning: true
+    end
   end
 
   defmacro embed_sigil(modifiers, plugin) do

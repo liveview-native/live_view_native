@@ -1,6 +1,7 @@
 defmodule LiveViewNativeTest.HTMLTemplateLive.HTML do
   use LiveViewNative.Component,
-    format: :html
+    format: :html,
+    as: :render
 end
 
 defmodule LiveViewNativeTest.HTMLTemplateLive do

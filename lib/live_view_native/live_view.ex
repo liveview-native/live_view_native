@@ -1,5 +1,8 @@
 defmodule LiveViewNative.LiveView do
-  import LiveViewNative.Utils, only: [stringify_format: 1]
+  import LiveViewNative.Utils, only: [
+    normalize_layouts: 1,
+    stringify_format: 1
+  ]
 
   defmacro __using__(opts) do
     quote do
@@ -10,11 +13,9 @@ defmodule LiveViewNative.LiveView do
   end
 
   defmacro __before_compile__(%{module: module} = env) do
-    # available_formats = LiveViewNative.available_formats()
-
     opts = Module.get_attribute(module, :native_opts)
     formats = opts[:formats]
-    fallback_layouts = opts[:layouts]
+    fallback_layouts = normalize_layouts(opts[:layouts])
 
     cond do
       Keyword.keyword?(opts) ->

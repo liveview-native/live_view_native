@@ -11,16 +11,19 @@ defmodule LiveViewNative.Engine do
 
   @doc false
   defmacro compile(path) do
+    trim = Application.get_env(:phoenix, :trim_on_html_eex_engine, true)
+    debug_annotations? = Module.get_attribute(__CALLER__.module, :__debug_annotations__)
     source = File.read!(path)
 
     EEx.compile_string(source,
       engine: Phoenix.LiveView.TagEngine,
       line: 1,
       file: path,
-      trim: true,
+      trim: trim,
       caller: __CALLER__,
       source: source,
-      tag_handler: tag_handler_lookup(path)
+      tag_handler: tag_handler_lookup(path),
+      annotate_tagged_content: debug_annotations? && (&Phoenix.LiveView.HTMLEngine.annotate_tagged_content/1)
     )
   end
 
