@@ -3,11 +3,16 @@
 ```elixir
 Mix.install(
   [
-    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
+    {:kino_live_view_native, "0.2.0-rc.1"}
   ],
   config: [
     live_view_native: [plugins: [LiveViewNative.SwiftUI]],
-    live_view_native_style_sheet: [parsers: [swiftui: LiveViewNative.SwiftUI.RulesParser]]
+    live_view_native_style_sheet: [parsers: [swiftui: LiveViewNative.SwiftUI.RulesParser]],
+    phoenix_template: [
+      format_encoders: [
+        swiftui: Phoenix.HTML.Engine
+      ]
+    ]
   ]
 )
 
@@ -512,45 +517,7 @@ import Kernel
 :ok
 ```
 
-### Supporting Hierarchical Content
-
-`List` views support hierarchical content using the `DisclosureGroup` view. Nest `DisclosureGroup` views within a list to create multiple levels of content as seen in the example below.
-
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5IaWVyYXJjaGljYWxMaXN0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8TGlzdD5cbiAgICAgIDxEaXNjbG9zdXJlR3JvdXA+XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwibGFiZWxcIj5MZXZlbCAxPC9UZXh0PlxuICAgICAgICA8RGlzY2xvc3VyZUdyb3VwPlxuICAgICAgICAgIDxUZXh0IHRlbXBsYXRlPVwibGFiZWxcIj5MZXZlbCAyPC9UZXh0PlxuICAgICAgICAgIDxEaXNjbG9zdXJlR3JvdXA+XG4gICAgICAgICAgICA8VGV4dCB0ZW1wbGF0ZT1cImxhYmVsXCI+TGV2ZWwgMzwvVGV4dD5cbiAgICAgICAgICAgIENvbnRlbnRcbiAgICAgICAgICA8L0Rpc2Nsb3N1cmVHcm91cD5cbiAgICAgICAgPC9EaXNjbG9zdXJlR3JvdXA+XG4gICAgICA8L0Rpc2Nsb3N1cmVHcm91cD5cbiAgICA8L0xpc3Q+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,534],[647,45],[694,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
-
-```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
-import Kernel, except: [defmodule: 2]
-
-defmodule Server.HierarchicalListLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
-
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
-    <List>
-      <DisclosureGroup>
-        <Text template="label">Level 1</Text>
-        <DisclosureGroup>
-          <Text template="label">Level 2</Text>
-          <DisclosureGroup>
-            <Text template="label">Level 3</Text>
-            Content
-          </DisclosureGroup>
-        </DisclosureGroup>
-      </DisclosureGroup>
-    </List>
-    """
-  end
-end
-|> KinoLiveViewNative.register("/", ":index")
-
-import KinoLiveViewNative.Livebook, only: []
-import Kernel
-:ok
-```
+### Multi-dimensional lists
 
 Alternatively we can separate children within a `List` view in a `Section` view as seen in the example below. Views in the `Section` can have the `template` attribute with a `"header"` or `"footer"` value which controlls how the content is displayed above or below the section.
 

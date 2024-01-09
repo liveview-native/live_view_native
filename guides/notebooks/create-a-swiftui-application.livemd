@@ -3,11 +3,16 @@
 ```elixir
 Mix.install(
   [
-    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
+    {:kino_live_view_native, "0.2.0-rc.1"}
   ],
   config: [
     live_view_native: [plugins: [LiveViewNative.SwiftUI]],
-    live_view_native_style_sheet: [parsers: [swiftui: LiveViewNative.SwiftUI.RulesParser]]
+    live_view_native_style_sheet: [parsers: [swiftui: LiveViewNative.SwiftUI.RulesParser]],
+    phoenix_template: [
+      format_encoders: [
+        swiftui: Phoenix.HTML.Engine
+      ]
+    ]
   ]
 )
 
@@ -249,7 +254,7 @@ defmodule MyApp.HomeLive do
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{format: :swiftui} = assigns) do
+  def render(%{platform_id: :swiftui} = assigns) do
     ~SWIFTUI"""
     <Text>
       Hello again from LiveView Native!
