@@ -26,7 +26,6 @@ defmodule LiveViewNative.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {LiveViewNative.Application, []},
       extra_applications: [:logger]
     ]
   end
@@ -44,7 +43,7 @@ defmodule LiveViewNative.MixProject do
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_view, path: "../phoenix_live_view", override: true},
       {:phoenix_live_reload, "~> 1.4", only: :test},
-      {:phoenix_template, path: "../phoenix_template", override: true},
+      {:phoenix_template, "~> 1.0.4"},
       {:plug, "~> 1.15"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},

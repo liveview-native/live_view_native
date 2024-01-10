@@ -1,28 +1,21 @@
-defmodule LiveViewNative.SessionPlug do
+defmodule LiveViewNative.LiveReloader do
   import Plug.Conn
 
   def init(default), do: default
 
-  def call(
-        %Plug.Conn{
-          params: %{"_lvn" => %{"format" => lvn_platform}},
-          private: %{
-            :phoenix_format => "html",
-            :phoenix_root_layout => %{"html" => {root_layout_mod, root_layout_func}}
-          }
-        } = conn,
-        _default
-      ) do
-    root_layout_func = String.to_existing_atom("#{root_layout_func}_#{lvn_platform}")
-    root_layout = {root_layout_mod, root_layout_func}
-
+  def call(conn, _default) do
     conn
-    |> Phoenix.Controller.put_format(lvn_platform)
-    |> Phoenix.Controller.put_root_layout(html: root_layout)
-    |> live_reload()
+    |> get_format()
+    |> LiveViewNative.fetch_plugin()
+    |> case do
+      {:ok, _plugin} -> live_reload(conn)
+      :error -> conn
+    end
   end
 
-  def call(conn, _default), do: conn
+  defp get_format(%Plug.Conn{query_string: query_string}) do
+    URI.decode_query(query_string)["_format"]
+  end
 
   defp live_reload(conn) do
     endpoint = conn.private.phoenix_endpoint

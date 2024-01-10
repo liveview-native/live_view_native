@@ -1,4 +1,5 @@
 defmodule LiveViewNative.Component do
+
   defmacro __using__(opts) do
     %{module: module} = __CALLER__
     format = opts[:format]
@@ -15,7 +16,7 @@ defmodule LiveViewNative.Component do
     case LiveViewNative.fetch_plugin(format) do
       {:ok, plugin} ->
         quote do
-          import(Phoenix.LiveView.Helpers)
+          import Phoenix.LiveView.Helpers
           import Kernel, except: [def: 2, defp: 2]
           import Phoenix.Component, except: [embed_templates: 1, embed_templates: 2]
           import Phoenix.Component.Declarative
@@ -26,13 +27,14 @@ defmodule LiveViewNative.Component do
             def __global__?(prefix_match), do: value
           end
 
-          use unquote(plugin.component())
+          use unquote(plugin.component)
           import LiveViewNative.Renderer, only: [
             delegate_to_target: 1,
             delegate_to_target: 2,
             embed_templates: 1,
             embed_templates: 2
           ]
+          import LiveViewNative.Component, only: [embed_stylesheet: 1]
 
           if (unquote(opts[:as])) do
             @before_compile LiveViewNative.Renderer
@@ -50,42 +52,42 @@ defmodule LiveViewNative.Component do
   defmacro __before_compile__(_env) do
     quote do
       delegate_to_target :render, supress_warning: true
+
+      import LiveViewNative.Component, only: [embed_stylesheet: 2]
     end
   end
 
-  defmacro embed_sigil(modifiers, plugin) do
-    quote do
-      defmacro sigil_LVN({:<<>>, meta, [expr]}, modifiers)
-        when modifiers in [[] | unquote(modifiers)] do
+  defmacro sigil_LVN({:<<>>, meta, [expr]}, _modifiers) do
+    %{module: module} = __CALLER__
 
-        unless Macro.Env.has_var?(__CALLER__, {:assigns, nil}) do
-          raise "~LVN requires a variable named \"assigns\" to exist and be set to a map"
-        end
+    format = Module.get_attribute(module, :native_opts)[:format]
 
-        debug_annotations? = Module.get_attribute(__CALLER__.module, :__debug_annotations__)
-        modifier = LiveViewNative.Component.normalize_modifier(modifiers)
+    {:ok, plugin} = LiveViewNative.fetch_plugin(format)
 
-        options = [
-          engine: Phoenix.LiveView.TagEngine,
-          file: __CALLER__.file,
-          line: __CALLER__.line + 1,
-          caller: __CALLER__,
-          indentation: meta[:indentation] || 0,
-          source: expr,
-          tag_handler: unquote(plugin).tag_handler(modifier),
-          annotate_tagged_content:
-            debug_annotations? && (&LiveViewNative.Engine.annotate_tagged_content/1)
-        ]
-
-        EEx.compile_string(expr, options)
-      end
+    unless Macro.Env.has_var?(__CALLER__, {:assigns, nil}) do
+      raise "~LVN requires a variable named \"assigns\" to exist and be set to a map"
     end
+
+    debug_annotations? = Module.get_attribute(__CALLER__.module, :__debug_annotations__)
+
+    options = [
+      engine: Phoenix.LiveView.TagEngine,
+      file: __CALLER__.file,
+      line: __CALLER__.line + 1,
+      caller: __CALLER__,
+      indentation: meta[:indentation] || 0,
+      source: expr,
+      tag_handler: plugin.tag_handler,
+      annotate_tagged_content:
+        debug_annotations? && (&LiveViewNative.Engine.annotate_tagged_content/1)
+    ]
+
+    EEx.compile_string(expr, options)
   end
 
-  def normalize_modifier([]), do: nil
-  def normalize_modifier(modifier) when is_list(modifier) do
-    modifier
-    |> List.to_string()
-    |> String.to_atom()
+  def embed_stylesheet(assigns) do
+    ~LVN"""
+    <Styles><%= Phoenix.HTML.raw(File.read!(LiveViewNative.Stylesheet.file_path(@module))) %></Styles>
+    """
   end
 end

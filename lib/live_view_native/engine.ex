@@ -28,7 +28,7 @@ defmodule LiveViewNative.Engine do
   end
 
   defp tag_handler_lookup(path) do
-    {format, target} =
+    {format, _target} =
       path
       |> Path.basename()
       |> String.split(".")
@@ -40,7 +40,7 @@ defmodule LiveViewNative.Engine do
       end
 
     case LiveViewNative.fetch_plugin(format) do
-      {:ok, plugin} -> plugin.tag_handler(target)
+      {:ok, plugin} -> plugin.tag_handler
       :error ->
         IO.warn("could not find the LiveViewNative plugin for #{inspect(format)}")
     end

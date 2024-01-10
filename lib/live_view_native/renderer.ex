@@ -45,6 +45,7 @@ defmodule LiveViewNative.Renderer do
     root
     |> Phoenix.Template.find_all(pattern)
     |> Enum.chunk_by(&chunk_name(&1))
+    |> ensure_naming_uniq(env, opts[:name])
     |> Enum.map(&(__embed_templates__(&1,
       format: format,
       name: opts[:name],
@@ -52,6 +53,25 @@ defmodule LiveViewNative.Renderer do
       root: root,
       pattern: pattern
     )))
+  end
+
+  # this function ensures there is a single template group when applying a custom render function name
+  # if there is more than one grouping of templates and a custom render function name
+  # then the naming is ambiguous and we `raise`
+  defp ensure_naming_uniq([_template_group] = templates, _pattern, name) when not is_nil(name) and is_atom(name), do: templates
+  defp ensure_naming_uniq(templates, _pattern, nil), do: templates
+  defp ensure_naming_uniq(templates, pattern, name) when not is_nil(name) and is_atom(name) do
+    chunk_names =
+      templates
+      |> Enum.map(fn([template | _templates]) ->
+        "* #{chunk_name(template)}"
+      end)
+      |> Enum.join("\n")
+
+    raise ArgumentError,
+      "cannot apply custom render function name `#{inspect(name)}" <>
+      "when the following template groupings matched the pattern `#{inspect(pattern)}\n" <>
+      chunk_names
   end
 
   def chunk_name(template) do
@@ -184,7 +204,7 @@ defmodule LiveViewNative.Renderer do
     case LiveViewNative.fetch_plugin(format) do
       {:ok, plugin} ->
         module_suffix =
-          plugin.module_suffix()
+          plugin.module_suffix
           |> Atom.to_string()
 
         module

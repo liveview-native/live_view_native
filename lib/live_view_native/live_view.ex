@@ -23,7 +23,7 @@ defmodule LiveViewNative.LiveView do
           Enum.reduce(formats, {%{}, %{}}, fn(format, {layouts, render_withs}) ->
             case LiveViewNative.fetch_plugin(format) do
               {:ok, plugin} ->
-                render_module = Module.concat(module, plugin.module_suffix())
+                render_module = Module.concat(module, plugin.module_suffix)
                 fallback_layout = fallback_layouts[format]
                 render_with = Function.capture(render_module, :render, 1)
 
