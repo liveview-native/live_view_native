@@ -1,5 +1,4 @@
 defmodule LiveViewNative.Component do
-
   defmacro __using__(opts) do
     %{module: module} = __CALLER__
     format = opts[:format]
@@ -34,7 +33,8 @@ defmodule LiveViewNative.Component do
             embed_templates: 1,
             embed_templates: 2
           ]
-          import LiveViewNative.Component, only: [embed_stylesheet: 1]
+
+          import LiveViewNative.Stylesheet, only: [embed_stylesheet: 1]
 
           if (unquote(opts[:as])) do
             @before_compile LiveViewNative.Renderer
@@ -52,8 +52,6 @@ defmodule LiveViewNative.Component do
   defmacro __before_compile__(_env) do
     quote do
       delegate_to_target :render, supress_warning: true
-
-      import LiveViewNative.Component, only: [embed_stylesheet: 2]
     end
   end
 
@@ -83,11 +81,5 @@ defmodule LiveViewNative.Component do
     ]
 
     EEx.compile_string(expr, options)
-  end
-
-  def embed_stylesheet(assigns) do
-    ~LVN"""
-    <Styles><%= Phoenix.HTML.raw(File.read!(LiveViewNative.Stylesheet.file_path(@module))) %></Styles>
-    """
   end
 end

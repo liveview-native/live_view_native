@@ -24,8 +24,6 @@ defmodule LiveViewNative do
           Application.fetch_env(:live_view_native, :plugins)
           |> case do
             {:ok, plugins} ->
-              require IEx
-              IEx.pry()
               Enum.map(plugins, &struct(&1))
             :error -> []
           end
