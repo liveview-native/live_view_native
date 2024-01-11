@@ -58,6 +58,7 @@ defmodule LiveViewNative.Renderer do
   # this function ensures there is a single template group when applying a custom render function name
   # if there is more than one grouping of templates and a custom render function name
   # then the naming is ambiguous and we `raise`
+  defp ensure_naming_uniq([], _pattern, _name), do: []
   defp ensure_naming_uniq([_template_group] = templates, _pattern, name) when not is_nil(name) and is_atom(name), do: templates
   defp ensure_naming_uniq(templates, _pattern, nil), do: templates
   defp ensure_naming_uniq(templates, pattern, name) when not is_nil(name) and is_atom(name) do
@@ -69,7 +70,7 @@ defmodule LiveViewNative.Renderer do
       |> Enum.join("\n")
 
     raise ArgumentError,
-      "cannot apply custom render function name `#{inspect(name)}" <>
+      "cannot apply custom render function name `#{inspect(name)} " <>
       "when the following template groupings matched the pattern `#{inspect(pattern)}\n" <>
       chunk_names
   end
