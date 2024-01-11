@@ -41,18 +41,19 @@ defmodule LiveViewNative.MixProject do
     [
       {:phoenix, "~> 1.7.0"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_view, path: "../phoenix_live_view", override: true},
+      # {:phoenix_live_view, path: "../phoenix_live_view", override: true},
+      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view", ref: "476d1cd288474d7acb33424a74b304b4e9495ff1", override: true},
       {:phoenix_live_reload, "~> 1.4", only: :test},
       {:phoenix_template, "~> 1.0.4"},
       {:plug, "~> 1.15"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:floki, ">= 0.30.0"},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:owl, "~> 0.8", runtime: false},
       {:deep_merge, "~> 1.0"},
-      {:live_view_native_test, path: "../live_view_native_test", only: :test}
+      # {:live_view_native_test, path: "../live_view_native_test", only: :test}
+      {:live_view_native_test, github: "liveview-native/live_view_native_test", only: :test}
     ]
   end
 
