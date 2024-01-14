@@ -1,7 +1,7 @@
 defmodule LiveViewNativeTest.Switch.Component do
   defmacro __using__(_) do
     quote do
-      LiveViewNative.Component.embed_sigil([], LiveViewNativeTest.Switch)
+      import LiveViewNative.Component, only: [sigil_LVN: 2]
     end
   end
 end

@@ -7,7 +7,6 @@ defmodule LiveViewNative do
         component: config[:component],
         module_suffix: config[:module_suffix],
         template_engine: config[:template_engine],
-        tag_handler: config[:tag_handler],
         stylesheet_rules_parser: config[:stylesheet_rules_parser]
     end
   end

@@ -34,8 +34,6 @@ defmodule LiveViewNative.Component do
             embed_templates: 2
           ]
 
-          import LiveViewNative.Stylesheet, only: [embed_stylesheet: 1]
-
           if (unquote(opts[:as])) do
             @before_compile LiveViewNative.Renderer
           end
@@ -56,12 +54,6 @@ defmodule LiveViewNative.Component do
   end
 
   defmacro sigil_LVN({:<<>>, meta, [expr]}, _modifiers) do
-    %{module: module} = __CALLER__
-
-    format = Module.get_attribute(module, :native_opts)[:format]
-
-    {:ok, plugin} = LiveViewNative.fetch_plugin(format)
-
     unless Macro.Env.has_var?(__CALLER__, {:assigns, nil}) do
       raise "~LVN requires a variable named \"assigns\" to exist and be set to a map"
     end
@@ -75,7 +67,7 @@ defmodule LiveViewNative.Component do
       caller: __CALLER__,
       indentation: meta[:indentation] || 0,
       source: expr,
-      tag_handler: plugin.tag_handler,
+      tag_handler: LiveViewNative.TagEngine,
       annotate_tagged_content:
         debug_annotations? && (&LiveViewNative.Engine.annotate_tagged_content/1)
     ]

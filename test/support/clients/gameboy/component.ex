@@ -1,7 +1,7 @@
 defmodule LiveViewNativeTest.GameBoy.Component do
   defmacro __using__(_) do
     quote do
-      LiveViewNative.Component.embed_sigil([], LiveViewNativeTest.GameBoy)
+      import LiveViewNative.Component, only: [sigil_LVN: 2]
     end
   end
 end
