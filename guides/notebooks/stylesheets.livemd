@@ -323,6 +323,59 @@ import Kernel
 
 ## Custom Colors
 
+You can define custom colors for SwiftUI Views either directly in stylesheets or through the asset catalog. The SwiftUI [Color](https://developer.apple.com/documentation/swiftui/color) structure accepts either the name of a color in the asset catalog, or the RGB values of the color.
+
+Generally, using RGB values allows for quicker iteration, while using the asset catalog is more performant and customizable.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Custom Colors in Stylesheets
+
+You can define a custom color by providing the RGB values like so.
+
+```elixir
+defmodule CustomColorStylesheet do
+  use LiveViewNative.Stylesheet, :swiftui
+
+  ~SHEET"""
+  "custom-color" do
+    # light blue
+    foregroundStyle(Color(.sRGB, red: 0.4627, green: 0.8392, blue: 1.0))
+  end
+  """
+end
+```
+
+Evaluate the example below and view the custom color in your simulator.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DdXN0b21Db2xvclNoZWV0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcbiAgdXNlIEN1c3RvbUNvbG9yU3R5bGVzaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0IGNsYXNzPVwiY3VzdG9tLWNvbG9yXCI+SGVsbG8gZnJvbSBMaXZlVmlldyBOYXRpdmUhPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,282],[395,45],[442,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
+defmodule Server.CustomColorSheetLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+  use CustomColorStylesheet
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <Text class="custom-color">Hello from LiveView Native!</Text>
+    """
+  end
+end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
+```
+
+### Custom Colors in the Asset Catalog
+
 To use a custom color, you first need to define it in the [asset catalog](https://developer.apple.com/documentation/xcode/managing-assets-with-asset-catalogs).
 
 Find the `Assets` folder in your iOS app and create a new image set.
@@ -344,7 +397,7 @@ You can use the floating point input method with the RGB slider to create the ne
 Now you can access the color within your LiveView Native Stylesheets like so:
 
 ```elixir
-defmodule CustomColorStylesheet do
+defmodule CustomColorAssetSheet do
   use LiveViewNative.Stylesheet, :swiftui
 
   ~SHEET"""
@@ -359,17 +412,17 @@ end
 
 Define a custom color in your iOS app called "MyColor". Then, evaluate the cell below to view the text with this new custom color.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DdXN0b21Db2xvckxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG4gIHVzZSBDdXN0b21Db2xvclN0eWxlc2hlZXRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8VGV4dCBjbGFzcz1cIm15LWNvbG9yXCI+VGhpcyB0ZXh0IHNob3VsZCBtYXRjaCB0aGUgY29sb3IgaW4geW91ciBhc3NldCBjYXRhbG9ndWU8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,302],[415,45],[462,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DdXN0b21Db2xvckFzc2V0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcbiAgdXNlIEN1c3RvbUNvbG9yQXNzZXRTaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0IGNsYXNzPVwibXktY29sb3JcIj5UaGlzIHRleHQgc2hvdWxkIG1hdGNoIHRoZSBjb2xvciBpbiB5b3VyIGFzc2V0IGNhdGFsb2d1ZTwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,307],[420,45],[467,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require KinoLiveViewNative.Livebook
 import KinoLiveViewNative.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.CustomColorLive do
+defmodule Server.CustomColorAssetLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
-  use CustomColorStylesheet
+  use CustomColorAssetSheet
 
   @impl true
   def render(%{format: :swiftui} = assigns) do
