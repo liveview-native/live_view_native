@@ -1,0 +1,1 @@
+<GameboyLayout><%= @inner_content %></GameboyLayout>

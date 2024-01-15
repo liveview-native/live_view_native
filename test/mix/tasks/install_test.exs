@@ -1,7 +1,6 @@
 defmodule Mix.Tasks.Lvn.InstallTest do
   use ExUnit.Case
   doctest Mix.Tasks.Lvn.Install
-  alias Mix.Tasks.Lvn.Install
 
   # infer_app_name broke on commit d6a3036e9ce32d309e1bd4438b64b13487e81e19
   # when it started to return an atom instead of a string.

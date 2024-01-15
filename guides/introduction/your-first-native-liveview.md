@@ -19,7 +19,7 @@ First create a new LiveView somewhere in your app that inherits `LiveViewNative.
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{} = assigns) do
@@ -59,7 +59,7 @@ end
 Then, run your app and navigate to your local development server in a web browser.
 You should see the LiveView you created.
 
-![Hello World - Web](./assets/images/hello-web.png)
+![Hello World - Web](./assets/images/first-web.png)
 
 ## A native LiveView
 
@@ -69,13 +69,13 @@ platform you want to support. This is done by extending LiveView's standard `ren
 Each platform will have its own custom `:format`, render sigil and HEEx syntax, which are
 all pulled in by the `LiveViewNative.LiveView` macro inherited toward the top of your LiveView.
 The following example demonstrates handling the `:swiftui` platform for LiveView Native apps
-with the `:live_view_native_swift_ui` dependency, which covers iOS, iPadOS and macOS support:
+with the `:live_view_native_swiftui` dependency, which covers iOS, iPadOS and macOS support:
 
 ```elixir
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use Phoenix.LiveView
-  use LiveViewNative.LiveView
+  use MyAppWeb, :live_view
 
   @impl true
   def render(%{format: :swiftui} = assigns) do
@@ -104,24 +104,9 @@ end
 ```
 
 Loading the native project at `native/swiftui/MyApp/MyApp.xcodeproj` and running it in
-Simulator will render the native template in various devices for the SwiftUI platform:
+Simulator will render the native template as a native SwiftUI app:
 
-<!-- tabs-open -->
-
-### iOS
-
-![Hello World - iOS](./assets/images/hello-iphone.png)
-
-### iPadOS
-![Hello World - iPadOS](./assets/images/hello-ipad.png)
-
-### macOS
-![Hello World - macOS](./assets/images/hello-mac.png)
-
-### Web
-![Hello World - Web](./assets/images/hello-web.png)
-
-<!-- tabs-close -->
+![Hello World - iOS](./assets/images/first-ios.png)
 
 If everything looks as it should, congratulations! Your app is now using LiveView Native to
 serve multiple platform-specific templates to both web and non-web clients.
@@ -148,7 +133,7 @@ are some recommended resources for the SwiftUI and Jetpack platforms:
 
 Covers iOS 16+, macOS 13+ and watchOS 9+.
 
-- [Platform library HexDocs](https://hexdocs.pm/live_view_native_swift_ui/)
+- [Platform library HexDocs](https://hexdocs.pm/live_view_native_swiftui/)
 - [Swift library docs](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/)
 - [SwiftUI docs](https://developer.apple.com/documentation/swiftui/)
 - [SwiftUI tutorials](https://developer.apple.com/tutorials/swiftui)

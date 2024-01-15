@@ -1,56 +1,46 @@
 defmodule LiveViewNative do
-  @moduledoc """
-  A module providing supporting functions for LiveView Native.
-  """
-  import LiveViewNative.Platforms, only: [env_platform: 1, env_platforms: 0]
+  import LiveViewNative.Utils, only: [stringify_format: 1]
 
-  @doc """
-  Returns an environment struct for a LiveView Native platform given its
-  `platform_id` or `:error` if not found.
-
-  Used to introspect platforms at compile-time or runtime.
-  """
-  @spec platform(atom) :: {:ok, %LiveViewNativePlatform.Env{}} | :error
-  def platform(platform_id) when is_atom(platform_id) and not is_nil(platform_id),
-    do: platform("#{platform_id}")
-
-  def platform(platform_id) when is_binary(platform_id) do
-    case env_platform(platform_id) do
-      %{} = platform_struct ->
-        {:ok, platform_struct}
-
-      _ ->
-        :error
+  defmacro __using__(config) do
+    quote bind_quoted: [config: config] do
+      defstruct format: config[:format],
+        component: config[:component],
+        module_suffix: config[:module_suffix],
+        template_engine: config[:template_engine],
+        stylesheet_rules_parser: config[:stylesheet_rules_parser]
     end
   end
 
-  @doc """
-  Returns an environment struct for a LiveView Native platform given its
-  `platform_id` or raises if not found.
+  def fetch_plugin(format) do
+    Map.fetch(plugins(), stringify_format(format))
+  end
 
-  Same as `platform/1` but raises `RuntimeError` instead of returning
-  `:error` if no platform exists for the given `platform_id`
-  """
-  @spec platform!(atom) :: %LiveViewNativePlatform.Env{}
-  def platform!(platform_id) do
-    case platform(platform_id) do
-      {:ok, %{} = platform} ->
-        platform
-
+  def plugins() do
+    case Application.fetch_env(:live_view_native, :plugins_map) do
+      {:ok, plugins} -> plugins
       :error ->
-        platform_ids = env_platforms() |> Map.keys() |> Enum.map(&":#{&1}") |> Enum.join(", ")
+        plugins =
+          Application.fetch_env(:live_view_native, :plugins)
+          |> case do
+            {:ok, plugins} ->
+              Enum.map(plugins, &struct(&1))
+            :error -> []
+          end
+          |> Enum.into(%{}, &({Atom.to_string(&1.format), &1}))
 
-        error_message_no_platform = "No LiveView Native platform for #{inspect(platform_id)}"
-
-        error_message_valid_platforms_hint = "The valid platforms are: #{platform_ids}"
-
-        raise error_message_no_platform <> ". " <> error_message_valid_platforms_hint
+        :ok = Application.put_env(:live_view_native, :plugins_map, plugins)
+        plugins
     end
   end
 
-  @doc """
-  Returns a list of environment structs for all LiveView Native platforms.
-  """
-  @spec platforms() :: list(%LiveViewNativePlatform.Env{})
-  def platforms, do: env_platforms()
+  def available_formats() do
+    case Application.fetch_env(:live_view_native, :plugins) do
+      {:ok, plugins} ->
+        Enum.map(plugins, &(&1.format))
+      :error ->
+        IO.warn("No LiveView Native plugins registered")
+
+        []
+    end
+  end
 end

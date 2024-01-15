@@ -7,12 +7,7 @@
 # General application configuration
 import Config
 
-if config_env() == :test do
-  # Define platform support for LiveView Native
-  config :live_view_native,
-    plugins: [
-      LiveViewNative.TestPlugin
-    ]
+config :logger, :level, :debug
+config :logger, :backends, []
 
-  config :live_view_native, LiveViewNative.TestPlatform, testing_notes: "everything is ok"
-end
+import_config "#{config_env()}.exs"
