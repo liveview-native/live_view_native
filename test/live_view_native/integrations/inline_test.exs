@@ -12,35 +12,35 @@ defmodule LiveViewNative.InlineRenderTest do
   end
 
   test "can render the fallback html inline render", %{conn: conn} do
-    {:ok, lv, _html} = live(conn, "/inline")
+    {:ok, lv, _body} = live(conn, "/inline")
 
     assert lv |> element("#inline") |> render() =~ "original inline HTML works"
   end
 
   test "can render the gameboy format", %{conn: conn} do
     conn = put_req_header(conn, "accept", "text/gameboy")
-    {:ok, lv, _html} = live(conn, "/inline")
+    {:ok, lv, _body} = live(conn, "/inline")
 
     assert lv |> element("gameboy") |> render() =~ "Inline GameBoy Render 100"
   end
 
   test "can render the gameboy format with tv target", %{conn: conn} do
     conn = put_req_header(conn, "accept", "text/gameboy")
-    {:ok, lv, _html} = live(conn, "/inline?target=tv")
+    {:ok, lv, _body} = live(conn, "/inline?_interface[target]=tv")
 
     assert lv |> element("gameboytv") |> render() =~ "TV Target Inline GameBoy Render 100"
   end
 
   test "can render the switch format", %{conn: conn} do
     conn = put_req_header(conn, "accept", "text/switch")
-    {:ok, lv, _html} = live(conn, "/inline")
+    {:ok, lv, _body} = live(conn, "/inline")
 
     assert lv |> element("switch") |> render() =~ "Inline Switch Render 100"
   end
 
   test "can render the switch format with tv target", %{conn: conn} do
     conn = put_req_header(conn, "accept", "text/switch")
-    {:ok, lv, _html} = live(conn, "/inline?target=tv")
+    {:ok, lv, _body} = live(conn, "/inline?_interface[target]=tv")
 
     assert lv |> element("switchtv") |> render() =~ "TV Target Inline Switch Render 100"
   end

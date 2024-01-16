@@ -28,8 +28,8 @@ defmodule LiveViewNative.Renderer do
     else
       quote do
         def unquote(name)(var!(assigns)) do
-          target = LiveViewNative.Utils.get_target(var!(assigns))
-          apply(__MODULE__, unquote(name), [var!(assigns), %{target: target}])
+          interface = LiveViewNative.Utils.get_interface(var!(assigns))
+          apply(__MODULE__, unquote(name), [var!(assigns), interface])
         end
       end
     end
@@ -123,7 +123,7 @@ defmodule LiveViewNative.Renderer do
               quote do
                 @file unquote(template)
                 @external_resource unquote(template)
-                def unquote(name)(var!(assigns), _) do
+                def unquote(name)(var!(assigns), _interface) do
                   unquote(ast)
                 end
               end
@@ -132,7 +132,7 @@ defmodule LiveViewNative.Renderer do
               quote do
                 @file unquote(template)
                 @external_resource unquote(template)
-                def unquote(name)(var!(assigns), %{target: unquote(target)}) do
+                def unquote(name)(var!(assigns), %{"target" => unquote(target)}) do
                   unquote(ast)
                 end
               end

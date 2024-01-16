@@ -1,4 +1,4 @@
-defmodule LiveViewNative.SessionPlugTest do
+defmodule LiveViewNative.LiveReloaderTest do
   use ExUnit.Case
 
   import Plug.Test
@@ -6,24 +6,17 @@ defmodule LiveViewNative.SessionPlugTest do
 
   defp conn(path) do
     conn(:get, path)
-    |> Plug.Conn.put_private(:phoenix_endpoint, MyApp.Endpoint)
+    |> Plug.Conn.put_private(:phoenix_endpoint, LiveViewNativeTest.Endpoint)
   end
 
   describe "live reloader" do
     test "injects live_reload for LVN requests if configured and injects at the end of the body" do
-      opts = LiveViewNative.SessionPlug.init([])
+      opts = LiveViewNative.LiveReloader.init([])
  
-      # define so it exists
-      :root_layout_native
-      
       conn =
         conn("/")
-        |> Map.put(:params, %{"_lvn" => %{"format" => "native"}})
-        |> put_private(:phoenix_format, "html")
-        |> put_private(:phoenix_root_layout, %{
-            "html" => {TestLayout, :root_layout}
-          })
-        |> LiveViewNative.SessionPlug.call(opts)
+        |> Map.put(:query_string, "_format=gameboy")
+        |> LiveViewNative.LiveReloader.call(opts)
         |> send_resp(200, "<Text>Hello, Elixir</Text>")
   
       assert to_string(conn.resp_body) ==

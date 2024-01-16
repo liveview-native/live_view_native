@@ -26,7 +26,7 @@ defmodule LiveViewNative.TemplateRenderTest do
 
   test "can render the gameboy format with tv target", %{conn: conn} do
     conn = put_req_header(conn, "accept", "text/gameboy")
-    {:ok, lv, _html} = live(conn, "/template?target=tv")
+    {:ok, lv, _html} = live(conn, "/template?_interface[target]=tv")
 
     assert lv |> element("gameboytv") |> render() =~ "TV Target Template GameBoy Render 200"
   end
@@ -40,7 +40,7 @@ defmodule LiveViewNative.TemplateRenderTest do
 
   test "can render the switch format with tv target", %{conn: conn} do
     conn = put_req_header(conn, "accept", "text/switch")
-    {:ok, lv, _html} = live(conn, "/template?target=tv")
+    {:ok, lv, _html} = live(conn, "/template?_interface[target]=tv")
 
     assert lv |> element("switchtv") |> render() =~ "TV Target Template Switch Render 200"
   end

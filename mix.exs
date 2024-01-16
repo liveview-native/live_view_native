@@ -1,7 +1,7 @@
 defmodule LiveViewNative.MixProject do
   use Mix.Project
 
-  @version "0.2.0"
+  @version "0.3.0-alpha.1"
 
   def project do
     [
@@ -16,7 +16,6 @@ defmodule LiveViewNative.MixProject do
       aliases: aliases(),
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
-      consolidate_protocols: Mix.env() != :test,
       docs: docs()
     ]
   end
@@ -53,8 +52,8 @@ defmodule LiveViewNative.MixProject do
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:owl, "~> 0.8", runtime: false},
       {:deep_merge, "~> 1.0"},
-      # {:live_view_native_test, path: "../live_view_native_test", only: :test}
-      {:live_view_native_test, github: "liveview-native/live_view_native_test", only: :test}
+      {:live_view_native_test, path: "../live_view_native_test", only: :test}
+      # {:live_view_native_test, github: "liveview-native/live_view_native_test", only: :test}
     ]
   end
 
@@ -112,7 +111,7 @@ defmodule LiveViewNative.MixProject do
   # Hex package configuration
   defp package do
     %{
-      maintainers: ["May Matyi"],
+      maintainers: ["Brian Cardarella"],
       licenses: ["MIT"],
       links: %{
         "GitHub" => @source_url

@@ -4,7 +4,7 @@ defmodule LiveViewNativeTest.InlineLive.GameBoy do
     as: :render,
     layout: {LiveViewNativeTest.GameBoyLayouts, :app}
 
-  def render(assigns, %{target: "tv"}) do
+  def render(assigns, %{"target" => "tv"}) do
     ~LVN"""
     <GameBoyTV>TV Target Inline GameBoy Render <%= @count %></GameBoyTV>
     """
@@ -23,7 +23,7 @@ defmodule LiveViewNativeTest.InlineLive.Switch do
     as: :render,
     layout: {LiveViewNativeTest.SwitchLayouts, :app}
 
-  def render(assigns, %{target: "tv"}) do
+  def render(assigns, %{"target" => "tv"}) do
     ~LVN"""
     <SwitchTV>TV Target Inline Switch Render <%= @count %></SwitchTV>
     """
