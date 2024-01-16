@@ -53,7 +53,7 @@ defmodule LiveViewNative.MixProject do
       {:owl, "~> 0.8", runtime: false},
       {:deep_merge, "~> 1.0"},
       # {:live_view_native_test, path: "../live_view_native_test", only: :test}
-      {:live_view_native_test, github: "liveview-native/live_view_native_test", only: :test}
+      {:live_view_native_test, github: "liveview-native/live_view_native_test", tag: "0.3.0-alpha.1", only: :test}
     ]
   end
 
