@@ -654,4 +654,3 @@ defmodule Server.TodoListLive do
   # Define any handle_event/3 callbacks
 end
 ```
-

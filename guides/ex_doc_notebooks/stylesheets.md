@@ -4,17 +4,17 @@
 
 ## Overview
 
-In this guide, you'll learn how to style your LiveView Native Views using stylesheets. You'll learn some of the inner workings of how LiveView Native uses stylesheets to implement modifiers, and how those modifiers style and customize SwiftUI Views. By the end of this lesson you'll be armed with the foundations of building beautiful native UIs.
+In this guide, you'll learn how to use stylesheets to customize the appearance of your LiveView Native Views. You'll also learn about the inner workings of how LiveView Native uses stylesheets to implement modifiers, and how those modifiers style and customize SwiftUI Views. By the end of this lesson, you'll have the fundamentals you need to create beautiful native UIs.
 
 ## The Stylesheet DSL
 
-SwiftUI uses **modifiers** to style and customize views. In SwiftUI syntax (not LiveView Native), each modifier is a function that can be chained on the View they modify. Here's a basic example using the [foregroundStyle](https://developer.apple.com/documentation/swiftui/text/foregroundstyle(_:)) modifier that makes some red text.
+SwiftUI employs **modifiers** to style and customize views. In SwiftUI syntax, each modifier is a function that can be chained onto the view they modify. Here's a basic example of making text red using the [foregroundStyle](https://developer.apple.com/documentation/swiftui/text/foregroundstyle(_:)) modifier:
 
 ```swift
 Text("Some Red Text").foregroundStyle(.red)
 ```
 
-Multiple modifiers can be chained together. Here's an example using the [foregroundStyle](https://developer.apple.com/documentation/swiftui/text/foregroundstyle(_:)) and [frame](https://developer.apple.com/documentation/swiftui/view/frame(width:height:alignment:)) modifier.
+Many modifiers can be applied to a view. Here's an example using [foregroundStyle](https://developer.apple.com/documentation/swiftui/text/foregroundstyle(_:)) and [frame](https://developer.apple.com/documentation/swiftui/view/frame(width:height:alignment:)).
 
 ```swift
 Text("Some Red Text")
@@ -22,9 +22,9 @@ Text("Some Red Text")
             .frame(height: 100, width: 100)
 ```
 
-In LiveView Native, we define `~SHEET` sigil stylesheets that organize modifers by classes similar to how we use CSS to style elements on the web. These classes use an Elixir-oriented DSL (Domain Specific Language).
+In LiveView Native, we use `~SHEET` sigil stylesheets to organize modifers by classes using an Elixir-oriented DSL similar to CSS for styling web elements.
 
-Here's the same modifiers above grouped into a `"color-red"` class in a LiveView Native Stylesheet:
+Here's the same `foregroundStyle` and `frame` modifiers grouped into a "color-red" class in a stylesheet:
 
 <!-- livebook:{"force_markdown":true} -->
 
@@ -37,9 +37,9 @@ Here's the same modifiers above grouped into a `"color-red"` class in a LiveView
 """
 ```
 
-The DSL drops the `.` dot before each modifier, but otherwise remains mostly the same. For this reason, we don't separately document every modifier, as you can generally translate SwiftUI examples into the DSL syntax.
+The DSL (Domain Specific Language) used in LiveView Native drops the `.` dot before each modifier, but otherwise remains largely the same. We do not document every modifier separately, since you can translate SwiftUI examples into the DSL syntax.
 
-There can be edge cases for modifier argument values not-compatible with Elixir terms, but that's beyond the scope of this guide. For the most part, you can write your native templates in such as way that this is a non-issue.
+There are instances where modifier argument values are not compatible with Elixir terms, but these are infrequent and beyond the scope of this guide. In most cases, you can write your LiveView Native templates in such a way that this is a non-issue.
 
 For more, you can find documentation and examples of modifiers on [Apple's SwiftUI documentation](https://developer.apple.com/documentation/swiftui) which is comprehensive and thorough, though it may feel unfamiliar at first for Elixir Developers when compared to [HexDocs](https://hexdocs.pm/).
 
@@ -53,9 +53,9 @@ This next section focuses on practical examples of building your own stylesheets
 
 ### Stylesheet Modules
 
-Stylesheet modules define classes within the `~SHEET` sigil. These modules must include `use LiveViewNative.Stylesheet, :swiftui` to access the `~SHEET` sigil.
+Stylesheet modules define classes within the `~SHEET` sigil and must include `use LiveViewNative.Stylesheet, :swiftui`.
 
-Here's an example stylesheet using the `~SHEET` sigil. This stylesheet creates a `color-red` class. The `color-red` class applies the [foregroundStyle](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)) SwiftUI modifier. The modifier accepts an argument for color. In this example, we provide the [.red](https://developer.apple.com/documentation/swiftui/color/red) color.
+In this example, the stylesheet generates a `color-red` class. This class applies the `[foregroundStyle](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)` SwiftUI modifier, which accepts an argument for color. In our example, we chose the `[.red](https://developer.apple.com/documentation/swiftui/color/red)` color.
 
 ```elixir
 defmodule MyStyleSheet do
@@ -71,9 +71,9 @@ end
 
 ### Applying Stylesheet Classes to Views
 
-`use` the stylesheet module within a LiveView module to access classes in the stylesheet.
+To access the classes in the stylesheet, you can `use` the stylesheet module within a LiveView module.
 
-The example below applies the `color-red` class we previously defined to display red text. Evaluate the cell and you can see it in your IOS simulator.
+The example below applies the `color-red` class we previously defined to display red text.
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5SZWRUZXh0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcbiAgdXNlIE15U3R5bGVTaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0IGNsYXNzPVwiY29sb3ItcmVkXCI+XG4gICAgICBUaGlzIHRleHQgaXMgcmVkIVxuICAgIDwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,263],[376,45],[423,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
@@ -113,7 +113,7 @@ end
 
 ### Multiple Classes
 
-You can define multiple classes within the same stylesheet. The same modifier can apply to the same view multiple times with different values. For example, the `frame` modifier can change both the height and the width of a view.
+You can define multiple classes in the same stylesheet. The same modifier can apply to a view multiple times with different values. For instance, the 'frame' modifier can alter both the height and width of a view.
 
 <!-- livebook:{"force_markdown":true} -->
 
@@ -129,7 +129,7 @@ end
 """
 ```
 
-The above classes could be applied to a view like so:
+The above classes would be applied to a view like so:
 
 ```html
 <Text class="tall wide">Tall and Wide Text</Text>
@@ -139,9 +139,7 @@ The above classes could be applied to a view like so:
 
 ### Reusable Classes
 
-It would be cumbersome to define a new class everytime we wanted to change the text color of an element, so we can instead dynamically inject variables within the class name.
-
-Currently, when compiling dynamic classes it's necessary to tell the rules parser how to compile the value.
+We can reuse classes by injecting variables within the class name. When injecting a variable, it's necessary to instruct the rules parser on how to parse the value.
 
 LiveView Native provides the following functions for that purpose:
 
@@ -197,11 +195,19 @@ For example, you **cannot** concatenate two strings together to form a class nam
 <Text class={"color-#{Enum.random(["red", "blue"])}"}>randomly colored text</Text>
 ```
 
+If you want dynamic classes, they must be unbroken. Here's how the code above could be written to follow this rule.
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+<Text class={Enum.random(["color-red", "color-blue"])}>randomly colored text</Text>
+```
+
 <!-- livebook:{"break_markdown":true} -->
 
 ### Your Turn: Dynamic Height and Width Classes
 
-You're going to create dynamic height `h-*` and width `w-*` classes. You'll need to wrap the dynamic value with `to_integer` so that the rules parser knows to treat the value as an integer. You can use the `frame` modifier to change the height and width of a view.
+Create dynamic `h-*` and `w-*` classes. Make sure you wrap the dynamic value with `to_integer` so the rules parse knows to parse the value as an integer. Remember you can use the `frame` modifier to change the height and width of a view.
 
 ### Example Solution
 
@@ -271,6 +277,103 @@ defmodule Server.DynamicHeightAndWidthLive do
       <Text class="w-100">C</Text>
       <Text class="w-100">D</Text>
     </HStack>
+    """
+  end
+end
+```
+
+## Custom Colors
+
+You can set custom colors for SwiftUI views either via stylesheets or through the asset catalog. The SwiftUI [Color](https://developer.apple.com/documentation/swiftui/color) structure accepts either the name of a color in the asset catalog or the RGB values of the color.
+
+Generally, using RGB values allows for quicker iteration, while using the asset catalog is more performant and customizable.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Custom Colors in Stylesheets
+
+Here's an example of defining a custom color. We'll apply this `custom-color` class to a SwiftUI Text View in a moment.
+
+```elixir
+defmodule CustomColorStylesheet do
+  use LiveViewNative.Stylesheet, :swiftui
+
+  ~SHEET"""
+  "custom-color" do
+    # light blue
+    foregroundStyle(Color(.sRGB, red: 0.4627, green: 0.8392, blue: 1.0))
+  end
+  """
+end
+```
+
+Evaluate the example below and view the custom color in your simulator.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DdXN0b21Db2xvclNoZWV0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcbiAgdXNlIEN1c3RvbUNvbG9yU3R5bGVzaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0IGNsYXNzPVwiY3VzdG9tLWNvbG9yXCI+SGVsbG8gZnJvbSBMaXZlVmlldyBOYXRpdmUhPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,282],[395,45],[442,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule Server.CustomColorSheetLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+  use CustomColorStylesheet
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <Text class="custom-color">Hello from LiveView Native!</Text>
+    """
+  end
+end
+```
+
+### Your Turn: Custom Colors in the Asset Catalog
+
+Custom colors can be defined in the asset catalog (https://developer.apple.com/documentation/xcode/managing-assets-with-asset-catalogs). You're going to define a new color in your iOS App.
+
+To create a new image go to the `Assets` folder in your iOS app and create a new color set.
+
+<!-- livebook:{"break_markdown":true} -->
+
+![](https://github.com/liveview-native/documentation_assets/blob/main/asset-catalogue-create-new-color-set.png?raw=true)
+
+<!-- livebook:{"break_markdown":true} -->
+
+To create a color set, enter the RGB values or a hexcode.
+
+<!-- livebook:{"break_markdown":true} -->
+
+![](https://github.com/liveview-native/documentation_assets/blob/main/asset-catalogue-modify-my-color.png?raw=true)
+
+<!-- livebook:{"break_markdown":true} -->
+
+The defined color is now available for use within Stylesheets. Evaluate the code below. You'll use the `my-color` class in a moment.
+
+```elixir
+defmodule CustomColorAssetSheet do
+  use LiveViewNative.Stylesheet, :swiftui
+
+  ~SHEET"""
+  "my-color" do
+    foregroundStyle(Color("MyColor"))
+  end
+  """
+end
+```
+
+Now, evaluate the cell below. You should see some text with your new custom color applied to it.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DdXN0b21Db2xvckFzc2V0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcbiAgdXNlIEN1c3RvbUNvbG9yQXNzZXRTaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0IGNsYXNzPVwibXktY29sb3JcIj5UaGlzIHRleHQgc2hvdWxkIG1hdGNoIHRoZSBjb2xvciBpbiB5b3VyIGFzc2V0IGNhdGFsb2d1ZTwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,307],[420,45],[467,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule Server.CustomColorAssetLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+  use CustomColorAssetSheet
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <Text class="my-color">This text should match the color in your asset catalogue</Text>
     """
   end
 end

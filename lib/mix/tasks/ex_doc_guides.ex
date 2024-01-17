@@ -18,7 +18,6 @@ defmodule Mix.Tasks.ExDocGuides do
     content
     |> replace_setup_section_with_badge(file_name)
     |> remove_kino_boilerplate()
-    |> remove_navigation()
     |> convert_details_sections()
   end
 
@@ -36,10 +35,6 @@ defmodule Mix.Tasks.ExDocGuides do
 
     """, "")
     |> String.replace(~r/\|\> KinoLiveViewNative\.register\(\".+\, \".+\"\)\n\nimport KinoLiveViewNative\.Livebook, only: \[\]\nimport Kernel\n:ok\n/, "")
-  end
-
-  defp remove_navigation(content) do
-    String.replace(content, ~r/## Navigation(\n|.)+/, "")
   end
 
   defp convert_details_sections(content) do

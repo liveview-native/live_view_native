@@ -250,4 +250,3 @@ If you encountered any issues with the native application, here are some trouble
 * Check for error messages in the Livebook smart cells.
 
 You can also [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) if you would like support from the LiveView Native team.
-

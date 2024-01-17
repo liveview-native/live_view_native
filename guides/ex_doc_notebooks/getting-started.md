@@ -69,4 +69,3 @@ Ensure you have the latest versions of all necessary software installed, and ens
 To clear the cache, you can click the `Setup without cache` button revealed by clicking the dropdown next to the `setup` button at the top of the Livebook.
 
 If that does not resolve the issue, you can [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) to receive support from the LiveView Native team.
-

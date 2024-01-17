@@ -93,7 +93,7 @@ defmodule LiveViewNative.MixProject do
       "guides/ex_doc_notebooks/common-swiftui-views.md",
       "guides/ex_doc_notebooks/stylesheets.md",
       "guides/ex_doc_notebooks/interactive-swiftui-views.md",
-      "guides/ex_doc_notebooks/navigation.md"
+      "guides/ex_doc_notebooks/native-navigation.md"
       # "guides/ex_doc_notebooks/forms-and-validation.md"
       # "guides/ex_doc_notebooks/deployment.md"
     ]
