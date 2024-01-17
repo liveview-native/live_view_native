@@ -400,7 +400,7 @@ import Kernel
 
 ### Multi-dimensional lists
 
-Alternatively we can separate children within a `List` view in a `Section` view as seen in the example below. Views in the `Section` can have the `template` attribute with a `"header"` or `"footer"` value which controlls how the content is displayed above or below the section.
+Alternatively we can separate children within a `List` view in a `Section` view as seen in the example below. Views in the `Section` can have the `template` attribute with a `"header"` or `"footer"` value which controls how the content is displayed above or below the section.
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MaXN0U2VjdGlvbnNMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxMaXN0PlxuICAgICAgPFNlY3Rpb24+XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwiaGVhZGVyXCI+SGVhZGVyPC9UZXh0PlxuICAgICAgICBDb250ZW50XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwiZm9vdGVyXCI+Rm9vdGVyPC9UZXh0PlxuICAgICAgPC9TZWN0aW9uPlxuICAgIDwvTGlzdD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,348],[461,45],[508,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
