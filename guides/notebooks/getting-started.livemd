@@ -3,7 +3,7 @@
 ```elixir
 Mix.install(
   [
-    {:kino_live_view_native, "0.2.0-rc.1"}
+    {:kino_live_view_native, "0.2.0"}
   ],
   config: [
     live_view_native: [plugins: [LiveViewNative.SwiftUI]],
