@@ -138,20 +138,8 @@ defmodule LiveViewNative.Renderer do
               end
           end
         end)
-        |> setup(templates, root: opts[:root], module: module, pattern: opts[:pattern])
     end
     |> inject_target_delegate(name)
-  end
-
-  defp setup(triplets, templates, opts) do
-    Phoenix.Template.__idempotent_setup__(opts[:module],%{LiveViewNative.Engine => true})
-
-    # Store the hashes so we define __mix_recompile__?
-    hash = templates |> Enum.sort() |> :erlang.md5()
-
-    Module.put_attribute(opts[:module], :phoenix_templates_hashes, {hash, [opts[:root], opts[:pattern]]})
-
-    triplets
   end
 
   defp inject_target_delegate([], _name), do: []
