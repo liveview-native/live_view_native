@@ -82,7 +82,7 @@ defmodule LiveViewNative.Renderer do
     |> List.first()
   end
 
-  defp __embed_templates__(templates, opts \\ []) do
+  defp __embed_templates__(templates, opts) do
     %{module: module} = env = opts[:env]
     format = opts[:format]
     name = build_name(templates, opts[:name])
