@@ -7,7 +7,7 @@ Mix.install(
   ],
   config: [
     live_view_native: [plugins: [LiveViewNative.SwiftUI]],
-    live_view_native_style_sheet: [parsers: [swiftui: LiveViewNative.SwiftUI.RulesParser]],
+    live_view_native_stylesheet: [parsers: [swiftui: LiveViewNative.SwiftUI.RulesParser]],
     phoenix_template: [
       format_encoders: [
         swiftui: Phoenix.HTML.Engine
