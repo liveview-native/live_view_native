@@ -22,13 +22,13 @@ KinoLiveViewNative.start([])
 
 ## Overview
 
-The [LiveView Native Live Form](https://github.com/liveview-native/liveview-native-live-form) project makes it easier to build forms in LiveView Native. This project enables you to group different [Control Views](https://developer.apple.com/documentation/swiftui/controls-and-indicators) together inside of a `LiveForm` and control them collectively under a single `phx-change` or `phx-submit` event handler, rather than with multiple different `phx-change` event handlers.
+The [LiveView Native Live Form](https://github.com/liveview-native/liveview-native-live-form) project makes it easier to build forms in LiveView Native. This project enables you to group different [Control Views](https://developer.apple.com/documentation/swiftui/controls-and-indicators) inside of a `LiveForm` and control them collectively under a single `phx-change` or `phx-submit` event handler, rather than with multiple different `phx-change` event handlers.
 
-This project also makes it easier to work with changesets and the `Phoenix.HTML.Form` struct.
+Getting the most out of this material requires some understanding of the [Ecto](https://hexdocs.pm/ecto/Ecto.html) project and in particular a reasonably deep understanding of [Ecto.Changeset](https://hexdocs.pm/ecto/Ecto.Changeset.html). Review the linked Ecto documentation if you find any of the examples difficult to follow.
 
 ## Installing LiveView Native Live Form
 
-To Install LiveViewNative Form, we need to add the `live-view-native-form` SwiftUI package to our iOS application.
+To install LiveView Native Form, we need to add the `live-view-native-form` SwiftUI package to our iOS application.
 
 Follow the [LiveView Native Form Installation Guide](https://github.com/liveview-native/liveview-native-live-form?tab=readme-ov-file#liveviewnativeliveform) on that project's README and come back to this guide after you have finished the installation process.
 
@@ -36,7 +36,7 @@ Follow the [LiveView Native Form Installation Guide](https://github.com/liveview
 
 Once you have the LiveView Native Form package installed, you can use the `LiveForm` and `LiveSubmitButton` views to build forms more conveniently.
 
-Here's a basic example of a `LiveForm`. Keep in mind, `LiveForm` requires an `id` attribute.
+Here's a basic example of a `LiveForm`. Keep in mind that `LiveForm` requires an `id` attribute.
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8TGl2ZUZvcm0gaWQ9XCJteWZvcm1cIiBwaHgtc3VibWl0PVwic3VibWl0XCI+XG4gICAgICA8VGV4dEZpZWxkIG5hbWU9XCJteS10ZXh0XCIgPlBsYWNlaG9sZGVyPC9UZXh0RmllbGQ+XG4gICAgICA8TGl2ZVN1Ym1pdEJ1dHRvbj5TdWJtaXQ8L0xpdmVTdWJtaXRCdXR0b24+XG4gICAgPC9MaXZlRm9ybT5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgaGFuZGxlX2V2ZW50KFwic3VibWl0XCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLmluc3BlY3QocGFyYW1zKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,463],[576,45],[623,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
@@ -72,7 +72,7 @@ import Kernel
 :ok
 ```
 
-Upon form submission, the data in the form will be sent as a map based on the `name` attribute of control views inside the form. Evaluate the example above in your simulator and you will see a map similar to the following:
+When a form is submitted, its data is sent as a map where each key is the 'name' attribute of the form's control views. Evaluate the example above in your simulator and you will see a map similar to the following:
 
 <!-- livebook:{"force_markdown":true} -->
 
@@ -473,7 +473,7 @@ First, create a `CustomUser` changeset below that handles data validation.
 **Requirements**
 
 * A user should have a `name` field
-* A user should have a a hidden `password` field of 10 or more characters.
+* A user should have a `password` string field of 10 or more characters. Note that for simplicity we are not hashing the password or following real security practices since our pretend application doesn't have a database. In real-world apps passwords should **never** be stored as a simple string, they should be encrypted.
 * A user should have an `age` number field greater than `0` and less than `200`.
 * A user should have an `email` field which matches an email format (including `@` is sufficient).
 * A user should have a `accepted_terms` field which must be true.
