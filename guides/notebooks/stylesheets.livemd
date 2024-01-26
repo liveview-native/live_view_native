@@ -28,15 +28,16 @@ In this guide, you'll learn how to use stylesheets to customize the appearance o
 SwiftUI employs **modifiers** to style and customize views. In SwiftUI syntax, each modifier is a function that can be chained onto the view they modify. Here's a basic example of making text red using the [foregroundStyle](https://developer.apple.com/documentation/swiftui/text/foregroundstyle(_:)) modifier:
 
 ```swift
-Text("Some Red Text").foregroundStyle(.red)
+Text("Some Red Text")
+  .foregroundStyle(.red)
 ```
 
 Many modifiers can be applied to a view. Here's an example using [foregroundStyle](https://developer.apple.com/documentation/swiftui/text/foregroundstyle(_:)) and [frame](https://developer.apple.com/documentation/swiftui/view/frame(width:height:alignment:)).
 
 ```swift
 Text("Some Red Text")
-            .foregroundStyle(.red)
-            .frame(height: 100, width: 100)
+  .foregroundStyle(.red)
+  .frame(height: 100, width: 100)
 ```
 
 In LiveView Native, we use `~SHEET` sigil stylesheets to organize modifers by classes using an Elixir-oriented DSL similar to CSS for styling web elements.
@@ -64,7 +65,9 @@ If you use Visual Studio Code, we strongly recommend you install the [LiveView N
 
 ## Writing Stylesheets
 
-This next section focuses on practical examples of building your own stylesheets as well as some useful patterns and general best-practices.
+LiveView Native employs stylesheet modules to style and modify the behavior of Views. These stylesheet modules define one or more classes, which each contain one or more modifiers.
+
+Using a stylesheet within a LiveView module gives you access to any of the classes it defines. These classes can then be applied to SwiftUI Views.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -72,7 +75,7 @@ This next section focuses on practical examples of building your own stylesheets
 
 Stylesheet modules define classes within the `~SHEET` sigil and must include `use LiveViewNative.Stylesheet, :swiftui`.
 
-In this example, the stylesheet generates a `color-red` class. This class applies the `[foregroundStyle](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)` SwiftUI modifier, which accepts an argument for color. In our example, we chose the `[.red](https://developer.apple.com/documentation/swiftui/color/red)` color.
+In this example, the stylesheet generates a `color-red` class. This class applies the [foregroundStyle](https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)) SwiftUI modifier, which accepts an argument for color. In our example, we chose the [.red](https://developer.apple.com/documentation/swiftui/color/red) color.
 
 ```elixir
 defmodule MyStyleSheet do
@@ -120,46 +123,13 @@ import Kernel
 :ok
 ```
 
-### Multiple Modifiers and Classes
+### One Stylesheet Per LiveView
 
-Multiple modifiers can be applied within the same class like so.
+Currently, only one stylesheet can be applied within a LiveView. This is likely to change in the future to make stylesheets more composable.
 
-<!-- livebook:{"force_markdown":true} -->
+## Classes
 
-```elixir
-~SHEET"""
-"color-red" do
-  foregroundStyle(.red)
-  frame(height: 200, width: 200)
-end
-"""
-```
-
-<!-- livebook:{"break_markdown":true} -->
-
-### Multiple Classes
-
-You can define multiple classes in the same stylesheet. The same modifier can apply to a view multiple times with different values. For instance, the 'frame' modifier can alter both the height and width of a view.
-
-<!-- livebook:{"force_markdown":true} -->
-
-```elixir
-~SHEET"""
-"tall" do
-  frame(height: 200)
-end
-
-"wide" do
-  frame(width: 200)
-end
-"""
-```
-
-The above classes would be applied to a view like so:
-
-```html
-<Text class="tall wide">Tall and Wide Text</Text>
-```
+Classes within a stylsheet group modifiers together. These classes can be applied to a View using the `class` attribute so long as the LiveView uses the stylesheet that class is defined in.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -327,6 +297,190 @@ import Kernel
 :ok
 ```
 
+### Multiple Classes
+
+You can define multiple classes in the same stylesheet. The same modifier can apply to a view multiple times with different values. For instance, the 'frame' modifier can alter both the height and width of a view.
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+~SHEET"""
+"tall" do
+  frame(height: 200)
+end
+
+"wide" do
+  frame(width: 200)
+end
+"""
+```
+
+The above classes would be applied to a view like so:
+
+```html
+<Text class="tall wide">Tall and Wide Text</Text>
+```
+
+## Modifiers
+
+Modifiers modify a View's appearance or behavior. Be aware they are not limited to styling. LiveView Native supports nearly every modifier provided by SwiftUI.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Finding Modifiers
+
+The [Configuring View Elements](https://developer.apple.com/documentation/swiftui/view#configuring-view-elements) section of apple documentation contains links to modifiers organized by category. In that documentation you'll find useful references such as [Style Modifiers](https://developer.apple.com/documentation/swiftui/view-style-modifiers), [Layout Modifiers](https://developer.apple.com/documentation/swiftui/view-layout), and [Input and Event Modifiers](https://developer.apple.com/documentation/swiftui/view-input-and-events).
+
+You can also find the same modifiers with LiveView Native examples on the [LiveView Client SwiftUI Docs](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/paddingmodifier) however at the time of writing these examples are out of date.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Multiple Modifiers
+
+Multiple modifiers can be applied within the same class like so.
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+~SHEET"""
+"color-red" do
+  foregroundStyle(.red)
+  frame(height: 200, width: 200)
+end
+"""
+```
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Modifer Order
+
+Unlike in CSS, modifier order matters. Changing the order that modifers are applied can have a significant impact on their behavior. The order of modifiers in the stylesheet matters, and the order of classes matters.
+
+To demonstrate this concept, we're going to take a simple example of applying padding and background color.
+
+If we apply the background color first, then the padding, The background is applied to original view, leaving the padding filled with whitespace.
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+background(.orange)
+padding(20)
+```
+
+```mermaid
+flowchart
+
+subgraph Padding
+ View
+end
+
+style View fill:orange
+```
+
+If we apply the padding first, then the background, the background is applied to the view with the padding, thus filling the entire area with background color.
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+padding(20)
+background(.orange)
+```
+
+```mermaid
+flowchart
+
+subgraph Padding
+ View
+end
+
+style Padding fill:orange
+style View fill:orange
+```
+
+<!-- livebook:{"break_markdown":true} -->
+
+Here's that same concept but made into a stylesheet. This stylesheet defines the modifiers in a different order within the `bg-then-padding` and the `padding-then-bg` classes. It also individually defines a `background` class and `padding` class.
+
+In a moment, we'll use this stylesheet to demonstrate how changing the order of modifiers within a class, or changing the order of classes can affect our design.
+
+```elixir
+defmodule ModifierOrderSheet do
+  use LiveViewNative.Stylesheet, :swiftui
+
+  ~SHEET"""
+  "bg-then-padding" do
+    background(.red)
+    padding(20)
+  end
+
+  "padding-then-bg" do
+    padding(20)
+    background(.red)
+  end
+
+  "padding" do
+    padding(20)
+  end
+
+  "background" do
+    background(.orange)
+  end
+  """
+end
+```
+
+Now that we have a stylesheet defined, We'll use these styles within a LiveView. Run the example below in your similator and observe how in examples where padding was applied first, the entire area of the View is orange. In contrast, in examples where background was applied first, the padding is still filled with whitespace.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Nb2RpZmllck9yZGVyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcbiAgdXNlIE1vZGlmaWVyT3JkZXJTaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0IGNsYXNzPVwiYmctdGhlbi1wYWRkaW5nXCI+QmFja2dyb3VuZCB0aGVuIHBhZGRpbmc8L1RleHQ+XG4gICAgPFRleHQgY2xhc3M9XCJwYWRkaW5nLXRoZW4tYmdcIj5QYWRkaW5nIHRoZW4gYmFja2dyb3VuZDwvVGV4dD5cblxuICAgIDxUZXh0IGNsYXNzPVwiYmFja2dyb3VuZCBwYWRkaW5nXCI+QmFja2dyb3VuZCB0aGVuIHBhZGRpbmcgKGNsYXNzZXMpPC9UZXh0PlxuICAgIDxUZXh0IGNsYXNzPVwicGFkZGluZyBiYWNrZ3JvdW5kXCI+UGFkZGluZyB0aGVuIGJhY2tncm91bmQgKGNsYXNzZXMpPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,497],[610,45],[657,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
+defmodule Server.ModifierOrderLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+  use ModifierOrderSheet
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <Text class="bg-then-padding">Background then padding</Text>
+    <Text class="padding-then-bg">Padding then background</Text>
+
+    <Text class="background padding">Background then padding (classes)</Text>
+    <Text class="padding background">Padding then background (classes)</Text>
+    """
+  end
+end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
+```
+
+## Static Properties
+
+SwiftUI provides different values through dot notation. For example. the [.red](https://developer.apple.com/documentation/swiftui/color/red) notation we've already seen comes from a static property of the [Color](https://developer.apple.com/documentation/swiftui/color) struct.
+
+Apple provides their own documentation on all of the static properties, and you'll typically find static properties referenced within the documentation of a modifier, struct, or enum.
+
+For example, the [frame](https://developer.apple.com/documentation/swiftui/view/frame(width:height:alignment:)) modifier accepts an `alignment` parameter. Any dot-accessed value on the [Alignment](https://developer.apple.com/documentation/swiftui/alignment) struct can be provided as an argument.
+
+The default value is [.center](https://developer.apple.com/documentation/swiftui/alignment/center). if we wanted the text to be left-aligned we could make it [.leading](https://developer.apple.com/documentation/swiftui/alignment/leading) instead.
+
+<!-- livebook:{"force_markdown":true} -->
+
+```elixir
+~SHEET"""
+"leading" do
+  frame(alignment: .leading)
+end
+"""
+```
+
 ## Custom Colors
 
 You can set custom colors for SwiftUI views either via stylesheets or through the asset catalog. The SwiftUI [Color](https://developer.apple.com/documentation/swiftui/color) structure accepts either the name of a color in the asset catalog or the RGB values of the color.
@@ -384,7 +538,7 @@ import Kernel
 
 Custom colors can be defined in the asset catalog (https://developer.apple.com/documentation/xcode/managing-assets-with-asset-catalogs). You're going to define a new color in your iOS App.
 
-To create a new image go to the `Assets` folder in your iOS app and create a new color set.
+To create a new color go to the `Assets` folder in your iOS app and create a new color set.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -400,7 +554,9 @@ To create a color set, enter the RGB values or a hexcode.
 
 <!-- livebook:{"break_markdown":true} -->
 
-The defined color is now available for use within Stylesheets. Evaluate the code below. You'll use the `my-color` class in a moment.
+The defined color is now available for use within Stylesheets. However, the app needs to be re-compiled to pick up a new color set. Make sure you re-build your SwiftUI Application before moving on.
+
+Then evaluate the code below. You'll use the `my-color` class in a moment.
 
 ```elixir
 defmodule CustomColorAssetSheet do
@@ -414,7 +570,7 @@ defmodule CustomColorAssetSheet do
 end
 ```
 
-Now, evaluate the cell below. You should see some text with your new custom color applied to it.
+This next example uses the `my-color` class we just defined and styles some text using your custom color. Evaluate the cell and view it in you simulator. You should see some text with your new custom color applied to it.
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DdXN0b21Db2xvckFzc2V0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcbiAgdXNlIEN1c3RvbUNvbG9yQXNzZXRTaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0IGNsYXNzPVwibXktY29sb3JcIj5UaGlzIHRleHQgc2hvdWxkIG1hdGNoIHRoZSBjb2xvciBpbiB5b3VyIGFzc2V0IGNhdGFsb2d1ZTwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,307],[420,45],[467,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
