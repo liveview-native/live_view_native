@@ -302,98 +302,6 @@ defmodule Server.GridLive do
 end
 ```
 
-## ScrollView
-
-The SwiftUI [ScrollView](https://developer.apple.com/documentation/swiftui/scrollview) displays content within a scrollable region. ScrollView is often used in combination with [LazyHStack](https://developer.apple.com/documentation/swiftui/lazyvstack), [LazyVStack](https://developer.apple.com/documentation/swiftui/lazyhstack), [LazyHGrid](https://developer.apple.com/documentation/swiftui/lazyhgrid), and [LazyVGrid](https://developer.apple.com/documentation/swiftui/lazyhgrid) to create scrollable layouts optimized for displaying large amounts of data.
-
-<!-- livebook:{"break_markdown":true} -->
-
-### ScrollView with VStack and HStack
-
-Here's an example using a `ScrollView` and a `HStack` to create scrollable text arranged horizontally. `HStack` is not optimized, meaning large amounts of elements are still rendered.
-
-There's no issue when only rendering a few children such as in the example below.
-
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TY3JvbGxWaWV3RXhhbXBsZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5JdGVtIDE8L1RleHQ+XG4gICAgICAgIDxUZXh0Pkl0ZW0gMjwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSAzPC9UZXh0PlxuICAgICAgICA8VGV4dD5JdGVtIDQ8L1RleHQ+XG4gICAgICAgIDxUZXh0Pkl0ZW0gNTwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSA2PC9UZXh0PlxuICAgICAgICA8VGV4dD5JdGVtIDc8L1RleHQ+XG4gICAgICAgIDxUZXh0Pkl0ZW0gODwvVGV4dD5cbiAgICAgICAgPFRleHQ+SXRlbSA5PC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,507],[620,45],[667,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
-
-```elixir
-defmodule Server.ScrollViewExampleLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
-
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
-    <ScrollView>
-      <HStack>
-        <Text>Item 1</Text>
-        <Text>Item 2</Text>
-        <Text>Item 3</Text>
-        <Text>Item 4</Text>
-        <Text>Item 5</Text>
-        <Text>Item 6</Text>
-        <Text>Item 7</Text>
-        <Text>Item 8</Text>
-        <Text>Item 9</Text>
-      </HStack>
-    </ScrollView>
-    """
-  end
-end
-```
-
-However, for large amounts of data this becomes a problem since every child view is rendered. You should experience lag in your simulator while scrolling after evaluating the next example.
-
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MYWdFeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxWU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L1ZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,338],[451,45],[498,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
-
-```elixir
-defmodule Server.LagExampleLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
-
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
-    <ScrollView>
-      <VStack>
-        <%= for n <- 1..1000 do %>
-          <Text>Item <%= n %></Text>
-        <% end %>
-      </VStack>
-    </ScrollView>
-    """
-  end
-end
-```
-
-### Optimized ScrollView with LazyHStack and LazyVStack
-
-To resolve the performance problem for large amounts of data, you can use the Lazy views. Lazy views only create items as needed. Items won't be rendered until they are present on the screen.
-
-The next example demonstrates how using `LazyVStack` instead of `VStack` resolves the performance issue.
-
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5PcHRpbWl6ZWRTY3JvbGxWaWV3TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxMYXp5VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwMCBkbyAlPlxuICAgICAgICAgIDxUZXh0Pkl0ZW0gPCU9IG4gJT48L1RleHQ+XG4gICAgICAgIDwlIGVuZCAlPlxuICAgICAgPC9MYXp5VlN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,355],[468,45],[515,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
-
-```elixir
-defmodule Server.OptimizedScrollViewLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
-
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
-    <ScrollView>
-      <LazyVStack>
-        <%= for n <- 1..1000 do %>
-          <Text>Item <%= n %></Text>
-        <% end %>
-      </LazyVStack>
-    </ScrollView>
-    """
-  end
-end
-```
-
 ## List
 
 The SwiftUI [List](https://developer.apple.com/documentation/swiftui/list) view provides a system-specific interface, and has better performance for large amounts of scrolling elements.
@@ -418,38 +326,9 @@ defmodule Server.ListLive do
 end
 ```
 
-### Supporting Hierarchical Content
+### Multi-dimensional lists
 
-`List` views support hierarchical content using the `DisclosureGroup` view. Nest `DisclosureGroup` views within a list to create multiple levels of content as seen in the example below.
-
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5IaWVyYXJjaGljYWxMaXN0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8TGlzdD5cbiAgICAgIDxEaXNjbG9zdXJlR3JvdXA+XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwibGFiZWxcIj5MZXZlbCAxPC9UZXh0PlxuICAgICAgICA8RGlzY2xvc3VyZUdyb3VwPlxuICAgICAgICAgIDxUZXh0IHRlbXBsYXRlPVwibGFiZWxcIj5MZXZlbCAyPC9UZXh0PlxuICAgICAgICAgIDxEaXNjbG9zdXJlR3JvdXA+XG4gICAgICAgICAgICA8VGV4dCB0ZW1wbGF0ZT1cImxhYmVsXCI+TGV2ZWwgMzwvVGV4dD5cbiAgICAgICAgICAgIENvbnRlbnRcbiAgICAgICAgICA8L0Rpc2Nsb3N1cmVHcm91cD5cbiAgICAgICAgPC9EaXNjbG9zdXJlR3JvdXA+XG4gICAgICA8L0Rpc2Nsb3N1cmVHcm91cD5cbiAgICA8L0xpc3Q+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,534],[647,45],[694,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
-
-```elixir
-defmodule Server.HierarchicalListLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
-
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
-    <List>
-      <DisclosureGroup>
-        <Text template="label">Level 1</Text>
-        <DisclosureGroup>
-          <Text template="label">Level 2</Text>
-          <DisclosureGroup>
-            <Text template="label">Level 3</Text>
-            Content
-          </DisclosureGroup>
-        </DisclosureGroup>
-      </DisclosureGroup>
-    </List>
-    """
-  end
-end
-```
-
-Alternatively we can separate children within a `List` view in a `Section` view as seen in the example below. Views in the `Section` can have the `template` attribute with a `"header"` or `"footer"` value which controlls how the content is displayed above or below the section.
+Alternatively we can separate children within a `List` view in a `Section` view as seen in the example below. Views in the `Section` can have the `template` attribute with a `"header"` or `"footer"` value which controls how the content is displayed above or below the section.
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MaXN0U2VjdGlvbnNMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxMaXN0PlxuICAgICAgPFNlY3Rpb24+XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwiaGVhZGVyXCI+SGVhZGVyPC9UZXh0PlxuICAgICAgICBDb250ZW50XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwiZm9vdGVyXCI+Rm9vdGVyPC9UZXh0PlxuICAgICAgPC9TZWN0aW9uPlxuICAgIDwvTGlzdD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,348],[461,45],[508,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
@@ -468,6 +347,118 @@ defmodule Server.ListSectionsLive do
         <Text template="footer">Footer</Text>
       </Section>
     </List>
+    """
+  end
+end
+```
+
+## ScrollView
+
+The SwiftUI [ScrollView](https://developer.apple.com/documentation/swiftui/scrollview) displays content within a scrollable region. ScrollView is often used in combination with [LazyHStack](https://developer.apple.com/documentation/swiftui/lazyvstack), [LazyVStack](https://developer.apple.com/documentation/swiftui/lazyhstack), [LazyHGrid](https://developer.apple.com/documentation/swiftui/lazyhgrid), and [LazyVGrid](https://developer.apple.com/documentation/swiftui/lazyhgrid) to create scrollable layouts optimized for displaying large amounts of data.
+
+While `ScrollView` also works with typical `VStack` and `HStack` views, they are not optimal choices for large amounts of data.
+
+<!-- livebook:{"break_markdown":true} -->
+
+### ScrollView with VStack
+
+Here's an example using a `ScrollView` and a `HStack` to create scrollable text arranged horizontally.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TY3JvbGxWaWV3RXhhbXBsZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L1ZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,344],[457,45],[504,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule Server.ScrollViewExampleLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <ScrollView>
+      <VStack>
+        <%= for n <- 1..100 do %>
+          <Text>Item <%= n %></Text>
+        <% end %>
+      </VStack>
+    </ScrollView>
+    """
+  end
+end
+```
+
+### ScrollView with HStack
+
+By default, the [axes](https://developer.apple.com/documentation/swiftui/scrollview/axes) of a `ScrollView` is vertical. To make a horizontal `ScrollView`, set the `axes` attribute to `"horizontal"` as seen in the example below.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TY3JvbGxWaWV3RXhhbXBsZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFNjcm9sbFZpZXcgYXhlcz1cImhvcml6b250YWxcIj5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvSFN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,362],[475,45],[522,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule Server.ScrollViewExampleLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <ScrollView axes="horizontal">
+      <HStack>
+        <%= for n <- 1..100 do %>
+          <Text>Item <%= n %></Text>
+        <% end %>
+      </HStack>
+    </ScrollView>
+    """
+  end
+end
+```
+
+### Optimized ScrollView with LazyHStack and LazyVStack
+
+`VStack` and `HStack` are inefficient for large amounts of data because they render every child view. To demonstrate this, evaluate the example below. You should experience lag when you attempt to scroll.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MYWdFeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxWU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAwMCBkbyAlPlxuICAgICAgICAgIDxUZXh0Pkl0ZW0gPCU9IG4gJT48L1RleHQ+XG4gICAgICAgIDwlIGVuZCAlPlxuICAgICAgPC9WU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,339],[452,45],[499,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule Server.LagExampleLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <ScrollView>
+      <VStack>
+        <%= for n <- 1..10000 do %>
+          <Text>Item <%= n %></Text>
+        <% end %>
+      </VStack>
+    </ScrollView>
+    """
+  end
+end
+```
+
+To resolve the performance problem for large amounts of data, you can use the Lazy views. Lazy views only create items as needed. Items won't be rendered until they are present on the screen.
+
+The next example demonstrates how using `LazyVStack` instead of `VStack` resolves the performance issue.
+
+<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5PcHRpbWl6ZWRTY3JvbGxWaWV3TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxMYXp5VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvTGF6eVZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,356],[469,45],[516,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule Server.OptimizedScrollViewLive do
+  use Phoenix.LiveView
+  use LiveViewNative.LiveView
+
+  @impl true
+  def render(%{format: :swiftui} = assigns) do
+    ~SWIFTUI"""
+    <ScrollView>
+      <LazyVStack>
+        <%= for n <- 1..10000 do %>
+          <Text>Item <%= n %></Text>
+        <% end %>
+      </LazyVStack>
+    </ScrollView>
     """
   end
 end
@@ -703,4 +694,3 @@ end
 ## Further Resources
 
 See the [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui) for a complete list of SwiftUI elements and the [LiveView Native SwiftUI Documentation](https://liveview-native.github.io/liveview-client-swiftui/documentation/liveviewnative/) for LiveView Native examples of the SwiftUI elements.
-
