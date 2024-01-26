@@ -82,6 +82,7 @@ defmodule LiveViewNative.MixProject do
       "guides/introduction/installation.md",
       "guides/introduction/your-first-native-liveview.md",
       "guides/introduction/troubleshooting.md",
+      "guides/introduction/deployment.md",
       "guides/common-features/template-syntax.md",
       "guides/common-features/render-patterns.md",
       "guides/common-features/handling-events.md",
@@ -92,7 +93,6 @@ defmodule LiveViewNative.MixProject do
       "guides/ex_doc_notebooks/stylesheets.md",
       "guides/ex_doc_notebooks/native-navigation.md",
       "guides/ex_doc_notebooks/forms-and-validation.md"
-      # "guides/ex_doc_notebooks/deployment.md"
     ]
   end
 
