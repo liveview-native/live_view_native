@@ -159,10 +159,15 @@ import SwiftUI
 import LiveViewNative
 
 struct ContentView: View {
+
     var body: some View {
-        LiveView(.localhost)
+        LiveView(.automatic(
+            development: .localhost(path: "/"),
+            production: .custom(URL(string: "https://example.com/")!)
+        ))
     }
 }
+
 
 // Optionally preview the native UI in Xcode
 #Preview {
@@ -194,14 +199,6 @@ graph LR;
   
 ```
 
-<!-- livebook:{"break_markdown":true} -->
-
-To avoid confusion in the step above, here's how our `ContentView` should now look in Xcode.
-
-<!-- livebook:{"break_markdown":true} -->
-
-![](https://github.com/liveview-native/documentation_assets/blob/main/xcode-replace-content-view.png?raw=true)
-
 ## Start the Active Scheme
 
 Click the `start active scheme` button <i class="ri-play-fill"></i> to build the project and run it on the iOS simulator.
@@ -210,7 +207,11 @@ Click the `start active scheme` button <i class="ri-play-fill"></i> to build the
 > 
 > * https://developer.apple.com/documentation/xcode/build-system
 
-If you encounter an issue with `LiveViewNativeMacros`, select `Trust & Enable` to resolve the problem. You may need to click on the error in the Xcode error console to see the prompt.
+<!-- livebook:{"break_markdown":true} -->
+
+### Trust and Enable Dependencies
+
+If you encounter an issue with `LiveViewNativeMacros` or any other dependencies, select `Trust & Enable` to resolve the problem. You may need to click on the error in the Xcode error console to see the prompt.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -218,17 +219,7 @@ If you encounter an issue with `LiveViewNativeMacros`, select `Trust & Enable` t
 
 <!-- livebook:{"break_markdown":true} -->
 
-The iOS Xcode simulator should start. If you encounter any issues, make sure you have installed all [Prerequisites](#prerequisites) and see the [Troubleshooting](#troubleshooting) section for help.
-
-<!-- livebook:{"break_markdown":true} -->
-
-<div style="height: 800; width: 100%; display: flex; height: 800px; justify-content: center; align-items: center;">
-<img style="width: 100%; height: 100%; object-fit: contain" src="https://github.com/liveview-native/documentation_assets/blob/main/xcode-ios-simulator-no-connection.png?raw=true"/>
-</div>
-
-<!-- livebook:{"break_markdown":true} -->
-
-After you start the active scheme, the simulator should open the iOS application and display `Hello from LiveView Native!`.
+After you start the active scheme, the simulator should open the iOS application and display `Hello from LiveView Native!`. If you encounter any issues see the **Troubleshooting** section below.
 
 <!-- livebook:{"break_markdown":true} -->
 
@@ -286,16 +277,3 @@ If you encountered any issues with the native application, here are some trouble
 * Check for error messages in the Livebook smart cells.
 
 You can also [raise an issue](https://github.com/liveview-native/live_view_native/issues/new) if you would like support from the LiveView Native team.
-
-## Navigation
-
-<div style="display: flex; align-items: center; width: 100%; justify-content: space-between; font-size: 1rem; color: #61758a; background-color: #f0f5f9; height: 4rem; padding: 0 1rem; border-radius: 1rem;">
-<div style="display: flex; margin-right: auto;">
-<i class="ri-arrow-left-fill"></i>
-<a style="display: flex; color: #61758a; margin-left: 1rem;" href="https://livebook.dev/run?url=https%3A%2F%2Fhexdocs.pm%2Flive_view_native%2F0.1.2%2Fgetting-started.livemd">Getting Started</a>
-</div>
-<div style="display: flex; margin-left: auto;">
-<span style="display: flex; color: #61758a; margin-right: 1rem;" href="https://livebook.dev/run?url=https%3A%2F%2Fhexdocs.pm%2Flive_view_native%2F0.1.2%2Fswift-ui-elements.livemd">Coming Soon</span>
-<i class="ri-arrow-right-fill"></i>
-</div>
-</div>
