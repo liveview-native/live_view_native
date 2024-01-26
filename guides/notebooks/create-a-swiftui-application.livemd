@@ -254,7 +254,7 @@ defmodule MyApp.HomeLive do
   use LiveViewNative.LiveView
 
   @impl true
-  def render(%{platform_id: :swiftui} = assigns) do
+  def render(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
     <Text>
       Hello again from LiveView Native!
