@@ -429,7 +429,7 @@ defmodule ModifierOrderSheet do
 end
 ```
 
-Now that we have a stylesheet defined, We'll use these styles within a LiveView. Run the example below in your similator and observe how in examples where padding was applied first, the entire area of the View is orange. In contrast, in examples where background was applied first, the padding is still filled with whitespace.
+Now that we have a stylesheet defined, We'll use these styles within a LiveView. Run the example below in your similator and observe how in examples where padding was applied first, the entire area of the Text view is orange. In contrast, in examples where background was applied first, the padding is still filled with whitespace.
 
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Nb2RpZmllck9yZGVyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcbiAgdXNlIE1vZGlmaWVyT3JkZXJTaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxUZXh0IGNsYXNzPVwiYmctdGhlbi1wYWRkaW5nXCI+QmFja2dyb3VuZCB0aGVuIHBhZGRpbmc8L1RleHQ+XG4gICAgPFRleHQgY2xhc3M9XCJwYWRkaW5nLXRoZW4tYmdcIj5QYWRkaW5nIHRoZW4gYmFja2dyb3VuZDwvVGV4dD5cblxuICAgIDxUZXh0IGNsYXNzPVwiYmFja2dyb3VuZCBwYWRkaW5nXCI+QmFja2dyb3VuZCB0aGVuIHBhZGRpbmcgKGNsYXNzZXMpPC9UZXh0PlxuICAgIDxUZXh0IGNsYXNzPVwicGFkZGluZyBiYWNrZ3JvdW5kXCI+UGFkZGluZyB0aGVuIGJhY2tncm91bmQgKGNsYXNzZXMpPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,497],[610,45],[657,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
