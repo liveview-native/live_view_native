@@ -64,7 +64,15 @@ defmodule LiveViewNative.MixProject do
       extra_section: "GUIDES",
       extras: extras(),
       groups_for_extras: groups_for_extras(),
-      groups_for_modules: groups_for_modules()
+      groups_for_modules: groups_for_modules(),
+      before_closing_body_tag: fn
+        :html ->
+          """
+          <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+          <script>mermaid.initialize({startOnLoad: true})</script>
+          """
+        _ -> ""
+      end
     ]
   end
 
@@ -76,14 +84,23 @@ defmodule LiveViewNative.MixProject do
       "guides/introduction/troubleshooting.md",
       "guides/common-features/template-syntax.md",
       "guides/common-features/render-patterns.md",
-      "guides/common-features/handling-events.md"
+      "guides/common-features/handling-events.md",
+      "guides/ex_doc_notebooks/getting-started.md",
+      "guides/ex_doc_notebooks/create-a-swiftui-application.md",
+      "guides/ex_doc_notebooks/common-swiftui-views.md",
+      "guides/ex_doc_notebooks/interactive-swiftui-views.md"
+      # "guides/ex_doc_notebooks/swiftui-styling.md"
+      # "guides/ex_doc_notebooks/navigation.md"
+      # "guides/ex_doc_notebooks/forms-and-validation.md"
+      # "guides/ex_doc_notebooks/deployment.md"
     ]
   end
 
   defp groups_for_extras do
     [
       Introduction: ~r/guides\/introduction\/.?/,
-      Guides: ~r/guides\/[^\/]+\.md/,
+      Guides: ~r/guides\/[^\/]+\.[md|livemd]/,
+      "Interactive Guides": ~r/guides\/ex_doc_notebooks\/[^\/]+\.[md|livemd]/,
       "Common Features": ~r/guides\/common-features\/.?/
     ]
   end
@@ -100,7 +117,8 @@ defmodule LiveViewNative.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get"]
+      setup: ["deps.get"],
+      docs: ["ex_doc_guides", "docs"]
     ]
   end
 
