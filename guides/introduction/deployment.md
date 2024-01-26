@@ -71,7 +71,7 @@ The Apple App Store hosts native OS applications. Deploying a LiveView Native cl
 
 ### Production URL
 
-The `ContentView` of your SwiftUI Application should contain both a `development` and a `production` URL. Ensure the `production` URL matches the URL of your Phoenix server.
+The `ContentView` of your SwiftUI Application should contain both a development and a production URL. Ensure the production URL matches the URL of your Phoenix server.
 
 ```elixir
 struct ContentView: View {
@@ -85,7 +85,7 @@ struct ContentView: View {
 }
 ```
 
-The SwiftUI `LiveView` automatically determines which URL to communicate with, depending on the build environment.
+The SwiftUI `LiveView` automatically determines which URL to communicate with, depending on the build configuration. For debug builds it uses the development URL and for release builds it uses the production URL.
 
 This configuration automatically selects which URL the SwiftUI `LiveView` will communicate with, either the local development server or the production server.
 
