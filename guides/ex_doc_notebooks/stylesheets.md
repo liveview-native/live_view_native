@@ -525,4 +525,3 @@ defmodule Server.CustomColorAssetLive do
   end
 end
 ```
-
