@@ -3,7 +3,7 @@
 ```elixir
 Mix.install(
   [
-    {:kino_live_view_native, "0.2.0-rc.1"}
+    {:kino_live_view_native, "0.2.0"}
   ],
   config: [
     live_view_native: [plugins: [LiveViewNative.SwiftUI]],
@@ -597,16 +597,3 @@ import KinoLiveViewNative.Livebook, only: []
 import Kernel
 :ok
 ```
-
-## Navigation
-
-<div style="display: flex; align-items: center; width: 100%; justify-content: space-between; font-size: 1rem; color: #61758a; background-color: #f0f5f9; height: 4rem; padding: 0 1rem; border-radius: 1rem;">
-<div style="display: flex; margin-right: auto;">
-<i class="ri-arrow-left-fill"></i>
-<a style="display: flex; color: #61758a; margin-left: 1rem;" href="https://livebook.dev/run?url=https%3A%2F%2Fhexdocs.pm%2Flive_view_native%2F0.1.2%2Fcommon-swiftui-views.livemd">Common SwiftUI Views</a>
-</div>
-<div style="display: flex; margin-left: auto;">
-<a style="display: flex; color: #61758a; margin-right: 1rem;" href="https://livebook.dev/run?url=https%3A%2F%2Fhexdocs.pm%2Flive_view_native%2F0.1.2%interactive-swiftui-views.livemd">Coming Soon</a>
-<i class="ri-arrow-right-fill"></i>
-</div>
-</div>
