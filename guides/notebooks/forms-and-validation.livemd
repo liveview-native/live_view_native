@@ -591,7 +591,7 @@ defmodule Server.CustomUserFormLive do
   def handle_event("validate", params, socket) do
     user_changeset =
       CustomUser.changeset(%CustomUser{}, params)
-      |> Map.put(:action, socket.assigns.user_changeset.action)
+      |> Map.put(:action, socket.assigns.changeset.action)
 
     {:noreply, assign(socket, :changeset, user_changeset)}
   end
