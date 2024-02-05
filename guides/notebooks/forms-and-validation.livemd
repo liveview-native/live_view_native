@@ -53,7 +53,7 @@ defmodule Server.ExampleLive do
   def render(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
     <LiveForm id="myform" phx-submit="submit">
-      <TextField name="my-text" >Placeholder</TextField>
+      <TextField name="my-text">Placeholder</TextField>
       <LiveSubmitButton>Submit</LiveSubmitButton>
     </LiveForm>
     """
