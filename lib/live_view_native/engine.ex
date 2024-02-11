@@ -1,7 +1,14 @@
 defmodule LiveViewNative.Engine do
-  # @behaviour Phoenix.Template.Engine
+  @moduledoc """
+  The LiveViewNative.Engine that powers `.neex` templates and the `~LVN` sigil.
 
-  # @impl true
+  It works by adding a LiveView Native template parsing and validation layer on top
+  of `Phoenix.LiveView.TagEngine`.
+  """
+
+  @behaviour Phoenix.Template.Engine
+
+  @impl true
   def compile(path, _name) do
     quote do
       require LiveViewNative.Engine
@@ -27,6 +34,7 @@ defmodule LiveViewNative.Engine do
     )
   end
 
+  @doc false
   def annotate_tagged_content(%Macro.Env{} = caller) do
     %Macro.Env{module: mod, function: {func, _}, file: file, line: line} = caller
     line = if line == 0, do: 1, else: line

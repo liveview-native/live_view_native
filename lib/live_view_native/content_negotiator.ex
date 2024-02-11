@@ -1,8 +1,13 @@
 defmodule LiveViewNative.ContentNegotiator do
+  @moduledoc """
+  The callback module for delegating LiveView Native format
+  requests to the correct render component
+  """
   alias Phoenix.LiveView.Socket
   import Phoenix.LiveView, only: [render_with: 2]
   import LiveViewNative.Utils, only: [get_format: 1]
 
+  @doc false
   def on_mount(:call, _params, _session, %Socket{view: view} = socket) do
     formats =
       view.__native__()[:formats]

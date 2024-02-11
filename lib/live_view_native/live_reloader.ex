@@ -1,5 +1,20 @@
 defmodule LiveViewNative.LiveReloader do
+  @moduledoc """
+  Router for live-reload detection of LiveView Native applications in development.
+
+  # Usage
+
+  Add the `LiveViewNative.LiveReloader` plug within a `code_reloading?` block
+  in your Endpoint, ie:
+
+      if code_reloading? do
+        socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
+        plug Phoenix.LiveReloader
+        plug LiveViewNative.LiveReloader
+      end
+  """
   import Plug.Conn
+  @behaviour Plug
 
   def init(default), do: default
 

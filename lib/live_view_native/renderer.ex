@@ -1,8 +1,13 @@
 defmodule LiveViewNative.Renderer do
+  @moduledoc """
+  This module contains logic on how template rendering and embedding is implemented
+  """
+
   import LiveViewNative.Utils, only: [
     stringify_format: 1
   ]
 
+  @doc false
   defmacro __before_compile__(%{module: module}) do
     opts = Module.get_attribute(module, :native_opts)
     pattern = build_pattern(module, opts[:format])
@@ -12,6 +17,7 @@ defmodule LiveViewNative.Renderer do
     end
   end
 
+  @doc false
   defmacro delegate_to_target(name, opts \\ []) do
     %{module: module} = env = __CALLER__
     render? = Module.defines?(module, {name, 1})
@@ -35,6 +41,32 @@ defmodule LiveViewNative.Renderer do
     end
   end
 
+  @doc """
+  Embeds templates as render functions
+
+  This function is mostly identical to `Phoenix.Component.embed_templates/2` but deviates in a few ways
+
+  ## Options
+    * `:format` - the format from the client. This will be used for template discovery, for the format
+    `:swiftui` templates such as `home_live.swiftui.neex` will collected.
+    * `:name` - the name of the generated function. Defaults to the name of the template, for example
+    `app.swiftui.neex` will generate `app/2`. If this value is passed in there must only be a single template
+    name matched. So if the pattern results in `['home_live.swiftui.neex', 'user_list.swiftui.neex']` and
+    you pass `name: :render` there is ambiguity and will `raise`. The exception is when there are multiple
+    targets for the same name: `['home_live.swiftui+watchos.neex', 'home_live.swiftui+tvos.neex', 'home_live.swiftui.neex']`
+    if `name: :render` this will result:
+
+      def render(assings, %{"target" => "watchos"} = interface)
+      def render(assigns, %{"target" => "tvos"} = interface)
+      def render(assigns, interface)
+
+    the fallback function will always sort to render last. This allows for a greedy matcher if more than one target
+    will be used for the same template.
+
+    * `:root` - the location from which the `pattern` is applied to for finding templates. This is relative
+    to the rendering module.
+  """
+  @doc type: :macro
   defmacro embed_templates(pattern, opts \\ []) do
     %{module: module} = env = __CALLER__
     native_opts = Module.get_attribute(module, :native_opts)
@@ -75,7 +107,8 @@ defmodule LiveViewNative.Renderer do
       chunk_names
   end
 
-  def chunk_name(template) do
+
+  defp chunk_name(template) do
     template
     |> Path.basename()
     |> String.split(".")
