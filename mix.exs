@@ -55,7 +55,7 @@ defmodule LiveViewNative.MixProject do
     ]
   end
 
-  def description, do: "LiveView Native"
+  defp description, do: "LiveView Native"
 
   defp package do
     %{
