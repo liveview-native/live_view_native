@@ -101,6 +101,8 @@ defmodule LiveViewNative.Component do
         use LiveViewNative.Component,
           format: :swiftui
 
+        import LiveViewNative.Component, only: [csrf_token: 1]
+
         embed_templates "layouts_swiftui/*"
       end
 
@@ -195,5 +197,18 @@ defmodule LiveViewNative.Component do
     ]
 
     EEx.compile_string(expr, options)
+  end
+
+  @doc """
+  Embed the CSRF token for LiveView as a tag
+  """
+  def csrf_token(assigns) do
+    csrf_token = Phoenix.Controller.get_csrf_token()
+
+    assigns = Map.put(assigns, :csrf_token, csrf_token)
+
+    ~LVN"""
+    <csrf-token value={@csrf_token} />
+    """
   end
 end
