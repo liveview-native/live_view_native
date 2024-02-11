@@ -1,9 +1,44 @@
 defmodule LiveViewNative.LiveView do
+  @moduledoc """
+  Use this module within a LiveView to delegate rendering requests
+  from a native client to a format specific rendering component.
+
+  All event handling should remain in the LiveView, all rendering
+  concerns for a given format will be delegated to the component.
+
+  Please refer to `LiveViewNative.Component` for more information
+  on rendering components.
+  """
   import LiveViewNative.Utils, only: [
     normalize_layouts: 1,
     stringify_format: 1
   ]
 
+  @doc """
+  Uses LiveView Native in the current module for rendering delegation
+
+      defmodule MyAppWeb.HomeLive do
+        use MyAppWeb, :live_view
+        use LiveViewNative,
+          formats: [:swiftui, :jatpack],
+          layouts: [
+            swiftui: {MyAppWeb.Layouts.SwiftUI, :app},
+            jetpack: {MyAppWeb.Layouts.Jetpack, :app}
+          ]
+      end
+
+  ## Options
+      * `:formats` - the formats this LiveView will delegate to
+      a render component. For example, specifying `formats: [:swiftui, jetpack]`
+      for a LiveView named `MyAppWeb.HomeLive` will
+      invoke `MyAppWeb.HomeLive.SwiftUI` and `MyAppWeb.HomeLivew.Jetpack` when
+      respectively rendering each format. The appended module suffix
+      is taken from the `:module_suffix` value on each registered LiveView Native
+      plugin.
+
+    * `:layouts` - which layouts to render for each format,
+      for example: `[swiftui: {MyAppWeb.Layouts.SwiftUI, :app}]`
+  """
   defmacro __using__(opts) do
     quote do
       on_mount {LiveViewNative.ContentNegotiator, :call}
@@ -12,6 +47,7 @@ defmodule LiveViewNative.LiveView do
     end
   end
 
+  @doc false
   defmacro __before_compile__(%{module: module} = env) do
     opts = Module.get_attribute(module, :native_opts)
     formats = opts[:formats]

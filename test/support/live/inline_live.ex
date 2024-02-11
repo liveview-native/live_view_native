@@ -1,8 +1,7 @@
 defmodule LiveViewNativeTest.InlineLive.GameBoy do
   use LiveViewNative.Component,
     format: :gameboy,
-    as: :render,
-    layout: {LiveViewNativeTest.GameBoyLayouts, :app}
+    as: :render
 
   def render(assigns, %{"target" => "tv"}) do
     ~LVN"""
@@ -20,8 +19,7 @@ end
 defmodule LiveViewNativeTest.InlineLive.Switch do
   use LiveViewNative.Component,
     format: :switch,
-    as: :render,
-    layout: {LiveViewNativeTest.SwitchLayouts, :app}
+    as: :render
 
   def render(assigns, %{"target" => "tv"}) do
     ~LVN"""

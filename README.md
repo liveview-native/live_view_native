@@ -9,30 +9,37 @@ LiveView Native is a platform for building native applications using [Elixir](ht
 ```elixir
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
-  use Phoenix.LiveView
   use MyAppWeb, :live_view
+  use LiveViewNative.LiveView,
+    formats: [:swiftui],
+    layouts: [
+      swiftui: {MyAppWeb.Layouts.SwiftUI, :app}
+    ]
+end
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    # This UI renders on iOS
-    ~SWIFTUI"""
+# liv/my_app_web/live/hello_live_swiftui.ex
+def MyAppWeb.HelloLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui,
+    as: :render
+
+  def render(assigns, %{"target" => "watchos"}) do
+    ~LVN"""
     <VStack>
       <Text>
-        Hello native!
+        Hello WatchOS!
       </Text>
     </VStack>
     """
   end
 
-  @impl true
-  def render(%{} = assigns) do
-    # This UI renders on the web
-    ~H"""
-    <div class="flex w-full h-screen items-center">
-      <span class="w-full text-center">
-        Hello web!
-      </span>
-    </div>
+  def render(assigns, _interface) do
+    ~LVN"""
+    <VStack>
+      <Text>
+        Hello SwiftUI!
+      </Text>
+    </VStack>
     """
   end
 end

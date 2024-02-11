@@ -1,4 +1,5 @@
 defmodule LiveViewNative.Utils do
+  @moduledoc false
   alias Phoenix.LiveView.Socket
 
   def get_format(%Socket{private: %{connect_info: %{private: %{phoenix_format: format}}}}), do: format
@@ -15,7 +16,7 @@ defmodule LiveViewNative.Utils do
   def normalize_layouts(layouts) do
     Enum.map(layouts, fn
       {format, {mod, template}} -> {format, {mod, template}}
-      {format, mod} -> {format, {mod, :app}} 
+      {format, mod} -> {format, {mod, :app}}
     end)
   end
 end
