@@ -42,7 +42,7 @@ defmodule LiveViewNative.MixProject do
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:owl, "~> 0.8", runtime: false},
       {:deep_merge, "~> 1.0"},
-      {:live_view_native_test, github: "liveview-native/live_view_native_test", tag: "0.3.0-alpha.3", only: :test}
+      {:live_view_native_test, github: "liveview-native/live_view_native_test", tag: "v0.3.0-alpha.4", only: :test}
     ]
   end
 
