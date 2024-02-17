@@ -44,10 +44,10 @@ defmodule LiveViewNative.TemplateTest do
     test "accepts camelCased tag names" do
       assigns = %{}
 
-      ~LVN"""
+      assert ~LVN"""
       <FooBar />
       """
-      |> render() =~ "<FooBar><FooBar/>"
+      |> render() =~ "<FooBar></FooBar>"
     end
   end
 
