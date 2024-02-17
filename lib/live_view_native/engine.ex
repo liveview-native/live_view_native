@@ -30,9 +30,18 @@ defmodule LiveViewNative.Engine do
       caller: __CALLER__,
       source: source,
       tag_handler: LiveViewNative.TagEngine,
-      annotate_tagged_content: debug_annotations? && (&Phoenix.LiveView.HTMLEngine.annotate_tagged_content/1)
+      annotate_tagged_content: debug_annotations? && (&annotate_tagged_content/1)
     )
   end
+
+    @doc """
+  Encodes the HTML templates to iodata.
+  """
+  def encode_to_iodata!({:safe, body}), do: body
+  def encode_to_iodata!(nil), do: ""
+  def encode_to_iodata!(bin) when is_binary(bin), do: Phoenix.HTML.Engine.html_escape(bin)
+  def encode_to_iodata!(list) when is_list(list), do: LiveViewNative.Template.Safe.List.to_iodata(list)
+  def encode_to_iodata!(other), do: LiveViewNative.Template.Safe.to_iodata(other)
 
   @doc false
   def annotate_tagged_content(%Macro.Env{} = caller) do

@@ -192,8 +192,7 @@ defmodule LiveViewNative.Component do
       indentation: meta[:indentation] || 0,
       source: expr,
       tag_handler: LiveViewNative.TagEngine,
-      annotate_tagged_content:
-        debug_annotations? && (&LiveViewNative.Engine.annotate_tagged_content/1)
+      annotate_tagged_content: debug_annotations? && (&LiveViewNative.Engine.annotate_tagged_content/1)
     ]
 
     EEx.compile_string(expr, options)
