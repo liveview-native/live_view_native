@@ -31,7 +31,7 @@ defmodule LiveViewNative.MixProject do
     [
       {:phoenix, "~> 1.7.0"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_view, "~> 0.20.4", override: true},
+      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view", ref: "4939fb8", override: true},
       {:phoenix_live_reload, "~> 1.4", only: :test},
       {:phoenix_template, "~> 1.0.4"},
       {:floki, ">= 0.30.0", only: :test},
