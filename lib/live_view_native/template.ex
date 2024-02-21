@@ -10,9 +10,6 @@ defmodule LiveViewNative.Template do
     end)
   end
 
-  def escape({:safe, _} = safe), do: safe
-  def escape(other), do: {:safe, LiveViewNative.Engine.encode_to_iodata!(other)}
-
   def attributes_escape(attrs) when is_list(attrs) do
     {:safe, build_attrs(attrs)}
   end
@@ -22,7 +19,7 @@ defmodule LiveViewNative.Template do
   end
 
   defp build_attrs([{k, true} | t]),
-  do: [?\s, key_escape(k) | build_attrs(t)]
+    do: [?\s, key_escape(k) | build_attrs(t)]
 
   defp build_attrs([{_, false} | t]),
     do: build_attrs(t)
@@ -104,6 +101,6 @@ defmodule LiveViewNative.Template do
   defp attr_escape(attr)
   defp attr_escape({:safe, data}), do: data
   defp attr_escape(nil), do: []
-  defp attr_escape(other) when is_binary(other), do: LiveViewNative.Template.escape(other)
+  defp attr_escape(other) when is_binary(other), do: Phoenix.HTML.Engine.html_escape(other)
   defp attr_escape(other), do: LiveViewNative.Template.Safe.to_iodata(other)
 end

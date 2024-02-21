@@ -35,7 +35,7 @@ defimpl LiveViewNative.Template.Safe, for: Atom do
 end
 
 defimpl LiveViewNative.Template.Safe, for: BitString do
-  defdelegate to_iodata(data), to: LiveViewNative.Template, as: :escape
+  defdelegate to_iodata(data), to: Phoenix.HTML, as: :html_escape
 end
 
 defimpl LiveViewNative.Template.Safe, for: Time do
