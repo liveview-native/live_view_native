@@ -182,8 +182,6 @@ defmodule LiveViewNative.Component do
       raise "~LVN requires a variable named \"assigns\" to exist and be set to a map"
     end
 
-    debug_annotations? = Module.get_attribute(__CALLER__.module, :__debug_annotations__)
-
     options = [
       engine: Phoenix.LiveView.TagEngine,
       file: __CALLER__.file,
@@ -191,8 +189,7 @@ defmodule LiveViewNative.Component do
       caller: __CALLER__,
       indentation: meta[:indentation] || 0,
       source: expr,
-      tag_handler: LiveViewNative.TagEngine,
-      annotate_tagged_content: debug_annotations? && (&LiveViewNative.Engine.annotate_tagged_content/1)
+      tag_handler: LiveViewNative.TagEngine
     ]
 
     EEx.compile_string(expr, options)
