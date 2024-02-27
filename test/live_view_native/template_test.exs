@@ -93,7 +93,7 @@ defmodule LiveViewNative.TemplateTest do
       assigns = %{}
 
       assert ~LVN"""
-      <FooBar />
+      <FooBar/>
       """
       |> render() =~ "<FooBar></FooBar>"
     end
