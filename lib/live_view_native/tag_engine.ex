@@ -26,29 +26,11 @@ defmodule LiveViewNative.TagEngine do
 
   @doc false
   @impl true
-  def annotate_body(%Macro.Env{} = caller) do
-    if Application.get_env(:phoenix_live_view, :debug_heex_annotations, false) do
-      %Macro.Env{module: mod, function: {func, _}, file: file, line: line} = caller
-      line = if line == 0, do: 1, else: line
-      file = Path.relative_to_cwd(file)
-      app = Application.get_env(:logger, :compile_time_application)
+  defdelegate annotate_body(caller), to: Phoenix.LiveView.HTMLEngine
 
-      before = "<#{inspect(mod)}.#{func}> #{file}:#{line}"
-      aft = "</#{inspect(mod)}.#{func}>"
-      {"<!-- #{before} (#{app}) -->", "<!-- #{aft} -->"}
-    end
-  end
-
+  @doc false
   @impl true
-  def annotate_caller(file, line) do
-    if Application.get_env(:phoenix_live_view, :debug_heex_annotations, false) do
-      line = if line == 0, do: 1, else: line
-      file = Path.relative_to_cwd(file)
-      app = Application.get_env(:logger, :compile_time_application)
-
-      "<!-- @caller #{file}:#{line} (#{app}) -->"
-    end
-  end
+  defdelegate annotate_caller(file, line), to: Phoenix.LiveView.HTMLEngine
 
   @doc false
   @impl true
