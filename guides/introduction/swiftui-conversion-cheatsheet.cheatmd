@@ -1,0 +1,228 @@
+# SwiftUI Conversion Cheat Sheet
+
+This cheatsheet covers the fundamental syntax you'll encounter in SwiftUI guides and documentation and how to convert that syntax into LiveView Native templates and stylesheets.
+
+You may wish to bookmark this page and return to it as needed.
+
+## Views
+
+SwiftUI Views are the building blocks of user interfaces in Swift applications. They represent the visual elements of an app, such as buttons, text fields, and images, and are structured hierarchically to compose complex interfaces. In LiveView Native, we represent views using syntax similar to HTML tags.
+
+## 
+{: .col-2}
+
+### SwiftUI
+
+```elixir
+Text("Hello, SwiftUI")
+```
+
+### LiveView Native
+
+```html
+<Text>Hello, SwiftUI</Text>
+```
+
+## Modifiers
+
+SwiftUI modifiers are functions used to modify the appearance, behavior, or layout of views in a declarative manner. They enable developers to apply various transformations and adjustments to views, such as changing colors, fonts, sizes, alignments, or adding animations and gestures. These modifiers are chainable, allowing for complex and dynamic interfaces through multiple modifiers applied to a single view. 
+
+In LiveView Native, we use a stylesheet to apply modifiers to views using classes. Modifiers omit the `.` chaining.
+
+## 
+{: .col-2}
+
+### SwiftUI
+
+```elixir
+Text("Hello, SwiftUI")
+    .font(.title)
+    .foregroundStyle(.blue)
+```
+
+### LiveView Native
+
+Stylesheet
+
+```elixir
+defmodule MyAppWeb.Styles.SwiftUI do
+  use LiveViewNative.Stylesheet, :swiftui
+
+  ~SHEET"""
+  "blue-title" do
+    foregroundStyle(.blue)
+    font(.title)
+  end
+  """
+end
+```
+
+Template
+
+```html
+<Text class="blue-title">Hello, SwiftUI</Text>
+```
+
+
+## Attributes
+
+In SwiftUI, attributes are properties that define the appearance and behavior of views. Unlike modifiers, attributes set the initial properties of views, while modifiers dynamically modify or augment a view after it's created. Also, modifiers typically affect child views, whereas attributes only affect one view. In practice, attributes are more similar to parameters in a function, whereas modifiers are chainable functions that modify a view. 
+
+In LiveView Native, we represent SwiftUI attributes as element attributes like so:
+
+## 
+{: .col-2}
+
+### SwiftUI
+
+```elixir
+VStack(alignment: .leading)
+```
+
+### LiveView Native
+
+```html
+<VStack alignment="leading"></VStack>
+```
+
+## Unnamed Attributes
+
+In many SwiftUI Views, the first argument to the function is often an unnamed attribute. SwiftUI uses an underscore `_` to indicate the attribute is unnamed. Unnamed attributes are just optional syntax sugar to avoid passing in the name.
+
+In these cases, in LiveView Native, we use the attribute's name to provide the value.
+
+## 
+{: .col-2}
+
+### SwiftUI
+
+Unnamed version
+
+```elixir
+Image("my_asset")
+```
+
+Named version (equivalent to the above)
+
+```elixir
+Image(name: "my_asset")
+```
+
+### LiveView Native
+
+```html
+<Image name="my_asset"></Image>
+```
+
+## Finding Unnamed Attributes
+You can find the attributes of a view within the Topics section of the views documentation in the corresponding `init` definition. For example, here's the `init` definition from the [Image View's init documentation](https://developer.apple.com/documentation/swiftui/image/init(_:bundle:)) 
+The init definition includes a `_ name` unnamed attribute whose value is a `String`. Here's the same snippet you can find in the documentation above.
+
+```elixir
+init(
+    _ name: String,
+    bundle: Bundle? = nil
+)
+```
+
+That's why we use the `name` attribute to specify the name of the image asset to use in the SwiftUI asset catalogue.
+
+```html
+<Image name="my_asset"></Image>
+```
+
+## Views as Arguemnts
+
+SwiftUI Modifiers can accept views as arguments. Supporting views as arguments presents a challenge for LiveView Native as there's no equivalent in a CSS-inspired paradigm. It would be like having a CSS property accept HTML elements as a value.
+
+To support this pattern, LiveView Native represents SwiftUI Views using dot notation.
+
+## 
+{: .col-2}
+
+### SwiftUI
+
+```elixir
+Image(name: "my_asset")
+    .clipShape(Circle())
+```
+
+### LiveView Native
+
+Stylesheet
+
+```elixir
+defmodule MyAppWeb.Styles.SwiftUI do
+  use LiveViewNative.Stylesheet, :swiftui
+
+  ~SHEET"""
+  "clipShape:circle" do
+    clipShape(.circle)
+  end
+  """
+end
+```
+
+Template
+
+```html
+<Image class="clipShape:circle" name="my_asset"></Image>
+```
+
+## Named Content Areas
+
+SwiftUI Views can have content area modifiers that accept one or more views inside a closure (the curly `{}` brackets). Views within the named content area can even have their own modifiers.
+
+LiveView Native supports named content areas through the `template` attribute. The stylesheet specifies a name for the content area using an atom. The view's `template` attribute should match the atom used.
+
+## 
+
+{: .col-2}
+
+### SwiftUI
+
+Unnamed version
+
+```elixir
+Image("my_asset")
+    .overlay {
+        Circle().stroke(.white, lineWidth: 4)
+    }
+```
+
+Named version (equivalent to the above)
+
+```elixir
+Image("my_asset")
+    .overlay {
+        content: Circle().stroke(.white, lineWidth: 4)
+    }
+```
+
+### LiveView Native
+
+Stylesheet
+
+```elixir
+defmodule MyAppWeb.Styles.SwiftUI do
+  use LiveViewNative.Stylesheet, :swiftui
+
+  ~SHEET"""
+  "overlay-circle" do
+    overlay(content: :circle)
+  end
+
+  "white-border" do
+    stroke(.white, lineWidth: 4)
+  end
+  """
+end
+```
+
+Template
+
+```html
+<Image class="overlay-circle" name="my_asset">
+  <Circle class="white-border" template="circle">
+</Image>
+```

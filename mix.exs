@@ -80,6 +80,7 @@ defmodule LiveViewNative.MixProject do
       "guides/introduction/overview.md",
       "guides/introduction/installation.md",
       "guides/introduction/your-first-native-liveview.md",
+      "guides/introduction/swiftui-conversion-cheatsheet.cheatmd",
       "guides/introduction/troubleshooting.md",
       "guides/common-features/template-syntax.md",
       "guides/common-features/modifiers.md",
