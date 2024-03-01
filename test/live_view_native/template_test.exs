@@ -69,6 +69,15 @@ defmodule LiveViewNative.TemplateTest do
       |> render() =~ ~S(<Foo id="123"></Foo>)
     end
 
+    test "accepts false for a value and doesn't drop the attribute" do
+      assigns = %{}
+
+      assert ~LVN"""
+      <Foo bar={false}/>
+      """
+      |> render() =~ ~S(<Foo bar="false"></Foo>)
+    end
+
     test "json encode maps" do
       assigns = %{}
 

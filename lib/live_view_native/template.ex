@@ -21,9 +21,6 @@ defmodule LiveViewNative.Template do
   defp build_attrs([{k, true} | t]),
     do: [?\s, key_escape(k) | build_attrs(t)]
 
-  defp build_attrs([{_, false} | t]),
-    do: build_attrs(t)
-
   defp build_attrs([{_, nil} | t]),
     do: build_attrs(t)
 
