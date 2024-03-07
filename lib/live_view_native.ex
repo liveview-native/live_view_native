@@ -115,7 +115,16 @@ defmodule LiveViewNative do
   end
 
   @doc"""
-  Returns a list of all available LiveView Nativ plugins
+  Fetches a plugin based upon the format name
+
+  Follows the same return types as `Map.fetch!/2`
+  """
+  def fetch_plugin!(format) do
+    Map.fetch!(plugins(), stringify_format(format))
+  end
+
+  @doc"""
+  Returns a list of all available LiveView Native plugins
 
   Only the plugins that have been registered in your application
   config will be returned in the list
@@ -144,13 +153,8 @@ defmodule LiveViewNative do
   The format list is derived from the plugins returned by `LiveViewNative.plugins/0`
   """
   def available_formats() do
-    case Application.fetch_env(:live_view_native, :plugins) do
-      {:ok, plugins} ->
-        Enum.map(plugins, &(&1.format))
-      :error ->
-        IO.warn("No LiveView Native plugins registered")
-
-        []
-    end
+    plugins()
+    |> Map.values()
+    |> Enum.map(&(&1.format))
   end
 end
