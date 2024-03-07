@@ -4,10 +4,15 @@ defmodule <%= inspect context.module %> do
   def live_view() do
     quote do
       use LiveViewNative.LiveView,
+<<<<<<< Updated upstream
         formats: [:swiftui],
         layouts: [
           swiftui: {<%= inspect @web_module %>.Layouts.SwiftUI, :app}
         ]
+=======
+        formats: <%= inspect(@formats, pretty: true) %>,
+        layouts: <%= inspect(@layouts, pretty: true) %>
+>>>>>>> Stashed changes
 
       unquote(verified_routes())
     end

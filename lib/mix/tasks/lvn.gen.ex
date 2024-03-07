@@ -85,19 +85,36 @@ defmodule Mix.Tasks.Lvn.Gen do
 
   defp copy_new_files(%Context{} = context, binding, paths) do
     files = files_to_be_generated(context)
+    web_module = Mix.Phoenix.web_module(context.base_module)
 
     binding =
       Keyword.merge(binding,
         assigns: %{
           gettext: true,
-          web_module: Mix.Phoenix.web_module(context.base_module)
+          formats: formats(),
+          layouts: layouts(web_module),
+          web_module: web_module
         }
       )
 
-    IO.inspect(files, label: "Files")
     Mix.Phoenix.copy_from(paths, "priv/templates/lvn.gen", binding, files)
 
     context
+  end
+
+  defp formats do
+    LiveViewNative.available_formats()
+  end
+
+  defp layouts(web_module) do
+    Enum.map(formats(), fn(format) ->
+      format_module =
+        format
+        |> LiveViewNative.fetch_plugin!()
+        |> Map.fetch!(:module_suffix)
+
+      {format, {Module.concat([web_module, Layouts, format_module]), :app}}
+    end)
   end
 
   defp parse_opts(args) do
