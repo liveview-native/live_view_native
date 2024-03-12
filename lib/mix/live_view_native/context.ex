@@ -53,6 +53,7 @@ defmodule Mix.LiveViewNative.Context do
       |> Application.get_application()
 
     [".", plugin_otp_app_name, default_app]
+    |> Enum.reject(&(&1 == nil))
   end
 
   def prompt_for_conflicts(generator_files) do
