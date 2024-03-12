@@ -45,14 +45,14 @@ defmodule Mix.LiveViewNative.Context do
     end
   end
 
-  def apps(format) do
+  def apps(format, default_app \\ :live_view_native) do
     plugin_otp_app_name =
       format
       |> LiveViewNative.fetch_plugin!()
       |> Map.get(:__struct__)
       |> Application.get_application()
 
-    [".", plugin_otp_app_name, :live_view_native]
+    [".", plugin_otp_app_name, default_app]
   end
 
   def prompt_for_conflicts(generator_files) do
