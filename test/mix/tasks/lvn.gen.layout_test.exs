@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Lvn.Gen.LayoutTest do
     :ok
   end
 
-  test "generates the `Native` module into the project's lib directory", config do
+  test "generates layout file and the layout templates into the proper format directory", config do
     in_tmp_live_project config.test, fn ->
       Gen.Layout.run(["gameboy"])
       assert_file "lib/live_view_native_web/components/layouts_gameboy/app.gameboy.neex"
