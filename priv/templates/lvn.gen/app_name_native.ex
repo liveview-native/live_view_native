@@ -1,5 +1,5 @@
-defmodule <%= inspect context.module %> do
-  import <%= inspect @web_module %>, only: [verified_routes: 0]
+defmodule <%= inspect context.native_module %> do
+  import <%= inspect context.web_module %>, only: [verified_routes: 0]
 
   def live_view() do
     quote do
@@ -20,7 +20,7 @@ defmodule <%= inspect context.module %> do
     quote do
       use LiveViewNative.Component, unquote(opts)<%= if @gettext do %>
 
-      import <%= inspect @web_module %>.Gettext<% end %>
+      import <%= inspect context.web_module %>.Gettext<% end %>
 
       unquote(verified_routes())
     end
@@ -32,7 +32,7 @@ defmodule <%= inspect context.module %> do
     quote do
       use LiveViewNative.Component, unquote(opts)<%= if @gettext do %>
 
-      import <%= inspect @web_module %>.Gettext<% end %>
+      import <%= inspect context.web_module %>.Gettext<% end %>
 
       unquote(verified_routes())
     end
@@ -45,7 +45,7 @@ defmodule <%= inspect context.module %> do
       use LiveViewNative.Component, unquote(opts)
 
       import LiveViewNative.Component, only: [csrf_token: 1]<%= if @gettext do %>
-      import <%= inspect @web_module %>.Gettext<% end %>
+      import <%= inspect context.web_module %>.Gettext<% end %>
 
       unquote(verified_routes())
     end
