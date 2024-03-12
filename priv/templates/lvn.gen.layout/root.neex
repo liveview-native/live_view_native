@@ -1,0 +1,3 @@
+<.csrf_token />
+<Style url={~p"/assets/app.<%= context.format %>"} />
+<%%= @inner_content %>
