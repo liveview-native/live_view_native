@@ -30,7 +30,6 @@ defmodule LiveViewNative.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.7.0"},
-      {:phx_new, github: "phoenixframework/phoenix", sparse: "installer", branch: "main", only: :test},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_view, "~> 0.20.10"},
       {:phoenix_live_reload, "~> 1.4", only: :test},
