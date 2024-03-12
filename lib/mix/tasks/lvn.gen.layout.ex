@@ -70,7 +70,9 @@ defmodule Mix.Tasks.Lvn.Gen.Layout do
       }
     ]
 
-    Mix.Phoenix.copy_from([".", :live_view_native], "priv/templates/lvn.gen.layout", binding, files)
+    apps = Context.apps(context.format)
+
+    Mix.Phoenix.copy_from(apps, "priv/templates/lvn.gen.layout", binding, files)
 
     context
   end

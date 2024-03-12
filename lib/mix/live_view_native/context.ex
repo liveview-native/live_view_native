@@ -45,6 +45,16 @@ defmodule Mix.LiveViewNative.Context do
     end
   end
 
+  def apps(format) do
+    plugin_otp_app_name =
+      format
+      |> LiveViewNative.fetch_plugin!()
+      |> Map.get(:__struct__)
+      |> Application.get_application()
+
+    [".", plugin_otp_app_name, :live_view_native]
+  end
+
   def prompt_for_conflicts(generator_files) do
     file_paths =
       Enum.flat_map(generator_files, fn
