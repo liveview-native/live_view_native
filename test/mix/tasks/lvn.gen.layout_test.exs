@@ -26,7 +26,7 @@ defmodule Mix.Tasks.Lvn.Gen.LayoutTest do
   test "will raise with message if invalid format is given", config do
     in_tmp_live_project config.test, fn ->
       assert_raise(Mix.Error, fn() ->
-        Gen.run(["other"])
+        Gen.Layout.run(["other"])
       end)
       refute_file "lib/live_view_native_web/components/layouts_gameboy/app.other.neex"
       refute_file "lib/live_view_native_web/components/layouts_gameboy/root.other.neex"
