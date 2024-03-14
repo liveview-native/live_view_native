@@ -1,17 +1,18 @@
 defmodule Mix.LiveViewNative.Context do
   defstruct context_app: nil,
     base_module: nil,
+    schema_module: nil,
     web_module: nil,
     native_module: nil,
     module_suffix: nil,
-    format: nil,
-    opts: []
+    format: nil
 
   def build(args, caller) do
     {parsed_opts, parsed, _} = parse_opts(args, caller.switches())
-    [format | opts] = caller.validate_args!(parsed)
-
-    format = atomize(format)
+    [format, schema_module] =
+      parsed
+      |> caller.validate_args!()
+      |> parse_args()
 
     ctx_app = parsed_opts[:context_app] || Mix.Phoenix.context_app()
     base_module = Module.concat([Mix.Phoenix.context_base(ctx_app)])
@@ -21,12 +22,25 @@ defmodule Mix.LiveViewNative.Context do
     %__MODULE__{
       context_app: ctx_app,
       base_module: base_module,
+      schema_module: schema_module,
       native_module: native_module,
       web_module: web_module,
       module_suffix: get_module_suffix(format),
-      format: format,
-      opts: opts
+      format: format
     }
+  end
+
+  defp parse_args(args) do
+    format = Enum.at(args, 0) |> atomize()
+    schema_module =
+      Enum.at(args, 1)
+      |> case do
+        nil -> nil
+        schema ->
+          Module.concat([schema])
+      end
+
+    [format, schema_module]
   end
 
   defp atomize(atom) when is_atom(atom), do: atom
@@ -35,7 +49,10 @@ defmodule Mix.LiveViewNative.Context do
 
   defp get_module_suffix(nil), do: nil
   defp get_module_suffix(format),
-    do: LiveViewNative.fetch_plugin!(format).module_suffix
+    do:
+      LiveViewNative.fetch_plugin!(format).module_suffix
+      |> List.wrap()
+      |> Module.concat()
 
   def valid_format?(format) do
     LiveViewNative.fetch_plugin(format)
