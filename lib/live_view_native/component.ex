@@ -136,7 +136,7 @@ defmodule LiveViewNative.Component do
             form: 1,
             inputs_for: 1,
             intersperse: 1,
-            linl: 1,
+            link: 1,
             live_component: 1,
             live_file_input: 1,
             live_img_preview: 1,
