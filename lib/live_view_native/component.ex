@@ -126,7 +126,22 @@ defmodule LiveViewNative.Component do
         quote do
           import Phoenix.LiveView.Helpers
           import Kernel, except: [def: 2, defp: 2]
-          import Phoenix.Component, except: [embed_templates: 1, embed_templates: 2]
+          import Phoenix.Component, except: [
+            embed_templates: 1, embed_templates: 2,
+            sigitl_H: 2,
+
+            async_result: 1,
+            dynamic_tag: 1,
+            focus_wrap: 1,
+            form: 1,
+            inputs_for: 1,
+            intersperse: 1,
+            linl: 1,
+            live_component: 1,
+            live_file_input: 1,
+            live_img_preview: 1,
+            live_title: 1
+          ]
           import Phoenix.Component.Declarative
           require Phoenix.Template
 
