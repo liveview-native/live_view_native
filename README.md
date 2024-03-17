@@ -18,7 +18,7 @@ defmodule MyAppWeb.HelloLive do
 end
 
 # liv/my_app_web/live/hello_live_swiftui.ex
-def MyAppWeb.HelloLive.SwiftUI do
+defmodule MyAppWeb.HelloLive.SwiftUI do
   use LiveViewNative.Component,
     format: :swiftui,
     as: :render

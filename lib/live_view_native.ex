@@ -9,7 +9,7 @@ defmodule LiveViewNative do
   Phoenix on how to handle certain formats.
 
       # registers each plugin for use
-      config :live_view_native plugins: [
+      config :live_view_native, plugins: [
         LiveViewNative.SwiftUI,
         LiveViewNative.Jetpack
       ]
@@ -46,7 +46,7 @@ defmodule LiveViewNative do
       config :phoenix, :template_engines,
         neex: LiveViewNative.Engine
 
-  Next you should add `LiveViewNative.LiveReloader` to your application's endpoint.
+  Next you should add `LiveViewNative.LiveReloader` to your application's endpoint.ex
 
       if code_reloading? do
         socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket

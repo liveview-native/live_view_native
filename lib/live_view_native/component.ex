@@ -39,7 +39,7 @@ defmodule LiveViewNative.Component do
     See `LiveViewNative.Renderer.embed_templates/2` for more information.
 
   ## Format-Specific Render Component
-      def MyAppWeb.HomeLive.SwiftUI do
+      defmodule MyAppWeb.HomeLive.SwiftUI do
         use LiveViewNative.Component,
           format: :swiftui,
           as: :render
@@ -47,7 +47,7 @@ defmodule LiveViewNative.Component do
 
   In this example `:as` is used and this will inject following:
 
-      ember_templates("swiftui/home_live*", root: nil, name: :render)
+      embed_templates("swiftui/home_live*", root: nil, name: :render)
 
   Assuming there is a `swiftui/home_live.swiftui.neex` this will be embeded in the render
   component as `render/2`.
@@ -128,7 +128,7 @@ defmodule LiveViewNative.Component do
           import Kernel, except: [def: 2, defp: 2]
           import Phoenix.Component, except: [
             embed_templates: 1, embed_templates: 2,
-            sigitl_H: 2,
+            sigil_H: 2,
 
             async_result: 1,
             dynamic_tag: 1,
