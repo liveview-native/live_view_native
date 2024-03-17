@@ -20,7 +20,7 @@ defmodule LiveViewNative.LiveView do
       defmodule MyAppWeb.HomeLive do
         use MyAppWeb, :live_view
         use LiveViewNative,
-          formats: [:swiftui, :jatpack],
+          formats: [:swiftui, :jetpack],
           layouts: [
             swiftui: {MyAppWeb.Layouts.SwiftUI, :app},
             jetpack: {MyAppWeb.Layouts.Jetpack, :app}
