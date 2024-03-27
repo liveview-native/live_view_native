@@ -57,18 +57,9 @@ defmodule LiveViewNative.MixProject do
 
   defp docs do
     [
-      extras: [
-        "README.md",
-        "guides/livebooks/common-swiftui-views.livemd",
-        "guides/livebooks/create-a-swiftui-application.livemd",
-        "guides/livebooks/forms-and-validation.livemd",
-        "guides/livebooks/getting-started.livemd",
-        "guides/livebooks/interactive-swiftui-views.livemd",
-        "guides/livebooks/native-navigation.livemd",
-        "guides/livebooks/stylesheets.livemd"
-      ],
+      extras: extras(),
       groups_for_extras: [
-        "Livebooks": ~r/livebooks/
+        "Livebooks": ~r/ex_doc_notebooks/
       ],
       main: "readme",
       source_url: @source_url,
@@ -77,6 +68,18 @@ defmodule LiveViewNative.MixProject do
   end
 
   defp description, do: "LiveView Native"
+
+  defp extras do
+    [
+      "guides/ex_doc_notebooks/getting-started.md",
+      "guides/ex_doc_notebooks/create-a-swiftui-application.md",
+      "guides/ex_doc_notebooks/common-swiftui-views.md",
+      "guides/ex_doc_notebooks/interactive-swiftui-views.md",
+      "guides/ex_doc_notebooks/stylesheets.md",
+      "guides/ex_doc_notebooks/native-navigation.md",
+      "guides/ex_doc_notebooks/forms-and-validation.md"
+    ]
+  end
 
 
   defp package do
