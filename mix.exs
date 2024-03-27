@@ -49,7 +49,19 @@ defmodule LiveViewNative.MixProject do
 
   defp docs do
     [
-      extras: ["README.md"],
+      extras: [
+        "README.md",
+        "guides/livebooks/common-swiftui-views.livemd",
+        "guides/livebooks/create-a-swiftui-application.livemd",
+        "guides/livebooks/forms-and-validation.livemd",
+        "guides/livebooks/getting-started.livemd",
+        "guides/livebooks/interactive-swiftui-views.livemd",
+        "guides/livebooks/native-navigation.livemd",
+        "guides/livebooks/stylesheets.livemd"
+      ],
+      groups_for_extras: [
+        "Livebooks": ~r/livebooks/
+      ],
       main: "readme",
       source_url: @source_url,
       source_ref: "v#{@version}"
