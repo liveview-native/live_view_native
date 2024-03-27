@@ -14,13 +14,21 @@ defmodule LiveViewNative.MixProject do
       deps: deps(),
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),
-      docs: docs()
+      docs: docs(),
+      aliases: aliases()
     ]
   end
 
   def application do
     [
       extra_applications: [:logger]
+    ]
+  end
+
+
+  defp aliases do
+    [
+      docs: ["ex_doc_guides", "docs"]
     ]
   end
 
@@ -69,6 +77,7 @@ defmodule LiveViewNative.MixProject do
   end
 
   defp description, do: "LiveView Native"
+
 
   defp package do
     %{
