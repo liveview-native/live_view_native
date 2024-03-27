@@ -1,6 +1,6 @@
 # Forms and Validation
 
-[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%2Fnotebooks%forms-and-validation.livemd)
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%livebooks%forms-and-validation.livemd)
 
 ## Overview
 
@@ -10,7 +10,7 @@ Getting the most out of this material requires some understanding of the [Ecto](
 
 ## Installing LiveView Native Live Form
 
-To install LiveView Native Form, we need to add the `live-view-native-form` SwiftUI package to our iOS application.
+To install LiveView Native Form, we need to add the `liveview-native-live-form` SwiftUI package to our iOS application.
 
 Follow the [LiveView Native Form Installation Guide](https://github.com/liveview-native/liveview-native-live-form?tab=readme-ov-file#liveviewnativeliveform) on that project's README and come back to this guide after you have finished the installation process.
 
@@ -31,7 +31,7 @@ defmodule Server.ExampleLive do
   def render(%{format: :swiftui} = assigns) do
     ~SWIFTUI"""
     <LiveForm id="myform" phx-submit="submit">
-      <TextField name="my-text" >Placeholder</TextField>
+      <TextField name="my-text">Placeholder</TextField>
       <LiveSubmitButton>Submit</LiveSubmitButton>
     </LiveForm>
     """
@@ -516,7 +516,7 @@ defmodule Server.CustomUserFormLive do
   def handle_event("validate", params, socket) do
     user_changeset =
       CustomUser.changeset(%CustomUser{}, params)
-      |> Map.put(:action, socket.assigns.user_changeset.action)
+      |> Map.put(:action, socket.assigns.changeset.action)
 
     {:noreply, assign(socket, :changeset, user_changeset)}
   end
