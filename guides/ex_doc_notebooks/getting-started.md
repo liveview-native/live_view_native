@@ -1,12 +1,65 @@
 # Getting Started
 
-[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%livebooks%getting-started.livemd)
+```elixir
+notebook_path = __ENV__.file |> String.split("#") |> hd()
+
+Mix.install(
+  [
+    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
+  ],
+  config: [
+    server: [
+      {ServerWeb.Endpoint,
+       [
+         server: true,
+         url: [host: "localhost"],
+         adapter: Phoenix.Endpoint.Cowboy2Adapter,
+         render_errors: [
+           formats: [html: ServerWeb.ErrorHTML, json: ServerWeb.ErrorJSON],
+           layout: false
+         ],
+         pubsub_server: Server.PubSub,
+         live_view: [signing_salt: "JSgdVVL6"],
+         http: [ip: {127, 0, 0, 1}, port: 4000],
+         secret_key_base: String.duplicate("a", 64),
+         live_reload: [
+           patterns: [
+             ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg|styles)$",
+             ~r/#{notebook_path}$/
+           ]
+         ]
+       ]}
+    ],
+    kino: [
+      group_leader: Process.group_leader()
+    ],
+    phoenix: [
+      template_engines: [neex: LiveViewNative.Engine]
+    ],
+    phoenix_template: [format_encoders: [swiftui: Phoenix.HTML.Engine]],
+    mime: [
+      types: %{"text/swiftui" => ["swiftui"], "text/styles" => ["styles"]}
+    ],
+    live_view_native: [plugins: [LiveViewNative.SwiftUI]],
+    live_view_native_stylesheet: [
+      content: [
+        swiftui: [
+          "lib/**/*swiftui*",
+          notebook_path
+        ]
+      ],
+      output: "priv/static/assets"
+    ]
+  ],
+  force: true
+)
+```
 
 ## Overview
 
-Our interactive guides provide a step-by-step tutorial for learning LiveView Native using Livebook. These guides assume that you already have some familiarity with Phoenix LiveView applications.
+Our livebook guides provide step-by-step lessons to help you learn LiveView Native using Livebook. These guides assume that you already have some familiarity with Phoenix LiveView applications.
 
-For the best experience, we recommend using Livebook to run these guides. Simply click on the "Run in Livebook" badge to import the guide into Livebook.
+You can read these guides online, or for the best experience we recommend you click on the "Run in Livebook" badge to import and run these guides locally with Livebook.
 
 Each guide can be completed independently, but we suggest following them chronologically for the most comprehensive learning experience.
 
@@ -30,29 +83,56 @@ If you are not already running this guide in Livebook, click on the "Run in Live
 
 Then, you can evaluate the following smart cell and visit http://localhost:4000 to ensure this Livebook works correctly.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8VGV4dD5IZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSE8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxwPkhlbGxvIGZyb20gTGl2ZVZpZXchPC9wPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,306],[419,45],[466,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFRleHQ+SGVsbG8sIGZyb20gTGl2ZVZpZXcgTmF0aXZlITwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmRcblxuZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgU2VydmVyV2ViLCA6bGl2ZV92aWV3XG5cbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3LFxuICAgIGZvcm1hdHM6IFs6c3dpZnR1aV0sXG4gICAgbGF5b3V0czogW1xuICAgICAgc3dpZnR1aToge1NlcnZlcldlYi5MYXlvdXRzLlN3aWZ0VUksIDphcHB9XG4gICAgXVxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPHA+SGVsbG8gZnJvbSBMaXZlVmlldyE8L3A+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,85],[87,499],[588,49],[639,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-defmodule Server.ExampleLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+require Server.Livebook
+import Server.Livebook
+import Kernel, except: [defmodule: 2]
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
-    <Text>Hello from LiveView Native!</Text>
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
+
+  def render(assigns, _interface) do
+    ~LVN"""
+    <Text>Hello, from LiveView Native!</Text>
     """
   end
+end
 
+defmodule ServerWeb.ExampleLive do
+  use ServerWeb, :live_view
+
+  use LiveViewNative.LiveView,
+    formats: [:swiftui],
+    layouts: [
+      swiftui: {ServerWeb.Layouts.SwiftUI, :app}
+    ]
+
+  @impl true
   def render(assigns) do
     ~H"""
     <p>Hello from LiveView!</p>
     """
   end
 end
+|> Server.SmartCells.LiveViewNative.register("/")
+
+import Server.Livebook, only: []
+import Kernel
+:ok
 ```
 
+In an upcoming lesson, you'll set up an iOS application with Xcode so you can run code native examples.
+
+## Your Turn: Live Reloading
+
 Change `Hello from LiveView!` to `Hello again from LiveView!` in the above LiveView. Re-evaluate the cell and notice the application live reloads and automatically updates in the browser.
+
+## Kino LiveView Native
+
+To run a Phoenix Server setup with LiveView Native from within Livebook we built the [Kino LiveView Native](https://github.com/liveview-native/kino_live_view_native) library.
 
 ## Troubleshooting
 

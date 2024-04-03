@@ -1,12 +1,73 @@
-# Common SwiftUI Views
+# SwiftUI Views
 
-[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%livebooks%common-swiftui-views.livemd)
+```elixir
+notebook_path = __ENV__.file |> String.split("#") |> hd()
+
+Mix.install(
+  [
+    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
+  ],
+  config: [
+    server: [
+      {ServerWeb.Endpoint,
+       [
+         server: true,
+         url: [host: "localhost"],
+         adapter: Phoenix.Endpoint.Cowboy2Adapter,
+         render_errors: [
+           formats: [html: ServerWeb.ErrorHTML, json: ServerWeb.ErrorJSON],
+           layout: false
+         ],
+         pubsub_server: Server.PubSub,
+         live_view: [signing_salt: "JSgdVVL6"],
+         http: [ip: {127, 0, 0, 1}, port: 4000],
+         secret_key_base: String.duplicate("a", 64),
+         live_reload: [
+           patterns: [
+             ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg|styles)$",
+             ~r/#{notebook_path}$/
+           ]
+         ]
+       ]}
+    ],
+    kino: [
+      group_leader: Process.group_leader()
+    ],
+    phoenix: [
+      template_engines: [neex: LiveViewNative.Engine]
+    ],
+    phoenix_template: [format_encoders: [swiftui: Phoenix.HTML.Engine]],
+    mime: [
+      types: %{"text/swiftui" => ["swiftui"], "text/styles" => ["styles"]}
+    ],
+    live_view_native: [plugins: [LiveViewNative.SwiftUI]],
+    live_view_native_stylesheet: [
+      content: [
+        swiftui: [
+          "lib/**/*swiftui*",
+          notebook_path
+        ]
+      ],
+      output: "priv/static/assets"
+    ]
+  ],
+  force: true
+)
+```
 
 ## Overview
 
-LiveViewNative aims to use minimal SwiftUI code. All patterns for building interactive UIs are the same as LiveView. However, unlike LiveView for the web, LiveView Native uses SwiftUI templates to build the native UI.
+LiveView Native aims to use minimal SwiftUI code. All patterns for building interactive UIs are the same as LiveView. However, unlike LiveView for the web, LiveView Native uses SwiftUI templates to build the native UI.
 
 This lesson will teach you how to build SwiftUI templates using common SwiftUI views. We'll cover common uses of each view and give you practical examples you can use to build your own native UIs. This lesson is like a recipe book you can refer back to whenever you need an example of how to use a particular SwiftUI view.
+
+## Render Components
+
+LiveView Native `0.3.0` introduced render components to better encourage isolation of native and web templates and move away from co-location templates within the same LiveView module.
+
+Render components are namespaced under the main LiveView, and are responsible for defining the `render/1` callback function that returns the native template.
+
+For example, and `ExampleLive` LiveView module would have an `ExampleLive.SwiftUI` render component that returns the native template code.
 
 ## Platform Specific Render
 

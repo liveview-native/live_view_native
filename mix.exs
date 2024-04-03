@@ -79,6 +79,7 @@ defmodule LiveViewNative.MixProject do
 
   defp extras do
     [
+      "README.md",
       "guides/ex_doc_notebooks/getting-started.md",
       "guides/ex_doc_notebooks/create-a-swiftui-application.md",
       "guides/ex_doc_notebooks/swiftui-views.md",
