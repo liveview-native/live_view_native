@@ -67,7 +67,7 @@ In future lessons, you'll use this iOS application to view iOS examples in the X
 
 ## Prerequisites
 
-First, make sure you have followed the [Getting Started](./getting_started.md) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server runs properly. You should see the text `Hello from LiveView!`
+First, make sure you have followed the [Getting Started](https://hexdocs.pm/live_view_native/getting_started.md) guide. Then evaluate the smart cell below and visit http://localhost:4000 to ensure the Phoenix server runs properly. You should see the text `Hello from LiveView!`
 
 <!-- livebook:{"attrs":"e30","chunks":[[0,85],[87,499],[588,49],[639,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 

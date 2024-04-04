@@ -59,7 +59,7 @@ Mix.install(
 
 LiveView Native aims to use minimal SwiftUI code. All patterns for building interactive UIs are the same as LiveView. However, unlike LiveView for the web, LiveView Native uses SwiftUI templates to build the native UI.
 
-This lesson will teach you how to build SwiftUI templates using common SwiftUI views. We'll cover common uses of each view and give you practical examples you can use to build your own native UIs. This lesson is like a recipe book you can refer back to whenever you need an example of how to use a particular SwiftUI view.
+This lesson will teach you how to build SwiftUI templates using common SwiftUI views. We'll cover common uses of each view and give you practical examples you can use to build your own native UIs. This lesson is like a recipe book you can refer back to whenever you need an example of how to use a particular SwiftUI view. In addition, once you understand how to convert these views into the LiveView Native DSL, you should have the tools to convert essentially any SwiftUI View into the LiveView Native DSL.
 
 ## Render Components
 
@@ -67,32 +67,86 @@ LiveView Native `0.3.0` introduced render components to better encourage isolati
 
 Render components are namespaced under the main LiveView, and are responsible for defining the `render/1` callback function that returns the native template.
 
-For example, and `ExampleLive` LiveView module would have an `ExampleLive.SwiftUI` render component that returns the native template code.
+For example, and `ExampleLive` LiveView module would have an `ExampleLive.SwiftUI` render component module for the native Template.
 
-## Platform Specific Render
+This `ExampleLive.SwiftUI` render component may define a `render/1` callback function as seen below.
 
-LiveView Native utilizes a single LiveView for both the web and native views, but the templates are platform-specific. The native render function returns a `~SwiftUI` template, and the web render function returns a `~H` (HEEx) template.
-
-Here's an example of both render functions in a LiveView Native LiveView.
-
-<!-- livebook:{"force_markdown":true} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiIyBSZW5kZXIgQ29tcG9uZW50XG5kZWZtb2R1bGUgU2VydmVyV2ViLkV4YW1wbGVMaXZlLlN3aWZ0VUkgZG9cbiAgdXNlIExpdmVWaWV3TmF0aXZlLkNvbXBvbmVudCxcbiAgICBmb3JtYXQ6IDpzd2lmdHVpXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5MVk5cIlwiXCJcbiAgICA8VGV4dD5IZWxsbywgZnJvbSBMaXZlVmlldyBOYXRpdmUhPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZFxuXG4jIExpdmVWaWV3XG5kZWZtb2R1bGUgU2VydmVyV2ViLkV4YW1wbGVMaXZlIGRvXG4gIHVzZSBTZXJ2ZXJXZWIsIDpsaXZlX3ZpZXdcblxuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXcsXG4gICAgZm9ybWF0czogWzpzd2lmdHVpXSxcbiAgICBsYXlvdXRzOiBbXG4gICAgICBzd2lmdHVpOiB7U2VydmVyV2ViLkxheW91dHMuU3dpZnRVSSwgOmFwcH1cbiAgICBdXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,85],[87,517],[606,49],[657,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-@impl true
-def render(%{format: :swiftui} = assigns) do
-  ~SWIFTUI"""
-  <Text>Hello from LiveView Native!</Text>
-  """
+require Server.Livebook
+import Server.Livebook
+import Kernel, except: [defmodule: 2]
+
+# Render Component
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
+
+  def render(assigns) do
+    ~LVN"""
+    <Text>Hello, from LiveView Native!</Text>
+    """
+  end
 end
 
-def render(assigns) do
-  ~H"""
-  <p>Hello from LiveView!</p>
-  """
+# LiveView
+defmodule ServerWeb.ExampleLive do
+  use ServerWeb, :live_view
+
+  use LiveViewNative.LiveView,
+    formats: [:swiftui],
+    layouts: [
+      swiftui: {ServerWeb.Layouts.SwiftUI, :app}
+    ]
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <p>Hello from LiveView!</p>
+    """
+  end
 end
+|> Server.SmartCells.LiveViewNative.register("/")
+
+import Server.Livebook, only: []
+import Kernel
+:ok
 ```
 
-In future examples, we're going to focus on the SwiftUI render function in all of our examples and ignore the web function.
+Throughout this and further material we'll re-define render components you can evaluate and see reflected in your Xcode iOS simulator.
+
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFRleHQ+SGVsbG8sIGZyb20gYSBMaXZlVmlldyBOYXRpdmUgUmVuZGVyIENvbXBvbmVudCE8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,228],[317,47],[366,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
+
+```elixir
+require Server.Livebook
+import Server.Livebook
+import Kernel, except: [defmodule: 2]
+
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
+
+  def render(assigns, _interface) do
+    ~LVN"""
+    <Text>Hello, from a LiveView Native Render Component!</Text>
+    """
+  end
+end
+|> Server.SmartCells.RenderComponent.register()
+
+import Server.Livebook, only: []
+import Kernel
+:ok
+```
+
+### Embedding Templates
+
+Alternatively, you may omit the render callback and instead define a `.neex` (Native + Embedded Elixir) template.
+
+By default, the module above would look for a template in the `swiftui/example_live*` path relative to the module's location. You can see the `LiveViewNative.Component` documentation for further explanation.
+
+For the sake of ease when working in Livebook, we'll prefer defining the `render/1` callback. However, we recommend you generally prefer template files when working locally in Phoenix LiveView Native projects.
 
 ## SwiftUI Views
 
@@ -122,35 +176,34 @@ sequenceDiagram
     SwiftUI->>SwiftUI: Convert AST into SwiftUI syntax.
 ```
 
-SwiftUI provides a wide range of Views that can be used in native templates. You can find a full reference of these views in the SwiftUI Documentation at https://developer.apple.com/documentation/swiftui/. In this guide, we will cover some of the most commonly used views to help you get started.
+SwiftUI provides a wide range of Views that can be used in native templates. You can find a full reference of these views in the SwiftUI Documentation at https://developer.apple.com/documentation/swiftui/. You can also find a shorthand on how to convert SwiftUI syntax into the LiveView Native DLS in the [LiveView Native Syntax Conversion Cheatsheet](https://hexdocs.pm/live_view_native/cheatsheet.cheatmd).
 
 ## Text
 
 We've already seen the [Text](https://developer.apple.com/documentation/swiftui/text) view, but we'll start simple to get the interactive tutorial running.
 
-Evaluate the cell below, then in Xcode, Start the iOS application you created in the [Create a SwiftUI Application](https://hexdocs.pm/live_view_native/create-a-swiftui-application.html) lesson and ensure you see the `"Hello, World!"` text.
+Evaluate the cell below, then in Xcode, Start the iOS application you created in the [Create a SwiftUI Application](https://hexdocs.pm/live_view_native/create-a-swiftui-application.html) lesson and ensure you see the `"Hello, from LiveView Native!"` text.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5UZXh0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8VGV4dD5IZWxsbyBmcm9tIExpdmVWaWV3IE5hdGl2ZSE8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,221],[334,45],[381,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"e30","chunks":[[0,85],[87,209],[298,47],[347,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.TextLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
-    <Text>Hello from LiveView Native!</Text>
+  def render(assigns, _interface) do
+    ~LVN"""
+    <Text>Hello, from LiveView Native!</Text>
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -188,20 +241,19 @@ end
 
 Evaluate the example below and view the working 3X3 layout in your Xcode simulator.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TdGFja0V4YW1wbGVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxWU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgICA8SFN0YWNrPlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5PPC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgPC9WU3RhY2s+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,511],[624,45],[671,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFZTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICA8L1ZTdGFjaz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,490],[579,47],[628,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.StackExampleLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <VStack>
       <HStack>
         <Text>O</Text>
@@ -222,9 +274,9 @@ defmodule Server.StackExampleLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -257,13 +309,12 @@ end
 <summary>Example Solution</summary>
 
 ```elixir
-defmodule Server.BoardLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <HStack>
       <VStack>
         <Text>O</Text>
@@ -292,27 +343,26 @@ end
 
 ### Enter Your Solution Below
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Cb2FyZExpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPCEtLSBFbnRlciBzb2x1dGlvbiBiZWxvdyAtLT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,211],[324,45],[371,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPCEtLSBFbnRlciBzb2x1dGlvbiBiZWxvdyAtLT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,197],[286,47],[335,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.BoardLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <!-- Enter solution below -->
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -321,20 +371,19 @@ import Kernel
 
 `VStack` and `HStack` do not provide vertical-alignment between horizontal rows. Notice in the following example that the rows/columns of the 3X3 board are not aligned, just centered.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5BbGlnbm1lbnRFeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8VlN0YWNrPlxuICAgICAgPEhTdGFjaz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgIDwvSFN0YWNrPlxuICAgICAgPEhTdGFjaz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+TzwvVGV4dD5cbiAgICAgICAgPFRleHQ+TzwvVGV4dD5cbiAgICAgIDwvSFN0YWNrPlxuICAgICAgPEhTdGFjaz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+TzwvVGV4dD5cbiAgICAgIDwvSFN0YWNrPlxuICAgIDwvVlN0YWNrPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,469],[582,45],[629,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFZTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICA8L1ZTdGFjaz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,444],[533,47],[582,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.AlignmentExampleLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <VStack>
       <HStack>
         <Text>X</Text>
@@ -353,9 +402,9 @@ defmodule Server.AlignmentExampleLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -369,20 +418,19 @@ A grid layout vertically and horizontally aligns elements in the grid based on t
 
 Evaluate the example below and notice that rows and columns are aligned.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5HcmlkTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8R3JpZD5cbiAgICAgIDxHcmlkUm93PlxuICAgICAgICA8VGV4dD5YWDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgIDwvR3JpZFJvdz5cbiAgICAgIDxHcmlkUm93PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9HcmlkUm93PlxuICAgICAgPEdyaWRSb3c+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0dyaWRSb3c+XG4gICAgPC9HcmlkPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,483],[596,45],[643,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEdyaWQ+XG4gICAgICA8R3JpZFJvdz5cbiAgICAgICAgPFRleHQ+WFg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0dyaWRSb3c+XG4gICAgICA8R3JpZFJvdz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgIDwvR3JpZFJvdz5cbiAgICAgIDxHcmlkUm93PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9HcmlkUm93PlxuICAgIDwvR3JpZD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,470],[559,47],[608,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.GridLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <Grid>
       <GridRow>
         <Text>XX</Text>
@@ -402,9 +450,9 @@ defmodule Server.GridLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -413,20 +461,19 @@ import Kernel
 
 The SwiftUI [List](https://developer.apple.com/documentation/swiftui/list) view provides a system-specific interface, and has better performance for large amounts of scrolling elements.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MaXN0TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8TGlzdD5cbiAgICAgIDxUZXh0Pkl0ZW0gMTwvVGV4dD5cbiAgICAgIDxUZXh0Pkl0ZW0gMjwvVGV4dD5cbiAgICAgIDxUZXh0Pkl0ZW0gMzwvVGV4dD5cbiAgICA8L0xpc3Q+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,277],[390,45],[437,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPExpc3Q+XG4gICAgICA8VGV4dD5JdGVtIDE8L1RleHQ+XG4gICAgICA8VGV4dD5JdGVtIDI8L1RleHQ+XG4gICAgICA8VGV4dD5JdGVtIDM8L1RleHQ+XG4gICAgPC9MaXN0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,264],[353,47],[402,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ListLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <List>
       <Text>Item 1</Text>
       <Text>Item 2</Text>
@@ -435,9 +482,9 @@ defmodule Server.ListLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -446,20 +493,19 @@ import Kernel
 
 Alternatively we can separate children within a `List` view in a `Section` view as seen in the example below. Views in the `Section` can have the `template` attribute with a `"header"` or `"footer"` value which controls how the content is displayed above or below the section.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MaXN0U2VjdGlvbnNMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxMaXN0PlxuICAgICAgPFNlY3Rpb24+XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwiaGVhZGVyXCI+SGVhZGVyPC9UZXh0PlxuICAgICAgICBDb250ZW50XG4gICAgICAgIDxUZXh0IHRlbXBsYXRlPVwiZm9vdGVyXCI+Rm9vdGVyPC9UZXh0PlxuICAgICAgPC9TZWN0aW9uPlxuICAgIDwvTGlzdD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,348],[461,45],[508,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPExpc3Q+XG4gICAgICA8U2VjdGlvbj5cbiAgICAgICAgPFRleHQgdGVtcGxhdGU9XCJoZWFkZXJcIj5IZWFkZXI8L1RleHQ+XG4gICAgICAgIENvbnRlbnRcbiAgICAgICAgPFRleHQgdGVtcGxhdGU9XCJmb290ZXJcIj5Gb290ZXI8L1RleHQ+XG4gICAgICA8L1NlY3Rpb24+XG4gICAgPC9MaXN0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,327],[416,47],[465,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ListSectionsLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <List>
       <Section>
         <Text template="header">Header</Text>
@@ -470,9 +516,9 @@ defmodule Server.ListSectionsLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -489,20 +535,19 @@ While `ScrollView` also works with typical `VStack` and `HStack` views, they are
 
 Here's an example using a `ScrollView` and a `HStack` to create scrollable text arranged horizontally.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TY3JvbGxWaWV3RXhhbXBsZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L1ZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,344],[457,45],[504,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L1ZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,318],[407,47],[456,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ScrollViewExampleLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <ScrollView>
       <VStack>
         <%= for n <- 1..100 do %>
@@ -513,9 +558,9 @@ defmodule Server.ScrollViewExampleLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -524,20 +569,19 @@ import Kernel
 
 By default, the [axes](https://developer.apple.com/documentation/swiftui/scrollview/axes) of a `ScrollView` is vertical. To make a horizontal `ScrollView`, set the `axes` attribute to `"horizontal"` as seen in the example below.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TY3JvbGxWaWV3RXhhbXBsZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPFNjcm9sbFZpZXcgYXhlcz1cImhvcml6b250YWxcIj5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvSFN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,362],[475,45],[522,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXcgYXhlcz1cImhvcml6b250YWxcIj5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvSFN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,336],[425,47],[474,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ScrollViewExampleLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <ScrollView axes="horizontal">
       <HStack>
         <%= for n <- 1..100 do %>
@@ -548,9 +592,9 @@ defmodule Server.ScrollViewExampleLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -559,20 +603,19 @@ import Kernel
 
 `VStack` and `HStack` are inefficient for large amounts of data because they render every child view. To demonstrate this, evaluate the example below. You should experience lag when you attempt to scroll.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5MYWdFeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxWU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAwMCBkbyAlPlxuICAgICAgICAgIDxUZXh0Pkl0ZW0gPCU9IG4gJT48L1RleHQ+XG4gICAgICAgIDwlIGVuZCAlPlxuICAgICAgPC9WU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,339],[452,45],[499,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvVlN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,320],[409,47],[458,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.LagExampleLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <ScrollView>
       <VStack>
         <%= for n <- 1..10000 do %>
@@ -583,9 +626,9 @@ defmodule Server.LagExampleLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -594,20 +637,19 @@ To resolve the performance problem for large amounts of data, you can use the La
 
 The next example demonstrates how using `LazyVStack` instead of `VStack` resolves the performance issue.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5PcHRpbWl6ZWRTY3JvbGxWaWV3TGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8U2Nyb2xsVmlldz5cbiAgICAgIDxMYXp5VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvTGF6eVZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,356],[469,45],[516,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8TGF6eVZTdGFjaz5cbiAgICAgICAgPCU9IGZvciBuIDwtIDEuLjEwMDAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L0xhenlWU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,328],[417,47],[466,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.OptimizedScrollViewLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <ScrollView>
       <LazyVStack>
         <%= for n <- 1..10000 do %>
@@ -618,9 +660,9 @@ defmodule Server.OptimizedScrollViewLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -635,20 +677,19 @@ import Kernel
 
 Evaluate the following example and notice the `Text` element is pushed to the right by the `Spacer`.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TcGFjZXJMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxIU3RhY2s+XG4gICAgICA8U3BhY2VyLz5cbiAgICAgIDxUZXh0PlRoaXMgdGV4dCBpcyBwdXNoZWQgdG8gdGhlIHJpZ2h0PC9UZXh0PlxuICAgIDwvSFN0YWNrPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,273],[386,45],[433,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEhTdGFjaz5cbiAgICAgIDxTcGFjZXIvPlxuICAgICAgPFRleHQ+VGhpcyB0ZXh0IGlzIHB1c2hlZCB0byB0aGUgcmlnaHQ8L1RleHQ+XG4gICAgPC9IU3RhY2s+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,258],[347,47],[396,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.SpacerLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <HStack>
       <Spacer/>
       <Text>This text is pushed to the right</Text>
@@ -656,9 +697,9 @@ defmodule Server.SpacerLive do
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -671,13 +712,12 @@ In the cell below, use `VStack` and `Spacer` to place text in the bottom of the 
 <summary>Example Solution</summary>
 
 ```elixir
-defmodule Server.HomeLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <VStack>
       <Spacer/>
       <Text>Hello</Text>
@@ -693,27 +733,26 @@ end
 
 ### Enter Your Solution Below
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Cb3R0b21UZXh0U3BhY2VyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8IS0tIEVudGVyIHNvbHV0aW9uIGJlbG93IC0tPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,222],[335,45],[382,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPCEtLSBFbnRlciBzb2x1dGlvbiBiZWxvdyAtLT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,197],[286,47],[335,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.BottomTextSpacerLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <!-- Enter solution below -->
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -724,27 +763,26 @@ import Kernel
 
 Here's an example of `AsyncImage` with a lorem picsum image from https://picsum.photos/400/600.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Bc3luY0ltYWdlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8QXN5bmNJbWFnZSB1cmw9XCJodHRwczovL3BpY3N1bS5waG90b3MvNDAwLzQwMFwiPjwvQXN5bmNJbWFnZT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,248],[361,45],[408,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEFzeW5jSW1hZ2UgdXJsPVwiaHR0cHM6Ly9waWNzdW0ucGhvdG9zLzQwMC80MDBcIi8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,217],[306,47],[355,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.AsyncImageLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
-    <AsyncImage url="https://picsum.photos/400/400"></AsyncImage>
+  def render(assigns, _interface) do
+    ~LVN"""
+    <AsyncImage url="https://picsum.photos/400/400"/>
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -753,27 +791,26 @@ import Kernel
 
 `AsyncImage` displays a loading spinner while loading the image. Here's an example of using `AsyncImage` without a URL so that it loads forever.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Mb2FkaW5nU3Bpbm5lckxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEFzeW5jSW1hZ2UgdXJsPVwiXCI+PC9Bc3luY0ltYWdlPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,223],[336,45],[383,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEFzeW5jSW1hZ2UgdXJsPVwiXCI+PC9Bc3luY0ltYWdlPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,200],[289,47],[338,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.LoadingSpinnerLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <AsyncImage url=""></AsyncImage>
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -786,27 +823,26 @@ For example, the path `/images/logo.png` evaluates as http://localhost:4000/imag
 
 Evaluate the example below to see the LiveView Native logo in the iOS simulator.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5SZWxhdGl2ZVBhdGhMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxBc3luY0ltYWdlIHVybD1cIi9pbWFnZXMvbG9nby5wbmdcIi8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,225],[338,45],[385,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEFzeW5jSW1hZ2UgdXJsPVwiL2ltYWdlcy9sb2dvLnBuZ1wiLz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,204],[293,47],[342,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.RelativePathLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <AsyncImage url="/images/logo.png"/>
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -825,36 +861,35 @@ For the full list of SF Symbols you can download Apple's [Symbols 5](https://dev
 
 Evaluate the cell below to see an example using the `square.and.arrow.up` symbol.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5JbWFnZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEltYWdlIHN5c3RlbS1uYW1lPVwic3F1YXJlLmFuZC5hcnJvdy51cFwiIC8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,109],[111,225],[338,45],[385,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEltYWdlIHN5c3RlbS1uYW1lPVwic3F1YXJlLmFuZC5hcnJvdy51cFwiIC8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,211],[300,47],[349,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ImageLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <Image system-name="square.and.arrow.up" />
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
 
 ### Your Turn: Asset Catalogue
 
-Instead of using built-in system images, you can place assets in your SwiftUI application. Follow this guide: https://developer.apple.com/documentation/xcode/managing-assets-with-asset-catalogs#Add-a-new-asset to create a new asset called Image.
+You can place assets in your SwiftUI application's asset catalogue. Using the asset catalogue for SwiftUI assets provide many benefits such as device-specific image variants, dark mode images, high contrast image mode, and improved performance.
 
-Using the asset catalogue for SwiftUI assets provide many benefits such as device-specific image variants, dark mode images, high contrast image mode, performance optimization, and more.
+Follow this guide: https://developer.apple.com/documentation/xcode/managing-assets-with-asset-catalogs#Add-a-new-asset to create a new asset called Image.
 
 Then evaluate the following example and you should see this image in your simulator. For a convenient image, you can right-click and save the following LiveView Native logo.
 
@@ -866,27 +901,28 @@ You will need to **rebuild the native application** to pick up the changes to th
 
 ### Enter Your Solution Below
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Bc3NldENhdGFsb2d1ZUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPEltYWdlIG5hbWU9XCJJbWFnZVwiLz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,212],[325,45],[372,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+You should not need to make changes to this cell. Set up an image in your asset catalogue named "Image", rebuild your native application, then evaluate this cell. You should see the image in your iOS simulator.
+
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEltYWdlIG5hbWU9XCJJbWFnZVwiLz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,189],[278,47],[327,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.AssetCatalogueLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <Image name="Image"/>
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
@@ -899,28 +935,27 @@ The label of a button can be any view, such as a [Text](https://developer.apple.
 
 Evaluate the example below to see the SwiftUI [Button](https://developer.apple.com/documentation/swiftui/button) element.
 
-<!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5CdXR0b25MaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxCdXR0b24+PFRleHQ+VGV4dCBCdXR0b248L1RleHQ+PC9CdXR0b24+XG4gICAgPEJ1dHRvbj48TGFiZWwgc3lzdGVtLWltYWdlPVwiYm9sdC5maWxsXCI+SWNvbiBCdXR0b248L0xhYmVsPjwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,297],[410,45],[457,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEJ1dHRvbj48VGV4dD5UZXh0IEJ1dHRvbjwvVGV4dD48L0J1dHRvbj5cbiAgICA8QnV0dG9uPjxMYWJlbCBzeXN0ZW0taW1hZ2U9XCJib2x0LmZpbGxcIj5JY29uIEJ1dHRvbjwvTGFiZWw+PC9CdXR0b24+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,282],[371,47],[420,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require KinoLiveViewNative.Livebook
-import KinoLiveViewNative.Livebook
+require Server.Livebook
+import Server.Livebook
 import Kernel, except: [defmodule: 2]
 
-defmodule Server.ButtonLive do
-  use Phoenix.LiveView
-  use LiveViewNative.LiveView
+defmodule ServerWeb.ExampleLive.SwiftUI do
+  use LiveViewNative.Component,
+    format: :swiftui
 
-  @impl true
-  def render(%{format: :swiftui} = assigns) do
-    ~SWIFTUI"""
+  def render(assigns, _interface) do
+    ~LVN"""
     <Button><Text>Text Button</Text></Button>
     <Button><Label system-image="bolt.fill">Icon Button</Label></Button>
     """
   end
 end
-|> KinoLiveViewNative.register("/", ":index")
+|> Server.SmartCells.RenderComponent.register()
 
-import KinoLiveViewNative.Livebook, only: []
+import Server.Livebook, only: []
 import Kernel
 :ok
 ```
