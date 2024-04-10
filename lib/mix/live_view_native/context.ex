@@ -5,6 +5,7 @@ defmodule Mix.LiveViewNative.Context do
     web_module: nil,
     native_module: nil,
     module_suffix: nil,
+    native_path: nil,
     format: nil
 
   def build(args, caller) do
@@ -18,6 +19,7 @@ defmodule Mix.LiveViewNative.Context do
     base_module = Module.concat([Mix.Phoenix.context_base(ctx_app)])
     native_module = Module.concat([inspect(base_module) <> "Native"])
     web_module = Mix.Phoenix.web_module(base_module)
+    native_path = Path.join(["native", Atom.to_string(format)])
 
     %__MODULE__{
       context_app: ctx_app,
@@ -26,6 +28,7 @@ defmodule Mix.LiveViewNative.Context do
       native_module: native_module,
       web_module: web_module,
       module_suffix: get_module_suffix(format),
+      native_path: native_path,
       format: format
     }
   end
