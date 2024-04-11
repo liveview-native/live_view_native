@@ -78,16 +78,21 @@ defmodule LiveViewNative.MixProject do
   defp description, do: "LiveView Native"
 
   defp extras do
-    [
-      "README.md",
-      "guides/ex_doc_notebooks/getting-started.md",
-      "guides/ex_doc_notebooks/create-a-swiftui-application.md",
-      "guides/ex_doc_notebooks/swiftui-views.md",
-      "guides/ex_doc_notebooks/interactive-swiftui-views.md",
-      "guides/ex_doc_notebooks/stylesheets.md",
-      "guides/ex_doc_notebooks/native-navigation.md",
-      "guides/ex_doc_notebooks/forms-and-validation.md"
-    ]
+    livebooks = if System.get_env("LIVEBOOKS_ENABLED") do
+      [
+        "guides/ex_doc_notebooks/getting-started.md",
+        "guides/ex_doc_notebooks/create-a-swiftui-application.md",
+        "guides/ex_doc_notebooks/swiftui-views.md",
+        "guides/ex_doc_notebooks/interactive-swiftui-views.md",
+        "guides/ex_doc_notebooks/stylesheets.md",
+        "guides/ex_doc_notebooks/native-navigation.md",
+        "guides/ex_doc_notebooks/forms-and-validation.md"
+      ]
+    else
+      []
+    end
+
+    ["README.md"] ++ livebooks
   end
 
 

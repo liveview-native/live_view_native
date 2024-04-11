@@ -19,8 +19,7 @@ end
 
 # liv/my_app_web/live/hello_live_swiftui.ex
 def MyAppWeb.HelloLive.SwiftUI do
-  use LiveViewNative.Component,
-    format: :swiftui,
+  use ServerNative, [:render_component, format: :swiftui],
     as: :render
 
   def render(assigns, %{"target" => "watchos"}) do
