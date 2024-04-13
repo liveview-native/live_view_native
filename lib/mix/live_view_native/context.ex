@@ -6,10 +6,11 @@ defmodule Mix.LiveViewNative.Context do
     native_module: nil,
     module_suffix: nil,
     native_path: nil,
-    format: nil
+    format: nil,
+    opts: nil
 
   def build(args, caller) do
-    {parsed_opts, parsed, _} = parse_opts(args, caller.switches())
+    {parsed_opts, parsed, _other} = parse_opts(args, caller.switches())
     [format, schema_module] =
       parsed
       |> caller.validate_args!()
@@ -29,7 +30,8 @@ defmodule Mix.LiveViewNative.Context do
       web_module: web_module,
       module_suffix: get_module_suffix(format),
       native_path: native_path,
-      format: format
+      format: format,
+      opts: parsed_opts
     }
   end
 

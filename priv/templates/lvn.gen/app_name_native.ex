@@ -1,11 +1,26 @@
 defmodule <%= inspect context.native_module %> do
   import <%= inspect context.web_module %>, only: [verified_routes: 0]
 
-  def live_view() do
+  def live_view() do<%= unless plugins? do %>
+    # you do not have any plugins configured. Add a plugin to
+    # config/config.exs
+    #
+    #    config :live_view_native, plugins: [
+    #      LiveViewNative.SwiftUI
+    #    ]
+    #
+    # then re-run `mix lvn.gen` and the placeholders in this file
+    # will be populated<% end %>
     quote do
       use LiveViewNative.LiveView,
-        formats: <%= inspect(@formats, pretty: true) %>,
-        layouts: <%= inspect(@layouts, pretty: true) %>
+        formats: [<%= if plugins? do %><%= for plugin <- plugins do %>
+          :<%= plugin.format %><%= unless last?.(plugins, plugin) do %>,<% end %><% end %><% else %>
+          # :swiftui<% end %>
+        ],
+        layouts: [<%= if plugins? do %><%= for plugin <- plugins do %>
+          <%= plugin.format %>: {<%= inspect(Module.concat([context.web_module, Layouts, plugin.module_suffix])) %>, :app}<%= unless last?.(plugins, plugin) do %>,<% end %><% end %><% else %>
+          # swiftui: {<%= inspect(Module.concat([context.web_module, Layouts, SwiftUI])) %>, :app}<% end %>
+        ]
 
       unquote(verified_routes())
     end
