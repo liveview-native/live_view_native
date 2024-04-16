@@ -33,11 +33,9 @@ defmodule <%= inspect context.native_module %> do
       |> Keyword.put(:as, :render)
 
     quote do
-      use LiveViewNative.Component, unquote(opts)<%= if @gettext do %>
+      use LiveViewNative.Component, unquote(opts)
 
-      import <%= inspect context.web_module %>.Gettext<% end %>
-
-      unquote(verified_routes())
+      unquote(helpers(opts[:format]))
     end
   end
 
@@ -45,11 +43,9 @@ defmodule <%= inspect context.native_module %> do
     opts = Keyword.take(opts, [:format, :root, :as])
 
     quote do
-      use LiveViewNative.Component, unquote(opts)<%= if @gettext do %>
+      use LiveViewNative.Component, unquote(opts)
 
-      import <%= inspect context.web_module %>.Gettext<% end %>
-
-      unquote(verified_routes())
+      unquote(helpers(opts[:format]))
     end
   end
 
@@ -59,9 +55,22 @@ defmodule <%= inspect context.native_module %> do
     quote do
       use LiveViewNative.Component, unquote(opts)
 
-      import LiveViewNative.Component, only: [csrf_token: 1]<%= if @gettext do %>
-      import <%= inspect context.web_module %>.Gettext<% end %>
+      import LiveViewNative.Component, only: [csrf_token: 1]
 
+      unquote(helpers(opts[:format]))
+    end
+  end
+
+  defp helpers(<%= if @live_form? do %>format<% else %>_format<% end %>) do
+    <%= if @live_form? do %>plugin = LiveViewNative.fetch_plugin!(format)
+    <% end %>quote do
+      <%= if @gettext do %>import <%= inspect context.web_module %>.Gettext<% end %><%= if @live_form? do %>
+      if function_exported?(unquote(plugin.component), :__native_opts__, 0) do
+        import unquote(plugin.component)
+      end
+      if function_exported?(<%= inspect context.web_module %>.CoreComponents.unquote(Module.concat([plugin.module_suffix])), :__native_opts__, 0) do
+        import <%= inspect context.web_module %>.CoreComponents.unquote(Module.concat([plugin.module_suffix]))
+      end<% end %>
       unquote(verified_routes())
     end
   end
