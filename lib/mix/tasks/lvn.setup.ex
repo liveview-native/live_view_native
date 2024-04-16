@@ -58,8 +58,17 @@ defmodule Mix.Tasks.Lvn.Setup do
 
       Enum.each(plugins, fn(plugin) ->
         format = Atom.to_string(plugin.format)
-        Mix.Task.run("lvn.#{format}.gen")
+
+        args = if !live_form_opt? do
+          ["--no-live-form"]
+        else
+          []
+        end
+
+        Mix.Task.run("lvn.#{format}.gen", args)
+
         Mix.Task.run("lvn.gen.layout", [format])
+
         if stylesheet? do
           Mix.Task.run("lvn.stylesheet.gen", [format, "App", "--no-info"])
         end

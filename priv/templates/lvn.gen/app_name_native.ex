@@ -62,17 +62,31 @@ defmodule <%= inspect context.native_module %> do
   end
 
   defp helpers(<%= if @live_form? do %>format<% else %>_format<% end %>) do
-    <%= if @live_form? do %>plugin = LiveViewNative.fetch_plugin!(format)
-    <% end %>quote do
-      <%= if @gettext do %>import <%= inspect context.web_module %>.Gettext<% end %><%= if @live_form? do %>
-      if function_exported?(unquote(plugin.component), :__native_opts__, 0) do
+    <%= if @gettext do %>gettext_quoted = quote do
+      import <%= inspect context.web_module %>.Gettext
+    end<% end %>
+    <%= if @live_form? do %>
+    plugin = LiveViewNative.fetch_plugin!(format)
+    plugin_component_quoted = if function_exported?(plugin.component, :__native_opts__, 0) do
+      quote do
         import unquote(plugin.component)
       end
-      if function_exported?(<%= inspect context.web_module %>.CoreComponents.unquote(Module.concat([plugin.module_suffix])), :__native_opts__, 0) do
-        import <%= inspect context.web_module %>.CoreComponents.unquote(Module.concat([plugin.module_suffix]))
-      end<% end %>
-      unquote(verified_routes())
     end
+
+    core_component_module = Module.concat([<%= inspect context.web_module %>, CoreComponents, plugin.module_suffix])
+
+    core_component_quoted = if function_exported?(core_component_module, :__native_opts__, 0) do
+      quote do
+        import unquote(core_component_module)
+      end
+    end<% end %>
+
+    <%= case {@gettext, @live_form?} do %>
+      <% {true, true} -> %>[gettext_quoted, plugin_component_quoted, core_component_quoted, verified_routes()]
+      <% {false, true} -> %>[plugin_component_quoted, core_component_quoted, verified_routes()]
+      <% {true, false} -> %>[gettext_quoted, verified_routes()]
+      <% {false, false} -> %>[verified_routes()]
+    <% end %>
   end
 
   @doc """
