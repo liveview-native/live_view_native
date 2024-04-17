@@ -71,7 +71,7 @@ For example, and `ExampleLive` LiveView module would have an `ExampleLive.SwiftU
 
 This `ExampleLive.SwiftUI` render component may define a `render/1` callback function as seen below.
 
-<!-- livebook:{"attrs":"eyJjb2RlIjoiIyBSZW5kZXIgQ29tcG9uZW50XG5kZWZtb2R1bGUgU2VydmVyV2ViLkV4YW1wbGVMaXZlLlN3aWZ0VUkgZG9cbiAgdXNlIExpdmVWaWV3TmF0aXZlLkNvbXBvbmVudCxcbiAgICBmb3JtYXQ6IDpzd2lmdHVpXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5MVk5cIlwiXCJcbiAgICA8VGV4dD5IZWxsbywgZnJvbSBMaXZlVmlldyBOYXRpdmUhPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZFxuXG4jIExpdmVWaWV3XG5kZWZtb2R1bGUgU2VydmVyV2ViLkV4YW1wbGVMaXZlIGRvXG4gIHVzZSBTZXJ2ZXJXZWIsIDpsaXZlX3ZpZXdcblxuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXcsXG4gICAgZm9ybWF0czogWzpzd2lmdHVpXSxcbiAgICBsYXlvdXRzOiBbXG4gICAgICBzd2lmdHVpOiB7U2VydmVyV2ViLkxheW91dHMuU3dpZnRVSSwgOmFwcH1cbiAgICBdXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,85],[87,517],[606,49],[657,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiIyBSZW5kZXIgQ29tcG9uZW50XG5kZWZtb2R1bGUgU2VydmVyV2ViLkV4YW1wbGVMaXZlLlN3aWZ0VUkgZG9cbiAgdXNlIFNlcnZlck5hdGl2ZSwgWzpyZW5kZXJfY29tcG9uZW50LCBmb3JtYXQ6IDpzd2lmdHVpXVxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFRleHQ+SGVsbG8sIGZyb20gTGl2ZVZpZXcgTmF0aXZlITwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmRcblxuIyBMaXZlVmlld1xuZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgU2VydmVyV2ViLCA6bGl2ZV92aWV3XG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIDpsaXZlX3ZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxwPkhlbGxvIGZyb20gTGl2ZVZpZXchPC9wPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,85],[87,426],[515,49],[566,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require Server.Livebook
@@ -92,7 +92,6 @@ end
 # LiveView
 defmodule ServerWeb.ExampleLive do
   use ServerWeb, :live_view
-
   use ServerNative, :live_view
 
   @impl true
@@ -111,7 +110,7 @@ import Kernel
 
 Throughout this and further material we'll re-define render components you can evaluate and see reflected in your Xcode iOS simulator.
 
-<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFRleHQ+SGVsbG8sIGZyb20gYSBMaXZlVmlldyBOYXRpdmUgUmVuZGVyIENvbXBvbmVudCE8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,228],[317,47],[366,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMsIF9pbnRlcmZhY2UpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PkhlbGxvLCBmcm9tIGEgTGl2ZVZpZXcgTmF0aXZlIFJlbmRlciBDb21wb25lbnQhPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,233],[322,47],[371,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
 require Server.Livebook

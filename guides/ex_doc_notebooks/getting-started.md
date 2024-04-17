@@ -83,7 +83,7 @@ If you are not already running this guide in Livebook, click on the "Run in Live
 
 Then, you can evaluate the following smart cell and visit http://localhost:4000 to ensure this Livebook works correctly.
 
-<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFRleHQ+SGVsbG8sIGZyb20gTGl2ZVZpZXcgTmF0aXZlITwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmRcblxuZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgU2VydmVyV2ViLCA6bGl2ZV92aWV3XG5cbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3LFxuICAgIGZvcm1hdHM6IFs6c3dpZnR1aV0sXG4gICAgbGF5b3V0czogW1xuICAgICAgc3dpZnR1aToge1NlcnZlcldlYi5MYXlvdXRzLlN3aWZ0VUksIDphcHB9XG4gICAgXVxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5IXCJcIlwiXG4gICAgPHA+SGVsbG8gZnJvbSBMaXZlVmlldyE8L3A+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,85],[87,499],[588,49],[639,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMsIF9pbnRlcmZhY2UpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PkhlbGxvLCBmcm9tIExpdmVWaWV3IE5hdGl2ZSE8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kXG5cbmRlZm1vZHVsZSBTZXJ2ZXJXZWIuRXhhbXBsZUxpdmUgZG9cbiAgdXNlIFNlcnZlcldlYiwgOmxpdmVfdmlld1xuICB1c2UgU2VydmVyTmF0aXZlLCA6bGl2ZV92aWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,85],[87,408],[497,49],[548,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require Server.Livebook
@@ -102,7 +102,6 @@ end
 
 defmodule ServerWeb.ExampleLive do
   use ServerWeb, :live_view
-
   use ServerNative, :live_view
 
   @impl true
@@ -128,6 +127,10 @@ Change `Hello from LiveView!` to `Hello again from LiveView!` in the above LiveV
 ## Kino LiveView Native
 
 To run a Phoenix Server setup with LiveView Native from within Livebook we built the [Kino LiveView Native](https://github.com/liveview-native/kino_live_view_native) library.
+
+Whenever you run one of our Livebooks, a server starts on localhost:4000. Ensure you have no other servers running on port 4000
+
+Kino LiveView Native defines the **LiveView Native: LiveView** and **LiveViewNative: Render Component** smart cells within these guides.
 
 ## Troubleshooting
 
