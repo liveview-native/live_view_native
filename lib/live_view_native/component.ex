@@ -126,7 +126,7 @@ defmodule LiveViewNative.Component do
       import Kernel, except: [def: 2, defp: 2]
       import Phoenix.Component, except: [
         embed_templates: 1, embed_templates: 2,
-        sigitl_H: 2,
+        sigil_H: 2,
 
         async_result: 1,
         dynamic_tag: 1,
@@ -140,6 +140,7 @@ defmodule LiveViewNative.Component do
         live_img_preview: 1,
         live_title: 1
       ]
+
       import Phoenix.Component.Declarative
       require Phoenix.Template
 
@@ -148,19 +149,18 @@ defmodule LiveViewNative.Component do
         def __global__?(prefix_match), do: value
       end
 
-      import LiveViewNative.Renderer, only: [
-        delegate_to_target: 1,
-        delegate_to_target: 2,
-        embed_templates: 1,
-        embed_templates: 2
-      ]
-
       def __native_opts__, do: @native_opts
     end
 
     plugin_component_ast = case LiveViewNative.fetch_plugin(format) do
       {:ok, plugin} ->
         quote do
+          import LiveViewNative.Renderer, only: [
+            delegate_to_target: 1,
+            delegate_to_target: 2,
+            embed_templates: 1,
+            embed_templates: 2
+          ]
           use unquote(plugin.component)
 
           if (unquote(opts[:as])) do

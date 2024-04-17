@@ -67,18 +67,26 @@ defmodule <%= inspect context.native_module %> do
     end<% end %>
     <%= if @live_form? do %>
     plugin = LiveViewNative.fetch_plugin!(format)
-    plugin_component_quoted = if function_exported?(plugin.component, :__native_opts__, 0) do
+    plugin_component_quoted = try do
+      Code.ensure_compiled!(plugin.component)
+
       quote do
         import unquote(plugin.component)
       end
+    rescue
+      _ -> nil
     end
 
     core_component_module = Module.concat([<%= inspect context.web_module %>, CoreComponents, plugin.module_suffix])
 
-    core_component_quoted = if function_exported?(core_component_module, :__native_opts__, 0) do
+    core_component_quoted = try do
+      Code.ensure_compiled!(core_component_module)
+
       quote do
         import unquote(core_component_module)
       end
+    rescue
+      _ -> nil
     end<% end %>
 
     <%= case {@gettext, @live_form?} do %>

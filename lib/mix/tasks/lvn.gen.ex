@@ -24,6 +24,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     context
     |> print_instructions()
     |> print_config()
+    |> print_dev()
     |> print_router()
     |> print_endpoint()
   end
@@ -80,6 +81,27 @@ defmodule Mix.Tasks.Lvn.Gen do
     config :phoenix, :template_engines, [
       \e[32;1mneex: LiveViewNative.Engine\e[0m
     ]
+    """
+    |> compile_string()
+    |> Mix.shell().info()
+
+    context
+  end
+
+  def print_dev(context) do
+    """
+    \e[93;1m# config/dev.exs\e[0m
+
+    # \e[36mLVN - Optional\e[0m
+    # Allows LVN templates to be subject to LiveReload changes
+    config :<% context.context_app %>, <%= inspect context.web_module %>.Endpoint,
+      live_reload: [
+        patterns: [
+          ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+          ~r"priv/gettext/.*(po)$",
+          ~r"lib/anotherone_web/(controllers|live|components)/.*(ex|heex\e[32;1m|neex\e[0m)$"
+        ]
+      ]
     """
     |> compile_string()
     |> Mix.shell().info()
