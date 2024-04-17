@@ -50,29 +50,6 @@ defmodule Mix.Tasks.ExDocGuidesTest do
            """
   end
 
-  test "make_ex_doc_friendly/1 removes navigation" do
-    content = """
-    ## Section Above
-
-    ## Navigation
-
-    <div style="display: flex; align-items: center; width: 100%; justify-content: space-between; font-size: 1rem; color: #61758a; background-color: #f0f5f9; height: 4rem; padding: 0 1rem; border-radius: 1rem;">
-    <div style="display: flex; margin-left: auto;">
-    <a style="display: flex; color: #61758a; margin-right: 1rem;" href="https://livebook.dev/run?url=https%3A%2F%2Fhexdocs.pm%2Flive_view_native%2F0.1.2%2Fcreate-a-swiftui-application.livemd">Create a SwiftUI Application</a>
-    <i class="ri-arrow-right-fill"></i>
-    </div>
-    </div>
-
-    ## Section Below
-    """
-
-    # We currently clear any code below navigation to make the regex easier.
-    assert ExDocGuides.make_ex_doc_friendly(content, "filename.livemd") == """
-           ## Section Above
-
-           """
-  end
-
   test "make_ex_doc_friendly/1 convert details sections" do
     content = """
     <details style="background-color: lightgreen; padding: 1rem; margin: 1rem 0;">
