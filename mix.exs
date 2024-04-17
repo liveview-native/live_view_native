@@ -1,7 +1,7 @@
 defmodule LiveViewNative.MixProject do
   use Mix.Project
 
-  @version "0.3.0-alpha.3"
+  @version "0.3.0-beta.1"
   @source_url "https://github.com/liveview-native/live_view_native"
 
   def project do
@@ -49,9 +49,7 @@ defmodule LiveViewNative.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
-      {:owl, "~> 0.8", runtime: false},
-      {:deep_merge, "~> 1.0"},
-      {:live_view_native_test, github: "liveview-native/live_view_native_test", tag: "v0.3.0-alpha.4", only: :test}
+      {:live_view_native_test, github: "liveview-native/live_view_native_test", tag: "v0.3.0", only: :test}
     ]
   end
 

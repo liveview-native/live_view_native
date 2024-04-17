@@ -1,32 +1,39 @@
 defmodule Mix.LiveViewNative.Context do
+  @moduledoc false
+
   defstruct context_app: nil,
     base_module: nil,
     schema_module: nil,
     web_module: nil,
     native_module: nil,
     module_suffix: nil,
-    format: nil
+    native_path: nil,
+    format: nil,
+    opts: nil
 
   def build(args, caller) do
-    {parsed_opts, parsed, _} = parse_opts(args, caller.switches())
+    {parsed_opts, parsed, _other} = parse_opts(args, caller.switches())
     [format, schema_module] =
       parsed
       |> caller.validate_args!()
       |> parse_args()
 
-    ctx_app = parsed_opts[:context_app] || Mix.Phoenix.context_app()
-    base_module = Module.concat([Mix.Phoenix.context_base(ctx_app)])
+    context_app = parsed_opts[:context_app] || Mix.Phoenix.context_app()
+    base_module = Module.concat([Mix.Phoenix.context_base(context_app)])
     native_module = Module.concat([inspect(base_module) <> "Native"])
     web_module = Mix.Phoenix.web_module(base_module)
+    native_path = Path.join(["native", Atom.to_string(format)])
 
     %__MODULE__{
-      context_app: ctx_app,
+      context_app: context_app,
       base_module: base_module,
       schema_module: schema_module,
       native_module: native_module,
       web_module: web_module,
       module_suffix: get_module_suffix(format),
-      format: format
+      native_path: native_path,
+      format: format,
+      opts: parsed_opts
     }
   end
 
@@ -107,4 +114,11 @@ defmodule Mix.LiveViewNative.Context do
   defp put_context_app(opts, string) do
     Keyword.put(opts, :context_app, String.to_atom(string))
   end
+
+  defmacro compile_string(string) do
+    EEx.compile_string(string)
+  end
+
+  def last?(plugins, plugin),
+    do: Enum.at(plugins, -1) == plugin
 end

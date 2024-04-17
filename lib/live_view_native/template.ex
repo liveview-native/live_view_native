@@ -18,9 +18,6 @@ defmodule LiveViewNative.Template do
     {:safe, attrs |> Enum.to_list() |> build_attrs()}
   end
 
-  defp build_attrs([{k, true} | t]),
-    do: [?\s, key_escape(k) | build_attrs(t)]
-
   defp build_attrs([{_, nil} | t]),
     do: build_attrs(t)
 
@@ -53,10 +50,7 @@ defmodule LiveViewNative.Template do
 
   defp build_attrs([]), do: []
 
-  defp nested_attrs([{k, true} | kv], attr, t),
-    do: [attr, ?-, key_escape(k) | nested_attrs(kv, attr, t)]
-
-  defp nested_attrs([{_, falsy} | kv], attr, t) when falsy in [false, nil],
+  defp nested_attrs([{_, bool_atom} | kv], attr, t) when bool_atom in [true, false, nil],
     do: nested_attrs(kv, attr, t)
 
   defp nested_attrs([{k, v} | kv], attr, t) when is_list(v),

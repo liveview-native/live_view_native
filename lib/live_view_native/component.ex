@@ -121,54 +121,69 @@ defmodule LiveViewNative.Component do
 
     declarative_opts = Keyword.drop(opts, [:as, :format, :root])
 
-    case LiveViewNative.fetch_plugin(format) do
+    component_ast = quote do
+      import Phoenix.LiveView.Helpers
+      import Kernel, except: [def: 2, defp: 2]
+      import Phoenix.Component, except: [
+        embed_templates: 1, embed_templates: 2,
+        sigil_H: 2,
+
+        async_result: 1,
+        dynamic_tag: 1,
+        focus_wrap: 1,
+        form: 1,
+        inputs_for: 1,
+        intersperse: 1,
+        link: 1,
+        live_component: 1,
+        live_file_input: 1,
+        live_img_preview: 1,
+        live_title: 1
+      ]
+
+      import Phoenix.Component.Declarative
+      require Phoenix.Template
+
+      for {prefix_match, value} <- Phoenix.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
+        @doc false
+        def __global__?(prefix_match), do: value
+      end
+
+      def __native_opts__, do: @native_opts
+    end
+
+    plugin_component_ast = case LiveViewNative.fetch_plugin(format) do
       {:ok, plugin} ->
         quote do
-          import Phoenix.LiveView.Helpers
-          import Kernel, except: [def: 2, defp: 2]
-          import Phoenix.Component, except: [
-            embed_templates: 1, embed_templates: 2,
-            sigitl_H: 2,
-
-            async_result: 1,
-            dynamic_tag: 1,
-            focus_wrap: 1,
-            form: 1,
-            inputs_for: 1,
-            intersperse: 1,
-            link: 1,
-            live_component: 1,
-            live_file_input: 1,
-            live_img_preview: 1,
-            live_title: 1
-          ]
-          import Phoenix.Component.Declarative
-          require Phoenix.Template
-
-          for {prefix_match, value} <- Phoenix.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
-            @doc false
-            def __global__?(prefix_match), do: value
-          end
-
-          use unquote(plugin.component)
           import LiveViewNative.Renderer, only: [
             delegate_to_target: 1,
             delegate_to_target: 2,
             embed_templates: 1,
             embed_templates: 2
           ]
+          use unquote(plugin.component)
 
           if (unquote(opts[:as])) do
             @before_compile LiveViewNative.Renderer
           end
+
           @before_compile LiveViewNative.Component
         end
 
       :error ->
-        IO.warn("tried to load LiveViewNative plugin for format #{inspect(format)} but none was found")
+        if is_nil(format) do
+          quote do
+            import LiveViewNative.Component, only: [sigil_LVN: 2]
+          end
+        else
+          IO.warn("tried to load LiveViewNative plugin for format #{inspect(format)} but none was found")
 
-        []
+          []
+        end
+
     end
+
+    [component_ast, plugin_component_ast]
   end
 
   @doc false

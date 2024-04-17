@@ -87,15 +87,6 @@ defmodule LiveViewNative.TagEngine do
     ]
   end
 
-  defp handle_attr_escape("style", value, meta) do
-    [
-      quote(
-        line: meta[:line],
-        do: {:safe, unquote(__MODULE__).empty_attribute_encode(unquote(value))}
-      )
-    ]
-  end
-
   defp handle_attr_escape(_name, value, meta) do
     case extract_binaries(value, true, [], meta) do
       :error -> :error
