@@ -62,9 +62,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     # \e[91;1mLVN - Required\e[0m
     # Each format must be registered as a mime type add to
     # existing configuration if one exists as this will overwrite
-    config :mime, :types, %{\e[32;1m
-      # if you want to inspect LVN stylesheets from your browser add the `style` type
-      # "text/styles" => ["styles"],<%= if plugins? do %><%= for plugin <- plugins do %>
+    config :mime, :types, %{\e[32;1m<%= if plugins? do %><%= for plugin <- plugins do %>
       "text/<%= plugin.format %>" => ["<%= plugin.format %>"]<%= unless last?(plugins, plugin) do %>,<% end %><% end %><% else %>
       # "text/swiftui" => ["swiftui"]<% end %>\e[0m
     }
