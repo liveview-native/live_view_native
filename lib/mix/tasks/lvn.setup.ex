@@ -1,4 +1,5 @@
 defmodule Mix.Tasks.Lvn.Setup do
+  alias Mix.Tasks.Phx.Gen
   alias Mix.LiveViewNative.Context
 
   def run(args) do
@@ -65,7 +66,11 @@ defmodule Mix.Tasks.Lvn.Setup do
           []
         end
 
-        Mix.Task.run("lvn.#{format}.gen", args)
+        format_task_gen_module = Module.concat([Mix.Tasks.Lvn, Macro.camelize(format), Gen])
+
+        if Mix.Task.task?(format_task_gen_module) do
+          Mix.Task.run("lvn.#{format}.gen", args)
+        end
 
         Mix.Task.run("lvn.gen.layout", [format])
 
