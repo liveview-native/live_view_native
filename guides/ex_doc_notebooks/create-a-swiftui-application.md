@@ -2,60 +2,7 @@
 
 # Create a SwiftUI Application
 
-```elixir
-notebook_path = __ENV__.file |> String.split("#") |> hd()
-
-Mix.install(
-  [
-    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
-  ],
-  config: [
-    server: [
-      {ServerWeb.Endpoint,
-       [
-         server: true,
-         url: [host: "localhost"],
-         adapter: Phoenix.Endpoint.Cowboy2Adapter,
-         render_errors: [
-           formats: [html: ServerWeb.ErrorHTML, json: ServerWeb.ErrorJSON],
-           layout: false
-         ],
-         pubsub_server: Server.PubSub,
-         live_view: [signing_salt: "JSgdVVL6"],
-         http: [ip: {127, 0, 0, 1}, port: 4000],
-         secret_key_base: String.duplicate("a", 64),
-         live_reload: [
-           patterns: [
-             ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg|styles)$",
-             ~r/#{notebook_path}$/
-           ]
-         ]
-       ]}
-    ],
-    kino: [
-      group_leader: Process.group_leader()
-    ],
-    phoenix: [
-      template_engines: [neex: LiveViewNative.Engine]
-    ],
-    phoenix_template: [format_encoders: [swiftui: Phoenix.HTML.Engine]],
-    mime: [
-      types: %{"text/swiftui" => ["swiftui"], "text/styles" => ["styles"]}
-    ],
-    live_view_native: [plugins: [LiveViewNative.SwiftUI]],
-    live_view_native_stylesheet: [
-      content: [
-        swiftui: [
-          "lib/**/*swiftui*",
-          notebook_path
-        ]
-      ],
-      output: "priv/static/assets"
-    ]
-  ],
-  force: true
-)
-```
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%livebooks%create-a-swiftui-application.livemd)
 
 ## Overview
 
@@ -72,10 +19,6 @@ First, make sure you have followed the [Getting Started](https://hexdocs.pm/live
 <!-- livebook:{"attrs":"e30","chunks":[[0,85],[87,499],[588,49],[639,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -98,11 +41,6 @@ defmodule ServerWeb.ExampleLive do
     """
   end
 end
-|> Server.SmartCells.LiveViewNative.register("/")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## Create the iOS Application

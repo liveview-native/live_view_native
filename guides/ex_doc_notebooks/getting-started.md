@@ -1,59 +1,6 @@
 # Getting Started
 
-```elixir
-notebook_path = __ENV__.file |> String.split("#") |> hd()
-
-Mix.install(
-  [
-    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
-  ],
-  config: [
-    server: [
-      {ServerWeb.Endpoint,
-       [
-         server: true,
-         url: [host: "localhost"],
-         adapter: Phoenix.Endpoint.Cowboy2Adapter,
-         render_errors: [
-           formats: [html: ServerWeb.ErrorHTML, json: ServerWeb.ErrorJSON],
-           layout: false
-         ],
-         pubsub_server: Server.PubSub,
-         live_view: [signing_salt: "JSgdVVL6"],
-         http: [ip: {127, 0, 0, 1}, port: 4000],
-         secret_key_base: String.duplicate("a", 64),
-         live_reload: [
-           patterns: [
-             ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg|styles)$",
-             ~r/#{notebook_path}$/
-           ]
-         ]
-       ]}
-    ],
-    kino: [
-      group_leader: Process.group_leader()
-    ],
-    phoenix: [
-      template_engines: [neex: LiveViewNative.Engine]
-    ],
-    phoenix_template: [format_encoders: [swiftui: Phoenix.HTML.Engine]],
-    mime: [
-      types: %{"text/swiftui" => ["swiftui"], "text/styles" => ["styles"]}
-    ],
-    live_view_native: [plugins: [LiveViewNative.SwiftUI]],
-    live_view_native_stylesheet: [
-      content: [
-        swiftui: [
-          "lib/**/*swiftui*",
-          notebook_path
-        ]
-      ],
-      output: "priv/static/assets"
-    ]
-  ],
-  force: true
-)
-```
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%livebooks%getting-started.livemd)
 
 ## Overview
 
@@ -86,10 +33,6 @@ Then, you can evaluate the following smart cell and visit http://localhost:4000 
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMsIF9pbnRlcmZhY2UpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PkhlbGxvLCBmcm9tIExpdmVWaWV3IE5hdGl2ZSE8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kXG5cbmRlZm1vZHVsZSBTZXJ2ZXJXZWIuRXhhbXBsZUxpdmUgZG9cbiAgdXNlIFNlcnZlcldlYiwgOmxpdmVfdmlld1xuICB1c2UgU2VydmVyTmF0aXZlLCA6bGl2ZV92aWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkhcIlwiXCJcbiAgICA8cD5IZWxsbyBmcm9tIExpdmVWaWV3ITwvcD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,85],[87,408],[497,49],[548,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -111,11 +54,6 @@ defmodule ServerWeb.ExampleLive do
     """
   end
 end
-|> Server.SmartCells.LiveViewNative.register("/")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 In an upcoming lesson, you'll set up an iOS application with Xcode so you can run code native examples.

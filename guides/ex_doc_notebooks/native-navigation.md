@@ -1,59 +1,6 @@
 # Native Navigation
 
-```elixir
-notebook_path = __ENV__.file |> String.split("#") |> hd()
-
-Mix.install(
-  [
-    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
-  ],
-  config: [
-    server: [
-      {ServerWeb.Endpoint,
-       [
-         server: true,
-         url: [host: "localhost"],
-         adapter: Phoenix.Endpoint.Cowboy2Adapter,
-         render_errors: [
-           formats: [html: ServerWeb.ErrorHTML, json: ServerWeb.ErrorJSON],
-           layout: false
-         ],
-         pubsub_server: Server.PubSub,
-         live_view: [signing_salt: "JSgdVVL6"],
-         http: [ip: {127, 0, 0, 1}, port: 4000],
-         secret_key_base: String.duplicate("a", 64),
-         live_reload: [
-           patterns: [
-             ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg|styles)$",
-             ~r/#{notebook_path}$/
-           ]
-         ]
-       ]}
-    ],
-    kino: [
-      group_leader: Process.group_leader()
-    ],
-    phoenix: [
-      template_engines: [neex: LiveViewNative.Engine]
-    ],
-    phoenix_template: [format_encoders: [swiftui: Phoenix.HTML.Engine]],
-    mime: [
-      types: %{"text/swiftui" => ["swiftui"], "text/styles" => ["styles"]}
-    ],
-    live_view_native: [plugins: [LiveViewNative.SwiftUI]],
-    live_view_native_stylesheet: [
-      content: [
-        swiftui: [
-          "lib/**/*swiftui*",
-          notebook_path
-        ]
-      ],
-      output: "priv/static/asseteas"
-    ]
-  ],
-  force: true
-)
-```
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%livebooks%native-navigation.livemd)
 
 ## Overview
 
@@ -82,10 +29,6 @@ Evaluate the code cell below. We'll view the source code in a moment.
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PkhlbGxvLCBmcm9tIExpdmVWaWV3IE5hdGl2ZSE8L1RleHQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kXG5cbmRlZm1vZHVsZSBTZXJ2ZXJXZWIuRXhhbXBsZUxpdmUgZG9cbiAgdXNlIFNlcnZlcldlYiwgOmxpdmVfdmlld1xuICB1c2UgU2VydmVyTmF0aXZlLCA6bGl2ZV92aWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpLCBkbzogfkhcIlwiXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,85],[87,347],[436,49],[487,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -103,11 +46,6 @@ defmodule ServerWeb.ExampleLive do
   @impl true
   def render(assigns), do: ~H""
 end
-|> Server.SmartCells.LiveViewNative.register("/")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 Visit http://localhost:4000/?_format=swiftui. The `?_format` query parameter specifies the Phoenix server should respond with the swiftui template rather than the web template. You should see source code similar to the example below. We've replaced long tokens with `"some token"` for the sake of readability.
@@ -135,10 +73,6 @@ Evaluate **both** of the code cells below and click on the `NavigationLink` in y
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5Ib21lTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PllvdSBhcmUgb24gdGhlIG1haW4gcGFnZTwvVGV4dD5cbiAgICA8TmF2aWdhdGlvbkxpbmsgZGVzdGluYXRpb249e1wiL2Fib3V0XCJ9PlxuICAgICAgICA8VGV4dD5UbyBBYm91dDwvVGV4dD5cbiAgICA8L05hdmlnYXRpb25MaW5rPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZFxuXG5kZWZtb2R1bGUgU2VydmVyV2ViLkhvbWVMaXZlIGRvXG4gIHVzZSBTZXJ2ZXJXZWIsIDpsaXZlX3ZpZXdcbiAgdXNlIFNlcnZlck5hdGl2ZSwgOmxpdmVfdmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSwgZG86IH5IXCJcIlxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,85],[87,433],[522,49],[573,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.HomeLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -159,20 +93,11 @@ defmodule ServerWeb.HomeLive do
   @impl true
   def render(assigns), do: ~H""
 end
-|> Server.SmartCells.LiveViewNative.register("/")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5BYm91dExpdmUuU3dpZnRVSSBkb1xuICB1c2UgU2VydmVyTmF0aXZlLCBbOnJlbmRlcl9jb21wb25lbnQsIGZvcm1hdDogOnN3aWZ0dWldXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5MVk5cIlwiXCJcbiAgICA8VGV4dD5Zb3UgYXJlIG9uIHRoZSBhYm91dCBwYWdlPC9UZXh0PlxuICAgIDxOYXZpZ2F0aW9uTGluayBkZXN0aW5hdGlvbj17XCIvXCJ9PlxuICAgICAgICA8VGV4dD5UbyBIb21lPC9UZXh0PlxuICAgIDwvTmF2aWdhdGlvbkxpbms+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kXG5cbmRlZm1vZHVsZSBTZXJ2ZXJXZWIuQWJvdXRMaXZlIGRvXG4gIHVzZSBTZXJ2ZXJXZWIsIDpsaXZlX3ZpZXdcbiAgdXNlIFNlcnZlck5hdGl2ZSwgOmxpdmVfdmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSwgZG86IH5IXCJcIlxuZW5kIiwicGF0aCI6Ii9hYm91dCJ9","chunks":[[0,85],[87,430],[519,54],[575,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.AboutLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -193,11 +118,6 @@ defmodule ServerWeb.AboutLive do
   @impl true
   def render(assigns), do: ~H""
 end
-|> Server.SmartCells.LiveViewNative.register("/about")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 The `destination` attribute works the same as the `navigate` attribute on the web. The current LiveView will shut down, and a new one will mount without re-establishing a new socket connection.
@@ -213,10 +133,6 @@ Evaluate **both** of the code cells below and click on the `Button` view in your
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5NYWluTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PllvdSBhcmUgb24gdGhlIE1haW4gUGFnZTwvVGV4dD5cbiAgICA8QnV0dG9uIHBoeC1jbGljaz1cInRvLWFib3V0XCI+R28gdG8gQWJvdXQgcGFnZTwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZFxuXG5kZWZtb2R1bGUgU2VydmVyV2ViLk1haW5MaXZlIGRvXG4gIHVzZSBTZXJ2ZXJXZWIsIDpsaXZlX3ZpZXdcbiAgdXNlIFNlcnZlck5hdGl2ZSwgOmxpdmVfdmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSwgZG86IH5IXCJcIlxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIGhhbmRsZV9ldmVudChcInRvLWFib3V0XCIsIF9wYXJhbXMsIHNvY2tldCkgZG9cbiAgICB7Om5vcmVwbHksIHB1c2hfbmF2aWdhdGUoc29ja2V0LCB0bzogXCIvYWJvdXRcIil9XG4gIGVuZFxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,85],[87,519],[608,49],[659,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.MainLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -240,20 +156,11 @@ defmodule ServerWeb.MainLive do
     {:noreply, push_navigate(socket, to: "/about")}
   end
 end
-|> Server.SmartCells.LiveViewNative.register("/")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5BYm91dExpdmUuU3dpZnRVSSBkb1xuICB1c2UgU2VydmVyTmF0aXZlLCBbOnJlbmRlcl9jb21wb25lbnQsIGZvcm1hdDogOnN3aWZ0dWldXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5MVk5cIlwiXCJcbiAgICA8VGV4dD5Zb3UgYXJlIG9uIHRoZSBBYm91dCBQYWdlPC9UZXh0PlxuICAgIDxCdXR0b24gcGh4LWNsaWNrPVwidG8tbWFpblwiPkdvIHRvIE1haW4gcGFnZTwvQnV0dG9uPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZFxuXG5kZWZtb2R1bGUgU2VydmVyV2ViLkFib3V0TGl2ZSBkb1xuICB1c2UgU2VydmVyV2ViLCA6bGl2ZV92aWV3XG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIDpsaXZlX3ZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoYXNzaWducyksIGRvOiB+SFwiXCJcblxuICAgIEBpbXBsIHRydWVcbiAgZGVmIGhhbmRsZV9ldmVudChcInRvLW1haW5cIiwgX3BhcmFtcywgc29ja2V0KSBkb1xuICAgIHs6bm9yZXBseSwgcHVzaF9uYXZpZ2F0ZShzb2NrZXQsIHRvOiBcIi9cIil9XG4gIGVuZFxuZW5kIiwicGF0aCI6Ii9hYm91dCJ9","chunks":[[0,85],[87,516],[605,54],[661,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.AboutLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -277,11 +184,6 @@ defmodule ServerWeb.AboutLive do
     {:noreply, push_navigate(socket, to: "/")}
   end
 end
-|> Server.SmartCells.LiveViewNative.register("/about")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## Routing
@@ -312,10 +214,6 @@ You can see this for yourself using the following example. Click each of the but
 <!-- livebook:{"attrs":"eyJjb2RlIjoiIyBUaGlzIG1vZHVsZSBidWlsdCBmb3IgZXhhbXBsZSBwdXJwb3NlcyB0byBwZXJzaXN0IGxvZ3MgYmV0d2VlbiBtb3VudGluZyBMaXZlVmlld3MuXG5kZWZtb2R1bGUgUGVyc2lzdGFudExvZ3MgZG9cbiAgZGVmIGdldCBkb1xuICAgIDpwZXJzaXN0ZW50X3Rlcm0uZ2V0KDpsb2dzKVxuICBlbmRcblxuICBkZWYgcHV0KGxvZykgd2hlbiBpc19iaW5hcnkobG9nKSBkb1xuICAgIDpwZXJzaXN0ZW50X3Rlcm0ucHV0KDpsb2dzLCBbe2xvZywgVGltZS51dGNfbm93KCl9IHwgZ2V0KCldKVxuICBlbmRcblxuICBkZWYgcmVzZXQgZG9cbiAgICA6cGVyc2lzdGVudF90ZXJtLnB1dCg6bG9ncywgW10pXG4gIGVuZFxuZW5kXG5cblBlcnNpc3RhbnRMb2dzLnJlc2V0KClcblxuZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxCdXR0b24gcGh4LWNsaWNrPVwicmVkaXJlY3RcIj5SZWRpcmVjdDwvQnV0dG9uPlxuICAgIDxCdXR0b24gcGh4LWNsaWNrPVwibmF2aWdhdGVcIj5OYXZpZ2F0ZTwvQnV0dG9uPlxuICAgIDxCdXR0b24gcGh4LWNsaWNrPVwicGF0Y2hcIj5QYXRjaDwvQnV0dG9uPlxuICAgIDxTY3JvbGxWaWV3PlxuICAgICAgPEdyaWQ+XG4gICAgICA8R3JpZFJvdz48VGV4dD5Tb2NrZXQgSUQ8L1RleHQ+PFRleHQ+PCU9IEBzb2NrZXRfaWQgJT48L1RleHQ+PC9HcmlkUm93PlxuICAgICAgPEdyaWRSb3c+PFRleHQ+TGl2ZVZpZXcgUElEOjwvVGV4dD48VGV4dD48JT0gQGxpdmVfdmlld19waWQgJT48L1RleHQ+PC9HcmlkUm93PlxuICAgICAgPCU9IGZvciB7bG9nLCB0aW1lfSA8LSBFbnVtLnJldmVyc2UoQGxvZ3MpIGRvICU+XG4gICAgICAgIDxHcmlkUm93PlxuICAgICAgICAgIDxUZXh0PjwlPSBDYWxlbmRhci5zdHJmdGltZSh0aW1lLCBcIiVIOiVNOiVTXCIpICU+OjwvVGV4dD5cbiAgICAgICAgICA8VGV4dD48JT0gbG9nICU+PC9UZXh0PlxuICAgICAgICA8L0dyaWRSb3c+XG4gICAgICA8JSBlbmQgJT5cbiAgICAgIDwvR3JpZD5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kXG5cbmRlZm1vZHVsZSBTZXJ2ZXJXZWIuRXhhbXBsZUxpdmUgZG9cbiAgdXNlIFNlcnZlcldlYiwgOmxpdmVfdmlld1xuICB1c2UgU2VydmVyTmF0aXZlLCA6bGl2ZV92aWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgbW91bnQoX3BhcmFtcywgX3Nlc3Npb24sIHNvY2tldCkgZG9cbiAgICBQZXJzaXN0YW50TG9ncy5wdXQoXCJNT1VOVFwiKVxuICAgIHs6b2ssXG4gICAgIGFzc2lnbihzb2NrZXQsXG4gICAgICAgc29ja2V0X2lkOiBzb2NrZXQuaWQsXG4gICAgICAgY29ubmVjdGVkOiBjb25uZWN0ZWQ/KHNvY2tldCksXG4gICAgICAgbG9nczogUGVyc2lzdGFudExvZ3MuZ2V0KCksXG4gICAgICAgbGl2ZV92aWV3X3BpZDogaW5zcGVjdChzZWxmKCkpXG4gICAgICl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIGhhbmRsZV9wYXJhbXMoX3BhcmFtcywgX3VybCwgc29ja2V0KSBkb1xuICAgIFBlcnNpc3RhbnRMb2dzLnB1dChcIkhBTkRMRSBQQVJBTVNcIilcblxuICAgIHs6bm9yZXBseSwgYXNzaWduKHNvY2tldCwgOmxvZ3MsIFBlcnNpc3RhbnRMb2dzLmdldCgpKX1cbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpLFxuICAgIGRvOiB+SFwiXCJcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBoYW5kbGVfZXZlbnQoXCJyZWRpcmVjdFwiLCBfcGFyYW1zLCBzb2NrZXQpIGRvXG4gICAgUGVyc2lzdGFudExvZ3MucmVzZXQoKVxuICAgIFBlcnNpc3RhbnRMb2dzLnB1dChcIi0tUkVESVJFQ1RJTkctLVwiKVxuICAgIHs6bm9yZXBseSwgcmVkaXJlY3Qoc29ja2V0LCB0bzogXCIvXCIpfVxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwibmF2aWdhdGVcIiwgX3BhcmFtcywgc29ja2V0KSBkb1xuICAgIFBlcnNpc3RhbnRMb2dzLnB1dChcIi0tLU5BVklHQVRJTkctLS1cIilcbiAgICB7Om5vcmVwbHksIHB1c2hfbmF2aWdhdGUoc29ja2V0LCB0bzogXCIvXCIpfVxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwicGF0Y2hcIiwgX3BhcmFtcywgc29ja2V0KSBkb1xuICAgIFBlcnNpc3RhbnRMb2dzLnB1dChcIi0tLS1QQVRDSElORy0tLS1cIilcbiAgICB7Om5vcmVwbHksIHB1c2hfcGF0Y2goc29ja2V0LCB0bzogXCIvXCIpfVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,85],[87,2159],[2248,49],[2299,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 # This module built for example purposes to persist logs between mounting LiveViews.
 defmodule PersistantLogs do
   def get do
@@ -402,9 +300,4 @@ defmodule ServerWeb.ExampleLive do
     {:noreply, push_patch(socket, to: "/")}
   end
 end
-|> Server.SmartCells.LiveViewNative.register("/")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```

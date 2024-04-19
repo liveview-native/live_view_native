@@ -23,6 +23,10 @@ Here's a basic example of a `LiveForm`. Keep in mind that `LiveForm` requires an
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8TGl2ZUZvcm0gaWQ9XCJteWZvcm1cIiBwaHgtc3VibWl0PVwic3VibWl0XCI+XG4gICAgICA8VGV4dEZpZWxkIG5hbWU9XCJteS10ZXh0XCIgPlBsYWNlaG9sZGVyPC9UZXh0RmllbGQ+XG4gICAgICA8TGl2ZVN1Ym1pdEJ1dHRvbj5TdWJtaXQ8L0xpdmVTdWJtaXRCdXR0b24+XG4gICAgPC9MaXZlRm9ybT5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgaGFuZGxlX2V2ZW50KFwic3VibWl0XCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLmluc3BlY3QocGFyYW1zKVxuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,463],[576,45],[623,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
 defmodule Server.ExampleLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
@@ -43,6 +47,11 @@ defmodule Server.ExampleLive do
     {:noreply, socket}
   end
 end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
 ```
 
 When a form is submitted, its data is sent as a map where each key is the 'name' attribute of the form's control views. Evaluate the example above in your simulator and you will see a map similar to the following:
@@ -98,6 +107,10 @@ end
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5NdWx0aUlucHV0Rm9ybUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPCEtLSBFbnRlciB5b3VyIHNvbHV0aW9uIGhlcmUgLS0+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gICMgWW91IG1heSB1c2UgdGhpcyBoYW5kbGVyIHRvIHRlc3QgeW91ciBzb2x1dGlvbi5cbiAgIyBZb3Ugc2hvdWxkIG5vdCBuZWVkIHRvIG1vZGlmeSB0aGlzIGhhbmRsZXIuXG4gIEBpbXBsIHRydWVcbiAgZGVmIGhhbmRsZV9ldmVudChcInN1Ym1pdFwiLCBwYXJhbXMsIHNvY2tldCkgZG9cbiAgICBJTy5pbnNwZWN0KHBhcmFtcylcbiAgICB7Om5vcmVwbHksIHNvY2tldH1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,438],[551,45],[598,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
 defmodule Server.MultiInputFormLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
@@ -117,6 +130,11 @@ defmodule Server.MultiInputFormLive do
     {:noreply, socket}
   end
 end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
 ```
 
 ### Controlled Values
@@ -128,6 +146,10 @@ Evaluate the example below to see this in action.
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TdGVwcGVyTGl2ZSBkb1xuICB1c2UgUGhvZW5peC5MaXZlVmlld1xuICB1c2UgTGl2ZVZpZXdOYXRpdmUuTGl2ZVZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIHBhcmFtczogJXtcIm15LXN0ZXBwZXJcIiA9PiAxfSl9XG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxMaXZlRm9ybSBpZD1cIm15Zm9ybVwiIHBoeC1jaGFuZ2U9XCJjaGFuZ2VcIj5cbiAgICAgIDxTdGVwcGVyIG5hbWU9XCJteS1zdGVwcGVyXCIgdmFsdWU9e0BwYXJhbXNbXCJteS1zdGVwcGVyXCJdfT48JT0gQHBhcmFtc1tcIm15LXN0ZXBwZXJcIl0gJT48L1N0ZXBwZXI+XG4gICAgPC9MaXZlRm9ybT5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgaGFuZGxlX2V2ZW50KFwiY2hhbmdlXCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIElPLmluc3BlY3QocGFyYW1zKVxuICAgIHs6bm9yZXBseSwgYXNzaWduKHNvY2tldCwgcGFyYW1zOiBwYXJhbXMpfVxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,600],[713,45],[760,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
 defmodule Server.StepperLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
@@ -152,6 +174,11 @@ defmodule Server.StepperLive do
     {:noreply, assign(socket, params: params)}
   end
 end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
 ```
 
 ### Secure Field
@@ -161,6 +188,10 @@ For password entry, or anytime you want to hide a given value, you can use the [
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5TZWN1cmVMaXZlIGRvXG4gIHVzZSBQaG9lbml4LkxpdmVWaWV3XG4gIHVzZSBMaXZlVmlld05hdGl2ZS5MaXZlVmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcigle2Zvcm1hdDogOnN3aWZ0dWl9ID0gYXNzaWducykgZG9cbiAgICB+U1dJRlRVSVwiXCJcIlxuICAgIDxTZWN1cmVGaWVsZCBwaHgtY2hhbmdlPVwiY2hhbmdlXCI+RW50ZXIgYSBQYXNzd29yZDwvU2VjdXJlRmllbGQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIGhhbmRsZV9ldmVudChcImNoYW5nZVwiLCBwYXJhbXMsIHNvY2tldCkgZG9cbiAgICBJTy5pbnNwZWN0KHBhcmFtcylcbiAgICB7Om5vcmVwbHksIHNvY2tldH1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,360],[473,45],[520,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
 defmodule Server.SecureLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
@@ -178,6 +209,11 @@ defmodule Server.SecureLive do
     {:noreply, socket}
   end
 end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
 ```
 
 ## Keyboard Types
@@ -217,6 +253,10 @@ Evaluate the example below to see the different keyboards as you focus on each i
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5LZXlib2FyZExpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG4gIHVzZSBLZXlib2FyZFN0eWxlc2hlZXRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8VGV4dEZpZWxkIGNsYXNzPVwiZW1haWwtYWRkcmVzc1wiPkVudGVyIEVtYWlsPC9UZXh0RmllbGQ+XG4gICAgPFRleHRGaWVsZCBjbGFzcz1cInBob25lLXBhZFwiPkVudGVyIFBob25lPC9UZXh0RmllbGQ+XG4gICAgPFRleHRGaWVsZCBjbGFzcz1cIm51bWJlci1wYWRcIj5FbnRlciBOdW1iZXI8L1RleHRGaWVsZD5cbiAgICA8VGV4dEZpZWxkIGNsYXNzPVwia2V5Ym9hcmQtbnVtYmVyUGFkXCI+RW50ZXIgTnVtYmVyPC9UZXh0RmllbGQ+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxwPkhlbGxvIGZyb20gTGl2ZVZpZXchPC9wPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,109],[111,531],[644,45],[691,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
 defmodule Server.KeyboardLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
@@ -238,6 +278,11 @@ defmodule Server.KeyboardLive do
     """
   end
 end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
 ```
 
 ## Validation
@@ -313,6 +358,10 @@ Evaluate the example below and view it in your simulator. We've included and `IO
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5Gb3JtVmFsaWRhdGlvbkxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG4gIHVzZSBFcnJvclN0eWxlc2hlZXRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiBtb3VudChfcGFyYW1zLCBfc2Vzc2lvbiwgc29ja2V0KSBkb1xuICAgIHVzZXJfY2hhbmdlc2V0ID0gVXNlci5jaGFuZ2VzZXQoJVVzZXJ7fSwgJXt9KVxuICAgIHs6b2ssIGFzc2lnbihzb2NrZXQsIDp1c2VyX2NoYW5nZXNldCwgdXNlcl9jaGFuZ2VzZXQpfVxuICBlbmRcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoJXtmb3JtYXQ6IDpzd2lmdHVpfSA9IGFzc2lnbnMpIGRvXG4gICAgflNXSUZUVUlcIlwiXCJcbiAgICA8TGl2ZUZvcm0gaWQ9XCJteWZvcm1cIiBwaHgtY2hhbmdlPVwidmFsaWRhdGVcIiBwaHgtc3VibWl0PVwic3VibWl0XCI+XG4gICAgICA8VGV4dEZpZWxkIG5hbWU9XCJlbWFpbFwiID5FbnRlciB5b3VyIGVtYWlsPC9UZXh0RmllbGQ+XG4gICAgICA8VGV4dCA6aWY9e0B1c2VyX2NoYW5nZXNldC5hY3Rpb259IGNsYXNzPVwiZXJyb3JcIj5cbiAgICAgICAgPCU9IEVycm9yVXRpbHMuZXJyb3JfbWVzc2FnZShAdXNlcl9jaGFuZ2VzZXQuZXJyb3JzLCA6ZW1haWwpICU+XG4gICAgICA8L1RleHQ+XG4gICAgICA8TGl2ZVN1Ym1pdEJ1dHRvbj5TdWJtaXQ8L0xpdmVTdWJtaXRCdXR0b24+XG4gICAgPC9MaXZlRm9ybT5cbiAgICBcIlwiXCJcbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgaGFuZGxlX2V2ZW50KFwidmFsaWRhdGVcIiwgcGFyYW1zLCBzb2NrZXQpIGRvXG4gICAgdXNlcl9jaGFuZ2VzZXQgPVxuICAgICAgVXNlci5jaGFuZ2VzZXQoJVVzZXJ7fSwgcGFyYW1zKVxuICAgICAgIyBQcmVzZXJ2ZSB0aGUgYDphY3Rpb25gIGZpZWxkIHNvIGVycm9ycyBkbyBub3QgdmFuaXNoLlxuICAgICAgfD4gTWFwLnB1dCg6YWN0aW9uLCBzb2NrZXQuYXNzaWducy51c2VyX2NoYW5nZXNldC5hY3Rpb24pXG5cbiAgICB7Om5vcmVwbHksIGFzc2lnbihzb2NrZXQsIDp1c2VyX2NoYW5nZXNldCwgdXNlcl9jaGFuZ2VzZXQpfVxuICBlbmRcblxuICBkZWYgaGFuZGxlX2V2ZW50KFwic3VibWl0XCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIHVzZXJfY2hhbmdlc2V0ID1cbiAgICAgIFVzZXIuY2hhbmdlc2V0KCVVc2Vye30sIHBhcmFtcylcbiAgICAgICMgZmFraW5nIGEgRGF0YWJhc2UgaW5zZXJ0IGFjdGlvblxuICAgICAgfD4gTWFwLnB1dCg6YWN0aW9uLCA6aW5zZXJ0KVxuICAgICAgIyBTdWJtaXQgdGhlIGZvcm0gYW5kIGluc3BlY3QgdGhlIGxvZ3MgYmVsb3cgdG8gdmlldyB0aGUgY2hhbmdlc2V0LlxuICAgICAgfD4gSU8uaW5zcGVjdChsYWJlbDogXCJGb3JtIEZpZWxkIFZhbHVlc1wiKVxuXG4gICAgezpub3JlcGx5LCBhc3NpZ24oc29ja2V0LCA6dXNlcl9jaGFuZ2VzZXQsIHVzZXJfY2hhbmdlc2V0KX1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,1412],[1525,45],[1572,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
 defmodule Server.FormValidationLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
@@ -358,6 +407,11 @@ defmodule Server.FormValidationLive do
     {:noreply, assign(socket, :user_changeset, user_changeset)}
   end
 end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
 ```
 
 In the code above, the `"sumbit"` and `"validate"` events update the changeset based on the current form params. This fills the `errors` field used by the `ErrorUtils` module to format the error message.
@@ -545,6 +599,10 @@ end
 <!-- livebook:{"attrs":"eyJhY3Rpb24iOiI6aW5kZXgiLCJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlci5DdXN0b21Vc2VyRm9ybUxpdmUgZG9cbiAgdXNlIFBob2VuaXguTGl2ZVZpZXdcbiAgdXNlIExpdmVWaWV3TmF0aXZlLkxpdmVWaWV3XG4gIHVzZSBGb3JtU3R5bGVzaGVldFxuXG4gIEBpbXBsIHRydWVcbiAgZGVmIG1vdW50KF9wYXJhbXMsIF9zZXNzaW9uLCBzb2NrZXQpIGRvXG4gICAgIyBSZW1lbWJlciB0byBwcm92aWRlIHRoZSBpbml0aWFsIGNoYW5nZXNldFxuICAgIHs6b2ssIHNvY2tldH1cbiAgZW5kXG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKCV7Zm9ybWF0OiA6c3dpZnR1aX0gPSBhc3NpZ25zKSBkb1xuICAgIH5TV0lGVFVJXCJcIlwiXG4gICAgPCEtLSBMaXZlRm9ybSBnb2VzIGhlcmUgLS0+XG4gICAgXCJcIlwiXG4gIGVuZFxuXG4gIEBpbXBsIHRydWVcbiAgIyBXcml0ZSB5b3VyIGBcInZhbGlkYXRlXCJgIGV2ZW50IGhhbmRsZXJcbiAgZGVmIGhhbmRsZV9ldmVudChcInZhbGlkYXRlXCIsIHBhcmFtcywgc29ja2V0KSBkb1xuICAgIHs6bm9yZXBseSwgc29ja2V0fVxuICBlbmRcblxuICAjIFdyaXRlIHlvdXIgYFwic3VibWl0XCJgIGV2ZW50IGhhbmRsZXJcbiAgZGVmIGhhbmRsZV9ldmVudChcInN1Ym1pdFwiLCBwYXJhbXMsIHNvY2tldCkgZG9cbiAgICB7Om5vcmVwbHksIHNvY2tldH1cbiAgZW5kXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,109],[111,620],[733,45],[780,63]],"kind":"Elixir.KinoLiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
+require KinoLiveViewNative.Livebook
+import KinoLiveViewNative.Livebook
+import Kernel, except: [defmodule: 2]
+
 defmodule Server.CustomUserFormLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView
@@ -574,4 +632,9 @@ defmodule Server.CustomUserFormLive do
     {:noreply, socket}
   end
 end
+|> KinoLiveViewNative.register("/", ":index")
+
+import KinoLiveViewNative.Livebook, only: []
+import Kernel
+:ok
 ```

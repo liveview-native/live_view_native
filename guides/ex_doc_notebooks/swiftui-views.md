@@ -1,59 +1,6 @@
 # SwiftUI Views
 
-```elixir
-notebook_path = __ENV__.file |> String.split("#") |> hd()
-
-Mix.install(
-  [
-    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
-  ],
-  config: [
-    server: [
-      {ServerWeb.Endpoint,
-       [
-         server: true,
-         url: [host: "localhost"],
-         adapter: Phoenix.Endpoint.Cowboy2Adapter,
-         render_errors: [
-           formats: [html: ServerWeb.ErrorHTML, json: ServerWeb.ErrorJSON],
-           layout: false
-         ],
-         pubsub_server: Server.PubSub,
-         live_view: [signing_salt: "JSgdVVL6"],
-         http: [ip: {127, 0, 0, 1}, port: 4000],
-         secret_key_base: String.duplicate("a", 64),
-         live_reload: [
-           patterns: [
-             ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg|styles)$",
-             ~r/#{notebook_path}$/
-           ]
-         ]
-       ]}
-    ],
-    kino: [
-      group_leader: Process.group_leader()
-    ],
-    phoenix: [
-      template_engines: [neex: LiveViewNative.Engine]
-    ],
-    phoenix_template: [format_encoders: [swiftui: Phoenix.HTML.Engine]],
-    mime: [
-      types: %{"text/swiftui" => ["swiftui"], "text/styles" => ["styles"]}
-    ],
-    live_view_native: [plugins: [LiveViewNative.SwiftUI]],
-    live_view_native_stylesheet: [
-      content: [
-        swiftui: [
-          "lib/**/*swiftui*",
-          notebook_path
-        ]
-      ],
-      output: "priv/static/assets"
-    ]
-  ],
-  force: true
-)
-```
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%livebooks%swiftui-views.livemd)
 
 ## Overview
 
@@ -74,10 +21,6 @@ This `ExampleLive.SwiftUI` render component may define a `render/1` callback fun
 <!-- livebook:{"attrs":"eyJjb2RlIjoiIyBSZW5kZXIgQ29tcG9uZW50XG5kZWZtb2R1bGUgU2VydmVyV2ViLkV4YW1wbGVMaXZlLlN3aWZ0VUkgZG9cbiAgdXNlIFNlcnZlck5hdGl2ZSwgWzpyZW5kZXJfY29tcG9uZW50LCBmb3JtYXQ6IDpzd2lmdHVpXVxuXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFRleHQ+SGVsbG8sIGZyb20gTGl2ZVZpZXcgTmF0aXZlITwvVGV4dD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmRcblxuIyBMaXZlVmlld1xuZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZSBkb1xuICB1c2UgU2VydmVyV2ViLCA6bGl2ZV92aWV3XG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIDpsaXZlX3ZpZXdcblxuICBAaW1wbCB0cnVlXG4gIGRlZiByZW5kZXIoYXNzaWducykgZG9cbiAgICB+SFwiXCJcIlxuICAgIDxwPkhlbGxvIGZyb20gTGl2ZVZpZXchPC9wPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCIsInBhdGgiOiIvIn0","chunks":[[0,85],[87,426],[515,49],[566,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 # Render Component
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
@@ -101,11 +44,6 @@ defmodule ServerWeb.ExampleLive do
     """
   end
 end
-|> Server.SmartCells.LiveViewNative.register("/")
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 Throughout this and further material we'll re-define render components you can evaluate and see reflected in your Xcode iOS simulator.
@@ -113,10 +51,6 @@ Throughout this and further material we'll re-define render components you can e
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMsIF9pbnRlcmZhY2UpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PkhlbGxvLCBmcm9tIGEgTGl2ZVZpZXcgTmF0aXZlIFJlbmRlciBDb21wb25lbnQhPC9UZXh0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,233],[322,47],[371,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -126,11 +60,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Embedding Templates
@@ -180,10 +109,6 @@ Evaluate the cell below, then in Xcode, Start the iOS application you created in
 <!-- livebook:{"attrs":"e30","chunks":[[0,85],[87,209],[298,47],[347,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -193,11 +118,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## HStack and VStack
@@ -236,10 +156,6 @@ Evaluate the example below and view the working 3X3 layout in your Xcode simulat
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFZTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICA8L1ZTdGFjaz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,490],[579,47],[628,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -265,11 +181,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Your Turn: 3x3 board using columns
@@ -335,10 +246,6 @@ end
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPCEtLSBFbnRlciBzb2x1dGlvbiBiZWxvdyAtLT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,197],[286,47],[335,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -348,11 +255,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## Grid
@@ -362,10 +264,6 @@ import Kernel
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFZTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Pk88L1RleHQ+XG4gICAgICA8L0hTdGFjaz5cbiAgICA8L1ZTdGFjaz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,444],[533,47],[582,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -389,11 +287,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 Fortunately, we have a few common elements for creating a grid-based layout.
@@ -408,10 +301,6 @@ Evaluate the example below and notice that rows and columns are aligned.
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEdyaWQ+XG4gICAgICA8R3JpZFJvdz5cbiAgICAgICAgPFRleHQ+WFg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICAgIDxUZXh0Plg8L1RleHQ+XG4gICAgICA8L0dyaWRSb3c+XG4gICAgICA8R3JpZFJvdz5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgICAgPFRleHQ+WDwvVGV4dD5cbiAgICAgIDwvR3JpZFJvdz5cbiAgICAgIDxHcmlkUm93PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgICA8VGV4dD5YPC9UZXh0PlxuICAgICAgPC9HcmlkUm93PlxuICAgIDwvR3JpZD5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,470],[559,47],[608,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -436,11 +325,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## List
@@ -450,10 +334,6 @@ The SwiftUI [List](https://developer.apple.com/documentation/swiftui/list) view 
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPExpc3Q+XG4gICAgICA8VGV4dD5JdGVtIDE8L1RleHQ+XG4gICAgICA8VGV4dD5JdGVtIDI8L1RleHQ+XG4gICAgICA8VGV4dD5JdGVtIDM8L1RleHQ+XG4gICAgPC9MaXN0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,264],[353,47],[402,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -467,11 +347,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Multi-dimensional lists
@@ -481,10 +356,6 @@ Alternatively we can separate children within a `List` view in a `Section` view 
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPExpc3Q+XG4gICAgICA8U2VjdGlvbj5cbiAgICAgICAgPFRleHQgdGVtcGxhdGU9XCJoZWFkZXJcIj5IZWFkZXI8L1RleHQ+XG4gICAgICAgIENvbnRlbnRcbiAgICAgICAgPFRleHQgdGVtcGxhdGU9XCJmb290ZXJcIj5Gb290ZXI8L1RleHQ+XG4gICAgICA8L1NlY3Rpb24+XG4gICAgPC9MaXN0PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,327],[416,47],[465,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -500,11 +371,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## ScrollView
@@ -522,10 +388,6 @@ Here's an example using a `ScrollView` and a `HStack` to create scrollable text 
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L1ZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,318],[407,47],[456,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -541,11 +403,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### ScrollView with HStack
@@ -555,10 +412,6 @@ By default, the [axes](https://developer.apple.com/documentation/swiftui/scrollv
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXcgYXhlcz1cImhvcml6b250YWxcIj5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvSFN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,336],[425,47],[474,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -574,11 +427,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Optimized ScrollView with LazyHStack and LazyVStack
@@ -588,10 +436,6 @@ import Kernel
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvVlN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,320],[409,47],[458,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -607,11 +451,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 To resolve the performance problem for large amounts of data, you can use the Lazy views. Lazy views only create items as needed. Items won't be rendered until they are present on the screen.
@@ -621,10 +460,6 @@ The next example demonstrates how using `LazyVStack` instead of `VStack` resolve
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8TGF6eVZTdGFjaz5cbiAgICAgICAgPCU9IGZvciBuIDwtIDEuLjEwMDAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L0xhenlWU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,328],[417,47],[466,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -640,11 +475,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## Spacers
@@ -660,10 +490,6 @@ Evaluate the following example and notice the `Text` element is pushed to the ri
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEhTdGFjaz5cbiAgICAgIDxTcGFjZXIvPlxuICAgICAgPFRleHQ+VGhpcyB0ZXh0IGlzIHB1c2hlZCB0byB0aGUgcmlnaHQ8L1RleHQ+XG4gICAgPC9IU3RhY2s+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,258],[347,47],[396,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -676,11 +502,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Your Turn: Bottom Text Spacer
@@ -713,10 +534,6 @@ end
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPCEtLSBFbnRlciBzb2x1dGlvbiBiZWxvdyAtLT5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,197],[286,47],[335,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -726,11 +543,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## AsyncImage
@@ -742,10 +554,6 @@ Here's an example of `AsyncImage` with a lorem picsum image from https://picsum.
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEFzeW5jSW1hZ2UgdXJsPVwiaHR0cHM6Ly9waWNzdW0ucGhvdG9zLzQwMC80MDBcIi8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,217],[306,47],[355,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -755,11 +563,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Loading Spinner
@@ -769,10 +572,6 @@ import Kernel
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEFzeW5jSW1hZ2UgdXJsPVwiXCI+PC9Bc3luY0ltYWdlPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,200],[289,47],[338,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -782,11 +581,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Relative Path
@@ -800,10 +594,6 @@ Evaluate the example below to see the LiveView Native logo in the iOS simulator.
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEFzeW5jSW1hZ2UgdXJsPVwiL2ltYWdlcy9sb2dvLnBuZ1wiLz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,204],[293,47],[342,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -813,11 +603,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## Image
@@ -837,10 +622,6 @@ Evaluate the cell below to see an example using the `square.and.arrow.up` symbol
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEltYWdlIHN5c3RlbS1uYW1lPVwic3F1YXJlLmFuZC5hcnJvdy51cFwiIC8+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,211],[300,47],[349,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -850,11 +631,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ### Your Turn: Asset Catalogue
@@ -878,10 +654,6 @@ You should not need to make changes to this cell. Set up an image in your asset 
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEltYWdlIG5hbWU9XCJJbWFnZVwiLz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,189],[278,47],[327,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -891,11 +663,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## Button
@@ -909,10 +676,6 @@ Evaluate the example below to see the SwiftUI [Button](https://developer.apple.c
 <!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPEJ1dHRvbj48VGV4dD5UZXh0IEJ1dHRvbjwvVGV4dD48L0J1dHRvbj5cbiAgICA8QnV0dG9uPjxMYWJlbCBzeXN0ZW0taW1hZ2U9XCJib2x0LmZpbGxcIj5JY29uIEJ1dHRvbjwvTGFiZWw+PC9CdXR0b24+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,282],[371,47],[420,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
-require Server.Livebook
-import Server.Livebook
-import Kernel, except: [defmodule: 2]
-
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
@@ -923,11 +686,6 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     """
   end
 end
-|> Server.SmartCells.RenderComponent.register()
-
-import Server.Livebook, only: []
-import Kernel
-:ok
 ```
 
 ## Further Resources

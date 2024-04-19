@@ -23,18 +23,19 @@ defmodule Mix.Tasks.ExDocGuides do
 
   defp replace_setup_section_with_badge(content, file_name) do
     badge = "[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2Fliveview-native%2Flive_view_native%2Fmain%2Fguides%livebooks%#{file_name})"
-    String.replace(content, ~r/```elixir\nMix.install(.|\n)+?```/, badge)
+    String.replace(content, ~r/```elixir(.|\n)+?```/, badge, global: false)
   end
 
   defp remove_kino_boilerplate(content) do
     content
     |> String.replace("""
-    require KinoLiveViewNative.Livebook
-    import KinoLiveViewNative.Livebook
+    require Server.Livebook
+    import Server.Livebook
     import Kernel, except: [defmodule: 2]
 
     """, "")
-    |> String.replace(~r/\|\> KinoLiveViewNative\.register\(\".+\, \".+\"\)\n\nimport KinoLiveViewNative\.Livebook, only: \[\]\nimport Kernel\n:ok\n/, "")
+    |> String.replace(~r/\|\> Server\.SmartCells\.LiveViewNative\.register\(\".+\"\)\n\nimport Server\.Livebook, only: \[\]\nimport Kernel\n:ok\n/, "")
+    |> String.replace(~r/\|\> Server\.SmartCells\.RenderComponent\.register\(\)\n\nimport Server\.Livebook, only: \[\]\nimport Kernel\n:ok\n/, "")
   end
 
   defp convert_details_sections(content) do
