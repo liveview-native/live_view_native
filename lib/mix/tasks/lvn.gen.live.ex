@@ -9,7 +9,6 @@ defmodule Mix.Tasks.Lvn.Gen.Live do
   #{@shortdoc}
 
       $ mix lvn.gen.live swiftui Home
-
   """
 
   @impl true

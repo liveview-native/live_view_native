@@ -12,7 +12,6 @@ defmodule Mix.Tasks.Lvn do
   To print the LiveView Native version, pass `-v` or `--version`, for example:
 
       $ mix lvn --version
-
   """
 
   @version Mix.Project.config()[:version]
