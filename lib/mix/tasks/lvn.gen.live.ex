@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Lvn.Gen.Live do
 
   alias Mix.LiveViewNative.Context
 
-  @shortdoc "Generates a new format specific LiveView rener component and template"
+  @shortdoc "Generates a new format specific LiveView render component and template"
 
   @moduledoc """
   #{@shortdoc}
