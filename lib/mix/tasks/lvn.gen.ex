@@ -1,10 +1,31 @@
 defmodule Mix.Tasks.Lvn.Gen do
+  use Mix.Task
+
   alias Mix.LiveViewNative.Context
   import Mix.LiveViewNative.Context, only: [
     compile_string: 1,
     last?: 2
   ]
 
+  @shortdoc "Generates the Native module and prints configuration instructions"
+
+  @moduledoc """
+  #{@shortdoc}
+
+      $ mix lvn.gen
+
+  Instructions will be printed for configuring your application. And a
+  new `Native` module will be copied into the `lib/` directory of your application.
+
+  ## Options
+
+  * `--no-copy` - don't copy the `Native` module into your application
+  * `--no-info` - don't print configuration info
+  * `--no-live-form` - don't include `LiveViewNative.LiveForm` content in the `Native` module
+  """
+
+  @impl true
+  @doc false
   def run(args) do
     context = Context.build(args, __MODULE__)
 
@@ -20,7 +41,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     end
   end
 
-  def print_shell_instructions(context) do
+  defp print_shell_instructions(context) do
     context
     |> print_instructions()
     |> print_config()
@@ -29,7 +50,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     |> print_endpoint()
   end
 
-  def print_instructions(context) do
+  defp print_instructions(context) do
     """
     The following are configurations that should be added to your application.
 
@@ -40,7 +61,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     context
   end
 
-  def print_config(context) do
+  defp print_config(context) do
     plugins =
       LiveViewNative.plugins()
       |> Map.values()
@@ -86,7 +107,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     context
   end
 
-  def print_dev(context) do
+  defp print_dev(context) do
     """
     \e[93;1m# config/dev.exs\e[0m
 
@@ -107,7 +128,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     context
   end
 
-  def print_router(context) do
+  defp print_router(context) do
     plugins =
       LiveViewNative.plugins()
       |> Map.values()
@@ -146,7 +167,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     context
   end
 
-  def print_endpoint(context) do
+  defp print_endpoint(context) do
     """
     \e[93;1m# lib/<%= Macro.underscore(context.web_module) %>/endpoint.ex\e[0m
 
@@ -166,6 +187,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     context
   end
 
+  @doc false
   def switches, do: [
     context_app: :string,
     web: :string,
@@ -174,6 +196,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     live_form: :boolean
   ]
 
+  @doc false
   def validate_args!([]), do: [nil]
   def validate_args!(_args) do
     Mix.raise("""
