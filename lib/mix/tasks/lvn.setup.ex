@@ -1,6 +1,24 @@
 defmodule Mix.Tasks.Lvn.Setup do
+  use Mix.Task
+
+  alias Mix.Tasks.Phx.Gen
   alias Mix.LiveViewNative.Context
 
+  @shortdoc "Setup LiveView Native within a project"
+
+  @moduledoc """
+  #{@shortdoc}
+
+      $ mix lvn.setup
+
+  ## Options
+
+  * `--no-stylesheet` - don't print `LiveViewNative.Stylesheet` config info and don't run `lvn.stylesheet.gen`
+  * `--no-live-form` - don't include `LiveViewNative.LiveForm` content in the `Native` module
+  """
+
+  @impl true
+  @doc false
   def run(args) do
     context = Context.build(args, __MODULE__)
 
@@ -65,7 +83,11 @@ defmodule Mix.Tasks.Lvn.Setup do
           []
         end
 
-        Mix.Task.run("lvn.#{format}.gen", args)
+        format_task_gen_module = Module.concat([Mix.Tasks.Lvn, Macro.camelize(format), Gen])
+
+        if Mix.Task.task?(format_task_gen_module) do
+          Mix.Task.run("lvn.#{format}.gen", args)
+        end
 
         Mix.Task.run("lvn.gen.layout", [format])
 
@@ -82,6 +104,7 @@ defmodule Mix.Tasks.Lvn.Setup do
     end
   end
 
+  @doc false
   def switches, do: [
     context_app: :string,
     web: :string,
@@ -89,6 +112,7 @@ defmodule Mix.Tasks.Lvn.Setup do
     live_form: :boolean
   ]
 
+  @doc false
   def validate_args!([]), do: [nil]
   def validate_args!(_args) do
     Mix.raise("""

@@ -152,7 +152,19 @@ defmodule LiveViewNative.Component do
       def __native_opts__, do: @native_opts
     end
 
-    plugin_component_ast = case LiveViewNative.fetch_plugin(format) do
+    plugin_component_ast = plugin_component_ast(format, opts)
+
+    [component_ast, plugin_component_ast]
+  end
+
+  defp plugin_component_ast(nil, _opts) do
+    quote do
+      import LiveViewNative.Component, only: [sigil_LVN: 2]
+    end
+  end
+
+  defp plugin_component_ast(format, opts) do
+    case LiveViewNative.fetch_plugin(format) do
       {:ok, plugin} ->
         quote do
           import LiveViewNative.Renderer, only: [
@@ -171,19 +183,10 @@ defmodule LiveViewNative.Component do
         end
 
       :error ->
-        if is_nil(format) do
-          quote do
-            import LiveViewNative.Component, only: [sigil_LVN: 2]
-          end
-        else
-          IO.warn("tried to load LiveViewNative plugin for format #{inspect(format)} but none was found")
+        IO.warn("tried to load LiveViewNative plugin for format #{inspect(format)} but none was found")
 
-          []
-        end
-
+        nil
     end
-
-    [component_ast, plugin_component_ast]
   end
 
   @doc false
