@@ -88,16 +88,6 @@ LiveView Native uses the following syntax to represent the view above.
 <Text>Hamlet</Text>
 ```
 
-LiveView Native parses the `~SwiftUI` template into an AST representation, which is sent to the SwiftUI application for conversion back into SwiftUI syntax.
-
-```mermaid
-sequenceDiagram
-    SwiftUI->>LiveView: Send request to "http://localhost:4000?_lvn[format]=swiftui"
-    LiveView->>LiveView: Convert native template into AST
-    LiveView->>SwiftUI: Send AST in response
-    SwiftUI->>SwiftUI: Convert AST into SwiftUI syntax.
-```
-
 SwiftUI provides a wide range of Views that can be used in native templates. You can find a full reference of these views in the SwiftUI Documentation at https://developer.apple.com/documentation/swiftui/. You can also find a shorthand on how to convert SwiftUI syntax into the LiveView Native DLS in the [LiveView Native Syntax Conversion Cheatsheet](https://hexdocs.pm/live_view_native/cheatsheet.cheatmd).
 
 ## Text
@@ -106,13 +96,13 @@ We've already seen the [Text](https://developer.apple.com/documentation/swiftui/
 
 Evaluate the cell below, then in Xcode, Start the iOS application you created in the [Create a SwiftUI Application](https://hexdocs.pm/live_view_native/create-a-swiftui-application.html) lesson and ensure you see the `"Hello, from LiveView Native!"` text.
 
-<!-- livebook:{"attrs":"e30","chunks":[[0,85],[87,209],[298,47],[347,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"e30","chunks":[[0,85],[87,202],[291,47],[340,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
-  def render(assigns, _interface) do
+  def render(assigns) do
     ~LVN"""
     <Text>Hello, from LiveView Native!</Text>
     """
@@ -157,7 +147,8 @@ Evaluate the example below and view the working 3X3 layout in your Xcode simulat
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -247,7 +238,8 @@ end
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -265,7 +257,8 @@ end
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -302,7 +295,8 @@ Evaluate the example below and notice that rows and columns are aligned.
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -335,7 +329,8 @@ The SwiftUI [List](https://developer.apple.com/documentation/swiftui/list) view 
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -357,7 +352,8 @@ Alternatively we can separate children within a `List` view in a `Section` view 
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -389,7 +385,8 @@ Here's an example using a `ScrollView` and a `HStack` to create scrollable text 
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -413,7 +410,8 @@ By default, the [axes](https://developer.apple.com/documentation/swiftui/scrollv
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -437,7 +435,8 @@ end
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -461,7 +460,8 @@ The next example demonstrates how using `LazyVStack` instead of `VStack` resolve
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -491,7 +491,8 @@ Evaluate the following example and notice the `Text` element is pushed to the ri
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -535,7 +536,8 @@ end
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -555,7 +557,8 @@ Here's an example of `AsyncImage` with a lorem picsum image from https://picsum.
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -573,7 +576,8 @@ end
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -595,7 +599,8 @@ Evaluate the example below to see the LiveView Native logo in the iOS simulator.
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -623,7 +628,8 @@ Evaluate the cell below to see an example using the `square.and.arrow.up` symbol
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -655,7 +661,8 @@ You should not need to make changes to this cell. Set up an image in your asset 
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""
@@ -677,7 +684,8 @@ Evaluate the example below to see the SwiftUI [Button](https://developer.apple.c
 
 ```elixir
 defmodule ServerWeb.ExampleLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
+  use LiveViewNative.Component,
+    format: :swiftui
 
   def render(assigns, _interface) do
     ~LVN"""

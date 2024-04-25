@@ -63,7 +63,7 @@ This guide assumes some existing familiarity with [Phoenix Bindings](https://hex
 
 We'll use the following LiveView and define new render component examples throughout the guide.
 
-<!-- livebook:{"attrs":"e30","chunks":[[0,85],[87,359],[448,49],[499,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"e30","chunks":[[0,85],[87,347],[436,49],[487,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 require Server.Livebook
@@ -73,7 +73,7 @@ import Kernel, except: [defmodule: 2]
 defmodule ServerWeb.ExampleLive.SwiftUI do
   use ServerNative, [:render_component, format: :swiftui]
 
-  def render(assigns, _interface) do
+  def render(assigns) do
     ~LVN"""
     <Text>Hello, from LiveView Native!</Text>
     """
