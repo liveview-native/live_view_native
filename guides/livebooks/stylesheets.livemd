@@ -5,8 +5,7 @@ notebook_path = __ENV__.file |> String.split("#") |> hd()
 
 Mix.install(
   [
-    # {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
-    {:kino_live_view_native, path: "../kino_live_view_native"}
+    {:kino_live_view_native, github: "liveview-native/kino_live_view_native"}
   ],
   config: [
     server: [
