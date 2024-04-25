@@ -516,7 +516,7 @@ While `ScrollView` also works with typical `VStack` and `HStack` views, they are
 
 Here's an example using a `ScrollView` and a `HStack` to create scrollable text arranged horizontally.
 
-<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L1ZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,318],[407,47],[456,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8VGV4dCA6Zm9yPXtuIDwtIDEuLjEwMH0+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgIDwvVlN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,283],[372,47],[421,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
 require Server.Livebook
@@ -531,9 +531,7 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     ~LVN"""
     <ScrollView>
       <VStack>
-        <%= for n <- 1..100 do %>
-          <Text>Item <%= n %></Text>
-        <% end %>
+        <Text :for={n <- 1..100}>Item <%= n %></Text>
       </VStack>
     </ScrollView>
     """
@@ -550,7 +548,7 @@ import Kernel
 
 By default, the [axes](https://developer.apple.com/documentation/swiftui/scrollview/axes) of a `ScrollView` is vertical. To make a horizontal `ScrollView`, set the `axes` attribute to `"horizontal"` as seen in the example below.
 
-<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXcgYXhlcz1cImhvcml6b250YWxcIj5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDwlPSBmb3IgbiA8LSAxLi4xMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvSFN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,336],[425,47],[474,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXcgYXhlcz1cImhvcml6b250YWxcIj5cbiAgICAgIDxIU3RhY2s+XG4gICAgICAgIDxUZXh0IDpmb3I9e24gPC0gMS4uMTAwfT5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgPC9IU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,301],[390,47],[439,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
 require Server.Livebook
@@ -565,9 +563,7 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     ~LVN"""
     <ScrollView axes="horizontal">
       <HStack>
-        <%= for n <- 1..100 do %>
-          <Text>Item <%= n %></Text>
-        <% end %>
+        <Text :for={n <- 1..100}>Item <%= n %></Text>
       </HStack>
     </ScrollView>
     """
@@ -584,7 +580,7 @@ import Kernel
 
 `VStack` and `HStack` are inefficient for large amounts of data because they render every child view. To demonstrate this, evaluate the example below. You should experience lag when you attempt to scroll.
 
-<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8JT0gZm9yIG4gPC0gMS4uMTAwMDAgZG8gJT5cbiAgICAgICAgICA8VGV4dD5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgICA8JSBlbmQgJT5cbiAgICAgIDwvVlN0YWNrPlxuICAgIDwvU2Nyb2xsVmlldz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmQifQ","chunks":[[0,85],[87,320],[409,47],[458,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8VlN0YWNrPlxuICAgICAgICA8VGV4dCA6Zm9yPXtuIDwtIDEuLjEwMDAwfT5JdGVtIDwlPSBuICU+PC9UZXh0PlxuICAgICAgPC9WU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,285],[374,47],[423,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
 require Server.Livebook
@@ -599,9 +595,7 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     ~LVN"""
     <ScrollView>
       <VStack>
-        <%= for n <- 1..10000 do %>
-          <Text>Item <%= n %></Text>
-        <% end %>
+        <Text :for={n <- 1..10000}>Item <%= n %></Text>
       </VStack>
     </ScrollView>
     """
@@ -618,7 +612,7 @@ To resolve the performance problem for large amounts of data, you can use the La
 
 The next example demonstrates how using `LazyVStack` instead of `VStack` resolves the performance issue.
 
-<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8TGF6eVZTdGFjaz5cbiAgICAgICAgPCU9IGZvciBuIDwtIDEuLjEwMDAwIGRvICU+XG4gICAgICAgICAgPFRleHQ+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgICAgPCUgZW5kICU+XG4gICAgICA8L0xhenlWU3RhY2s+XG4gICAgPC9TY3JvbGxWaWV3PlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZCJ9","chunks":[[0,85],[87,328],[417,47],[466,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5FeGFtcGxlTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBMaXZlVmlld05hdGl2ZS5Db21wb25lbnQsXG4gICAgZm9ybWF0OiA6c3dpZnR1aVxuXG4gIGRlZiByZW5kZXIoYXNzaWducywgX2ludGVyZmFjZSkgZG9cbiAgICB+TFZOXCJcIlwiXG4gICAgPFNjcm9sbFZpZXc+XG4gICAgICA8TGF6eVZTdGFjaz5cbiAgICAgICAgPFRleHQgOmZvcj17biA8LSAxLi4xMDAwMH0+SXRlbSA8JT0gbiAlPjwvVGV4dD5cbiAgICAgIDwvTGF6eVZTdGFjaz5cbiAgICA8L1Njcm9sbFZpZXc+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kIn0","chunks":[[0,85],[87,293],[382,47],[431,51]],"kind":"Elixir.Server.SmartCells.RenderComponent","livebook_object":"smart_cell"} -->
 
 ```elixir
 require Server.Livebook
@@ -633,9 +627,7 @@ defmodule ServerWeb.ExampleLive.SwiftUI do
     ~LVN"""
     <ScrollView>
       <LazyVStack>
-        <%= for n <- 1..10000 do %>
-          <Text>Item <%= n %></Text>
-        <% end %>
+        <Text :for={n <- 1..10000}>Item <%= n %></Text>
       </LazyVStack>
     </ScrollView>
     """
