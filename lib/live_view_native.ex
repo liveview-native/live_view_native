@@ -137,7 +137,10 @@ defmodule LiveViewNative do
           Application.fetch_env(:live_view_native, :plugins)
           |> case do
             {:ok, plugins} ->
-              Enum.map(plugins, &struct(&1))
+              Enum.map(plugins, fn(plugin) ->
+                Code.ensure_compiled(plugin)
+                struct(plugin)
+              end)
             :error -> []
           end
           |> Enum.into(%{}, &({Atom.to_string(&1.format), &1}))

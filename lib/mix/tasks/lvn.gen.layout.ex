@@ -1,6 +1,18 @@
 defmodule Mix.Tasks.Lvn.Gen.Layout do
+  use Mix.Task
+
   alias Mix.LiveViewNative.Context
 
+  @shortdoc "Generates a new format specific layout component and templates"
+
+  @moduledoc """
+  #{@shortdoc}
+
+      $ mix lvn.gen.layout swiftui
+  """
+
+  @impl true
+  @doc false
   def run(args) do
     context = Context.build(args, __MODULE__)
 
@@ -11,11 +23,13 @@ defmodule Mix.Tasks.Lvn.Gen.Layout do
     copy_new_files(context, files)
   end
 
+  @doc false
   def switches, do: [
     context_app: :string,
     web: :string
   ]
 
+  @doc false
   def validate_args!([]) do
     formats =
       LiveViewNative.available_formats()
@@ -28,6 +42,7 @@ defmodule Mix.Tasks.Lvn.Gen.Layout do
     """)
   end
 
+  @doc false
   def validate_args!([format | _] = args) do
     cond do
       not Context.valid_format?(format) ->

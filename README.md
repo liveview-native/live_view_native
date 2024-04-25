@@ -10,17 +10,12 @@ LiveView Native is a platform for building native applications using [Elixir](ht
 # lib/my_app_web/live/hello_live.ex
 defmodule MyAppWeb.HelloLive do
   use MyAppWeb, :live_view
-  use LiveViewNative.LiveView,
-    formats: [:swiftui],
-    layouts: [
-      swiftui: {MyAppWeb.Layouts.SwiftUI, :app}
-    ]
+  use MyAppNative, :live_view
 end
 
 # liv/my_app_web/live/hello_live_swiftui.ex
 def MyAppWeb.HelloLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui],
-    as: :render
+  use MyAppNative, [:render_component, format: :swiftui]
 
   def render(assigns, %{"target" => "watchos"}) do
     ~LVN"""
@@ -44,7 +39,36 @@ def MyAppWeb.HelloLive.SwiftUI do
 end
 ```
 
-To use LiveView Native in your Phoenix application, follow the instructions in the [getting started guide](https://hexdocs.pm/live_view_native/overview.html).
+## Getting started
+
+In addition to `live_view_native` you may want to include some additional libraries:
+
+```elixir
+{:live_view_native, "~> 0.3.0-rc.1"},
+{:live_view_native_stylesheet, "~> 0.3.0-rc.1"},
+{:live_view_native_swiftui, "~> 0.3.0-rc.1"},
+{:live_view_native_stylesheet, "~> 0.3.0-rc.1"}
+```
+
+Then add the client plugin to `config/config.exs`
+
+```
+config :live_view_native, plugins: [
+  LiveViewNative.SwiftUI
+]
+```
+
+then run:
+
+```
+$ mix lvn.setup
+```
+
+This task will several other tasks that will generate multiple files into your project.
+A list of changes to several files in your Phoenix app will be printed after the task
+completes. Please make sure to complete all of the `Required` changes otherwise LiveView Native
+will not run properly.
+
 
 ## Learn more
 
