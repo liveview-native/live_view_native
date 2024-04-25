@@ -25,12 +25,6 @@ We've setup this Livebook to be included when parsing the application for modifi
 
 LiveView Native watches for changes and updates the stylesheet, so those will be dynamically picked up and applied, You may notice a slight delay as the Livebook takes **5 seconds** to write it's contents to a file.
 
-<!-- livebook:{"break_markdown":true} -->
-
-<i class="ri-play-fill">
-
-</i>
-
 ## Modifiers
 
 SwiftUI employs **modifiers** to style and customize views. In SwiftUI syntax, each modifier is a function that can be chained onto the view they modify. LiveView Native has a minimal DSL (Domain Specific Language) for writing SwiftUI modifiers.

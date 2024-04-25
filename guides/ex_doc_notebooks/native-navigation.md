@@ -70,32 +70,7 @@ We've created the same example of navigating between the `Main` and `About` page
 
 Evaluate **both** of the code cells below and click on the `NavigationLink` in your simulator to navigate between the two views.
 
-<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5Ib21lTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PllvdSBhcmUgb24gdGhlIG1haW4gcGFnZTwvVGV4dD5cbiAgICA8TmF2aWdhdGlvbkxpbmsgZGVzdGluYXRpb249e1wiL2Fib3V0XCJ9PlxuICAgICAgICA8VGV4dD5UbyBBYm91dDwvVGV4dD5cbiAgICA8L05hdmlnYXRpb25MaW5rPlxuICAgIFwiXCJcIlxuICBlbmRcbmVuZFxuXG5kZWZtb2R1bGUgU2VydmVyV2ViLkhvbWVMaXZlIGRvXG4gIHVzZSBTZXJ2ZXJXZWIsIDpsaXZlX3ZpZXdcbiAgdXNlIFNlcnZlck5hdGl2ZSwgOmxpdmVfdmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSwgZG86IH5IXCJcIlxuZW5kIiwicGF0aCI6Ii8ifQ","chunks":[[0,85],[87,433],[522,49],[573,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
-
-```elixir
-defmodule ServerWeb.HomeLive.SwiftUI do
-  use ServerNative, [:render_component, format: :swiftui]
-
-  def render(assigns) do
-    ~LVN"""
-    <Text>You are on the main page</Text>
-    <NavigationLink destination={"/about"}>
-        <Text>To About</Text>
-    </NavigationLink>
-    """
-  end
-end
-
-defmodule ServerWeb.HomeLive do
-  use ServerWeb, :live_view
-  use ServerNative, :live_view
-
-  @impl true
-  def render(assigns), do: ~H""
-end
-```
-
-<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5BYm91dExpdmUuU3dpZnRVSSBkb1xuICB1c2UgU2VydmVyTmF0aXZlLCBbOnJlbmRlcl9jb21wb25lbnQsIGZvcm1hdDogOnN3aWZ0dWldXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5MVk5cIlwiXCJcbiAgICA8VGV4dD5Zb3UgYXJlIG9uIHRoZSBhYm91dCBwYWdlPC9UZXh0PlxuICAgIDxOYXZpZ2F0aW9uTGluayBkZXN0aW5hdGlvbj17XCIvXCJ9PlxuICAgICAgICA8VGV4dD5UbyBIb21lPC9UZXh0PlxuICAgIDwvTmF2aWdhdGlvbkxpbms+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kXG5cbmRlZm1vZHVsZSBTZXJ2ZXJXZWIuQWJvdXRMaXZlIGRvXG4gIHVzZSBTZXJ2ZXJXZWIsIDpsaXZlX3ZpZXdcbiAgdXNlIFNlcnZlck5hdGl2ZSwgOmxpdmVfdmlld1xuXG4gIEBpbXBsIHRydWVcbiAgZGVmIHJlbmRlcihhc3NpZ25zKSwgZG86IH5IXCJcIlxuZW5kIiwicGF0aCI6Ii9hYm91dCJ9","chunks":[[0,85],[87,430],[519,54],[575,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5BYm91dExpdmUuU3dpZnRVSSBkb1xuICB1c2UgU2VydmVyTmF0aXZlLCBbOnJlbmRlcl9jb21wb25lbnQsIGZvcm1hdDogOnN3aWZ0dWldXG5cbiAgZGVmIHJlbmRlcihhc3NpZ25zKSBkb1xuICAgIH5MVk5cIlwiXCJcbiAgICA8VGV4dD5Zb3UgYXJlIG9uIHRoZSBhYm91dCBwYWdlPC9UZXh0PlxuICAgIDxOYXZpZ2F0aW9uTGluayBkZXN0aW5hdGlvbj17fnBcIi9cIn0+XG4gICAgICAgIDxUZXh0PlRvIEhvbWU8L1RleHQ+XG4gICAgPC9OYXZpZ2F0aW9uTGluaz5cbiAgICBcIlwiXCJcbiAgZW5kXG5lbmRcblxuZGVmbW9kdWxlIFNlcnZlcldlYi5BYm91dExpdmUgZG9cbiAgdXNlIFNlcnZlcldlYiwgOmxpdmVfdmlld1xuICB1c2UgU2VydmVyTmF0aXZlLCA6bGl2ZV92aWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpLCBkbzogfkhcIlwiXG5lbmQiLCJwYXRoIjoiL2Fib3V0In0","chunks":[[0,85],[87,432],[521,54],[577,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
 
 ```elixir
 defmodule ServerWeb.AboutLive.SwiftUI do
@@ -104,7 +79,7 @@ defmodule ServerWeb.AboutLive.SwiftUI do
   def render(assigns) do
     ~LVN"""
     <Text>You are on the about page</Text>
-    <NavigationLink destination={"/"}>
+    <NavigationLink destination={~p"/"}>
         <Text>To Home</Text>
     </NavigationLink>
     """
@@ -112,6 +87,31 @@ defmodule ServerWeb.AboutLive.SwiftUI do
 end
 
 defmodule ServerWeb.AboutLive do
+  use ServerWeb, :live_view
+  use ServerNative, :live_view
+
+  @impl true
+  def render(assigns), do: ~H""
+end
+```
+
+<!-- livebook:{"attrs":"eyJjb2RlIjoiZGVmbW9kdWxlIFNlcnZlcldlYi5Ib21lTGl2ZS5Td2lmdFVJIGRvXG4gIHVzZSBTZXJ2ZXJOYXRpdmUsIFs6cmVuZGVyX2NvbXBvbmVudCwgZm9ybWF0OiA6c3dpZnR1aV1cblxuICBkZWYgcmVuZGVyKGFzc2lnbnMpIGRvXG4gICAgfkxWTlwiXCJcIlxuICAgIDxUZXh0PllvdSBhcmUgb24gdGhlIG1haW4gcGFnZTwvVGV4dD5cbiAgICA8TmF2aWdhdGlvbkxpbmsgZGVzdGluYXRpb249e35wXCIvYWJvdXRcIn0+XG4gICAgICAgIDxUZXh0PlRvIEFib3V0PC9UZXh0PlxuICAgIDwvTmF2aWdhdGlvbkxpbms+XG4gICAgXCJcIlwiXG4gIGVuZFxuZW5kXG5cbmRlZm1vZHVsZSBTZXJ2ZXJXZWIuSG9tZUxpdmUgZG9cbiAgdXNlIFNlcnZlcldlYiwgOmxpdmVfdmlld1xuICB1c2UgU2VydmVyTmF0aXZlLCA6bGl2ZV92aWV3XG5cbiAgQGltcGwgdHJ1ZVxuICBkZWYgcmVuZGVyKGFzc2lnbnMpLCBkbzogfkhcIlwiXG5lbmQiLCJwYXRoIjoiLyJ9","chunks":[[0,85],[87,435],[524,49],[575,51]],"kind":"Elixir.Server.SmartCells.LiveViewNative","livebook_object":"smart_cell"} -->
+
+```elixir
+defmodule ServerWeb.HomeLive.SwiftUI do
+  use ServerNative, [:render_component, format: :swiftui]
+
+  def render(assigns) do
+    ~LVN"""
+    <Text>You are on the main page</Text>
+    <NavigationLink destination={~p"/about"}>
+        <Text>To About</Text>
+    </NavigationLink>
+    """
+  end
+end
+
+defmodule ServerWeb.HomeLive do
   use ServerWeb, :live_view
   use ServerNative, :live_view
 
