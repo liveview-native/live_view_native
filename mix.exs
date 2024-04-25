@@ -67,6 +67,10 @@ defmodule LiveViewNative.MixProject do
           """
           <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
           <script>mermaid.initialize({startOnLoad: true})</script>
+          <link
+            href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+            rel="stylesheet"
+          />
           """
         _ -> ""
       end
