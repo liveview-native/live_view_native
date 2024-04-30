@@ -47,7 +47,7 @@ In addition to `live_view_native` you may want to include some additional librar
 {:live_view_native, "~> 0.3.0-rc.1"},
 {:live_view_native_stylesheet, "~> 0.3.0-rc.1"},
 {:live_view_native_swiftui, "~> 0.3.0-rc.1"},
-{:live_view_native_stylesheet, "~> 0.3.0-rc.1"}
+{:live_view_native_live_form, "~> 0.3.0-rc.2"}
 ```
 
 Then add the client plugin to `config/config.exs`
