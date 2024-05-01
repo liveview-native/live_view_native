@@ -167,12 +167,16 @@ defmodule LiveViewNative.Component do
     case LiveViewNative.fetch_plugin(format) do
       {:ok, plugin} ->
         quote do
+          Module.register_attribute(__MODULE__, :template_files, accumulate: true)
+          Module.register_attribute(__MODULE__, :embeded_templates_opts, accumulate: true)
+
           import LiveViewNative.Renderer, only: [
             delegate_to_target: 1,
             delegate_to_target: 2,
             embed_templates: 1,
             embed_templates: 2
           ]
+
           use unquote(plugin.component)
 
           if (unquote(opts[:as])) do
@@ -180,6 +184,7 @@ defmodule LiveViewNative.Component do
           end
 
           @before_compile LiveViewNative.Component
+          @before_compile {LiveViewNative.Renderer, :__inject_mix_recompile__}
         end
 
       :error ->

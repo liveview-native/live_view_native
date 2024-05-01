@@ -18,6 +18,34 @@ defmodule LiveViewNative.Renderer do
   end
 
   @doc false
+  defmacro __inject_mix_recompile__(_env) do
+    quote do
+      @template_file_hash @template_files |> Enum.sort() |> :erlang.md5()
+
+      @doc false
+      def __mix_recompile__? do
+        files =
+          @embeded_templates_opts
+          |> Enum.reduce([], fn({root, pattern, name}, templates_acc) ->
+            root
+            |> LiveViewNative.Renderer.find_templates(pattern, __MODULE__, name)
+            |> Enum.reduce(templates_acc, fn
+              {:no_embed, _reason}, templates_acc -> templates_acc
+              {:embed, templates}, templates_acc -> templates_acc ++ templates
+            end)
+          end)
+
+        file_hash =
+          files
+          |> Enum.sort()
+          |> :erlang.md5()
+
+        !(file_hash == @template_file_hash)
+      end
+    end
+  end
+
+  @doc false
   defmacro delegate_to_target(name, opts \\ []) do
     %{module: module} = env = __CALLER__
     render? = Module.defines?(module, {name, 1})
@@ -33,6 +61,7 @@ defmodule LiveViewNative.Renderer do
       []
     else
       quote do
+        @doc false
         def unquote(name)(var!(assigns)) do
           interface = LiveViewNative.Utils.get_interface(var!(assigns))
           apply(__MODULE__, unquote(name), [var!(assigns), interface])
@@ -71,13 +100,20 @@ defmodule LiveViewNative.Renderer do
     %{module: module} = env = __CALLER__
     native_opts = Module.get_attribute(module, :native_opts)
     format = native_opts[:format]
-
     root = build_root(env.file, opts[:root])
+    name = opts[:name]
 
-    root
-    |> Phoenix.Template.find_all(pattern)
-    |> Enum.chunk_by(&chunk_name(&1))
-    |> ensure_naming_uniq(env, opts[:name])
+
+    attr_ast = quote do
+      Module.put_attribute(__MODULE__, :embeded_templates_opts, {
+        unquote(root),
+        unquote(pattern),
+        unquote(name)
+      })
+    end
+
+    templates_ast = root
+    |> find_templates(pattern, module, name)
     |> Enum.map(&(__embed_templates__(&1,
       format: format,
       name: opts[:name],
@@ -85,6 +121,30 @@ defmodule LiveViewNative.Renderer do
       root: root,
       pattern: pattern
     )))
+
+    [attr_ast | templates_ast]
+  end
+
+  @doc false
+  def find_templates(root, pattern, module, default_name) do
+    root
+    |> Phoenix.Template.find_all(pattern)
+    |> Enum.chunk_by(&chunk_name(&1))
+    |> ensure_naming_uniq(pattern, default_name)
+    |> Enum.map(fn(templates) ->
+      name = build_name(templates, default_name)
+      render? = case Code.ensure_compiled(module) do
+        {:error, _} -> Module.defines?(module, {name, 2})
+        {:module, _} -> false
+      end
+
+      case {render?, templates} do
+        {true, [_template | _templates]} -> {:no_embed, :render_defined_with_templates}
+        {true, []} -> {:no_embed, :render_defined_no_templates}
+        {false, []} -> {:no_embed, :no_render_no_templates}
+        {false, templates} -> {:embed, templates}
+      end
+    end)
   end
 
   # this function ensures there is a single template group when applying a custom render function name
@@ -115,74 +175,71 @@ defmodule LiveViewNative.Renderer do
     |> List.first()
   end
 
-  defp __embed_templates__(templates, opts) do
+  defp __embed_templates__({:no_embed, reason}, opts) do
     %{module: module} = env = opts[:env]
-    format = opts[:format]
-    name = build_name(templates, opts[:name])
+    name = build_name([], opts[:name])
 
-    render? = Module.defines?(module, {name, 2})
-    filename = build_filename(module, format)
-
-    case {render?, templates} do
-      {true, [_template | _templates]} ->
+    case reason do
+      :render_defined_with_templates ->
         IO.warn(
-          "You have #{module}.render/2 defined as well as at least one template file. You must remove " <>
-          " #{module}.render/2 if you wish to use any template files.",
+          "You have #{module}.#{name}/2 defined as well as at least one template file. You must remove " <>
+          " #{module}.#{name}/2 if you wish to use any template files.",
           Macro.Env.stacktrace(env)
         )
 
         []
-
-      {true, []} -> []
-
-      {false, []} ->
+      :render_defined_no_templates -> []
+      :no_render_no_templates ->
         IO.warn(
           "You do not have any templates or any `render/2` functions defined for #{module}.",
           Macro.Env.stacktrace(env)
         )
 
         []
-
-      {false, templates} ->
-        templates
-        |> Enum.sort(&(String.length(&1) >= String.length(&2)))
-        |> Enum.map(fn(template) ->
-
-          engine = Map.fetch!(LiveViewNative.Template.engines(), format)
-          ast = engine.compile(template, filename)
-
-          case extract_target(template, format) do
-            nil ->
-              quote do
-                @file unquote(template)
-                @external_resource unquote(template)
-                def unquote(name)(var!(assigns), _interface) do
-                  unquote(ast)
-                end
-              end
-
-            target ->
-              quote do
-                @file unquote(template)
-                @external_resource unquote(template)
-                def unquote(name)(var!(assigns), %{"target" => unquote(target)}) do
-                  unquote(ast)
-                end
-              end
-          end
-        end)
+      _unmatched_reason -> []
     end
-    |> inject_target_delegate(name)
   end
 
-  defp inject_target_delegate([], _name), do: []
-  defp inject_target_delegate(quoted_renders, name) do
-    quoted_render =
-      quote do
-        delegate_to_target unquote(name)
-      end
+  defp __embed_templates__({:embed, templates}, opts) do
+    %{module: module} = opts[:env]
+    format = opts[:format]
+    name = build_name(templates, opts[:name])
+    filename = build_filename(module, format)
 
-    [quoted_render | quoted_renders]
+    templates
+    |> Enum.sort(&(String.length(&1) >= String.length(&2)))
+    |> Enum.map(fn(template) ->
+
+      engine = Map.fetch!(LiveViewNative.Template.engines(), format)
+      ast = engine.compile(template, filename)
+
+      case extract_target(template, format) do
+        nil ->
+          quote do
+            @file unquote(template)
+            @external_resource unquote(template)
+            @template_files unquote(template)
+            @doc false
+            def unquote(name)(var!(assigns), _interface) do
+              unquote(ast)
+            end
+          end
+
+        target ->
+          quote do
+            @file unquote(template)
+            @external_resource unquote(template)
+            @template_files unquote(template)
+            @doc false
+            def unquote(name)(var!(assigns), %{"target" => unquote(target)}) do
+              unquote(ast)
+            end
+          end
+      end
+    end)
+    |> List.insert_at(-1, quote do
+      delegate_to_target unquote(name)
+    end)
   end
 
   defp extract_target(template, format) do
