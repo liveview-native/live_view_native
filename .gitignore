@@ -23,3 +23,5 @@ erl_crash.dump
 live_view_native-*.tar
 
 .DS_Store
+
+tmp/
