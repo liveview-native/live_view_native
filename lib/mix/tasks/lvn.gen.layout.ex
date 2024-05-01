@@ -14,6 +14,12 @@ defmodule Mix.Tasks.Lvn.Gen.Layout do
   @impl true
   @doc false
   def run(args) do
+    if Mix.Project.umbrella?() do
+      Mix.raise(
+        "mix lvn.gen.layout must be invoked from within your *_web application root directory"
+      )
+    end
+
     context = Context.build(args, __MODULE__)
 
     files = files_to_be_generated(context)

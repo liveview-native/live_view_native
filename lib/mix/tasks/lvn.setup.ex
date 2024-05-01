@@ -20,6 +20,12 @@ defmodule Mix.Tasks.Lvn.Setup do
   @impl true
   @doc false
   def run(args) do
+    if Mix.Project.umbrella?() do
+      Mix.raise(
+        "mix lvn.setup must be invoked from within your *_web application root directory"
+      )
+    end
+
     context = Context.build(args, __MODULE__)
 
     plugins =

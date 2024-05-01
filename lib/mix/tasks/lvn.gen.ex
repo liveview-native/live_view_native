@@ -32,6 +32,7 @@ defmodule Mix.Tasks.Lvn.Gen do
         "mix lvn.gen must be invoked from within your *_web application root directory"
       )
     end
+
     context = Context.build(args, __MODULE__)
 
     if Keyword.get(context.opts, :copy, true) do

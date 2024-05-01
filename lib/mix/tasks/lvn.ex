@@ -19,6 +19,12 @@ defmodule Mix.Tasks.Lvn do
   @impl true
   @doc false
   def run([version]) when version in ~w(-v --version) do
+    if Mix.Project.umbrella?() do
+      Mix.raise(
+        "mix lvn must be invoked from within your *_web application root directory"
+      )
+    end
+
     Mix.shell().info("LiveView Native v#{@version}")
   end
 
