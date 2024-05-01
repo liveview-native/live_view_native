@@ -214,7 +214,11 @@ defmodule Mix.Tasks.Lvn.Gen do
   end
 
   defp files_to_be_generated(context) do
-    path = Mix.Phoenix.web_path(context.context_app, "..")
+    path =
+      context.context_app
+      |> Mix.Phoenix.web_path("..")
+      |> Path.relative_to(File.cwd!())
+
     file = Macro.underscore(context.native_module) <> ".ex"
 
     [{:eex, "app_name_native.ex", Path.join(path, file)}]
