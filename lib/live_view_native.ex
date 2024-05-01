@@ -9,7 +9,7 @@ defmodule LiveViewNative do
   Phoenix on how to handle certain formats.
 
       # registers each plugin for use
-      config :live_view_native plugins: [
+      config :live_view_native, plugins: [
         LiveViewNative.SwiftUI,
         LiveViewNative.Jetpack
       ]
