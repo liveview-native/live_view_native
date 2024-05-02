@@ -1,6 +1,36 @@
 defmodule <%= inspect context.native_module %> do
+  @moduledoc """
+  The entrypoint for defining your native interfaces, such
+  as components, render components, layouts, and live views.
+
+  This can be used in your application as:
+
+      use <%= inspect context.native_module %>, :live_view
+
+  The definitions below will be executed for every
+  component, so keep them short and clean, focused
+  on imports, uses and aliases.
+
+  Do NOT define functions inside the quoted expressions
+  below. Instead, define additional modules and import
+  those modules here.
+  """
+
   import <%= inspect context.web_module %>, only: [verified_routes: 0]
 
+  @doc ~S'''
+  Set up an existing LiveView module for use with LiveView Native
+
+      defmodule MyAppWeb.HomeLive do
+        use MyAppWeb, :live_view
+        use MyAppNative, :live_view
+      end
+
+  An `on_mount` callback will be injected that will negotiate
+  the inbound connection content type. If it is a LiveView Native
+  type the `render/1` will be delegated to the format-specific
+  render component.
+  '''
   def live_view() do<%= unless plugins? do %>
     # you do not have any plugins configured. Add a plugin to
     # config/config.exs
@@ -26,6 +56,19 @@ defmodule <%= inspect context.native_module %> do
     end
   end
 
+  @doc ~S'''
+  Set up a module as a LiveView Native format-specific render component
+
+      defmodule MyAppWeb.HomeLive.SwiftUI do
+        use MyAppNative, [:render_component, format: :swiftui]
+
+        def render(assigns, _interface) do
+          ~LVN"""
+          <Text>Hello, world!</Text>
+          """
+        end
+      end
+  '''
   def render_component(opts) do
     opts =
       opts
@@ -39,6 +82,23 @@ defmodule <%= inspect context.native_module %> do
     end
   end
 
+  @doc ~S'''
+  Set up a module as a LiveView Native Component
+
+      defmodule MyAppWeb.Components.CustomSwiftUI do
+        use MyAppNative, [:component, format: :swiftui]
+
+        attr :msg, :string, :required
+        def home_textk(assigns) do
+          ~LVN"""
+          <Text>@msg</Text>
+          """
+        end
+      end
+
+  LiveView Native Components are identical to Phoenix Components. Please
+  refer to the `Phoenix.Component` documentation for more information.
+  '''
   def component(opts) do
     opts = Keyword.take(opts, [:format, :root, :as])
 
@@ -49,6 +109,15 @@ defmodule <%= inspect context.native_module %> do
     end
   end
 
+  @doc ~S'''
+  Set up a module as a LiveView Natve Layout Component
+
+      defmodule MyAppWeb.Layouts.SwiftUI do
+        use MyAppNative, [:layout, format: :swiftui]
+
+        embed_tempaltes "layouts_swiftui/*"
+      end
+  '''
   def layout(opts) do
     opts = Keyword.take(opts, [:format, :root])
 
