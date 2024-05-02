@@ -52,10 +52,12 @@ defmodule Mix.Lvn.TestHelper do
   end
 
   def in_tmp_live_project(test, func) do
+    app = Mix.Phoenix.context_app()
+
     in_tmp_project(test, fn ->
       File.mkdir_p!("lib")
-      File.touch!("lib/live_view_native_web.ex")
-      File.touch!("lib/live_view_native.ex")
+      File.touch!("lib/#{app}_web.ex")
+      File.touch!("lib/#{app}.ex")
       func.()
     end)
   end
@@ -85,11 +87,13 @@ defmodule Mix.Lvn.TestHelper do
   end
 
   def in_tmp_live_umbrella_project(test, func) do
+    app = Mix.Phoenix.context_app()
+
     in_tmp_umbrella_project(test, fn ->
-      File.mkdir_p!("live_view_native/lib")
-      File.mkdir_p!("live_view_native_web/lib")
-      File.touch!("live_view_native/lib/live_view_native.ex")
-      File.touch!("live_view_native_web/lib/live_view_native_web.ex")
+      File.mkdir_p!("#{app}/lib")
+      File.mkdir_p!("#{app}_web/lib")
+      File.touch!("#{app}/lib/#{app}.ex")
+      File.touch!("#{app}_web/lib/#{app}_web.ex")
       func.()
     end)
   end
