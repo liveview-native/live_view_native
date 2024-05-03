@@ -119,7 +119,7 @@ defmodule Mix.Tasks.Lvn.Gen do
 
     # \e[36mLVN - Optional\e[0m
     # Allows LVN templates to be subject to LiveReload changes
-    config :<% context.context_app %>, <%= inspect context.web_module %>.Endpoint,
+    config :<%= context.context_app %>, <%= inspect context.web_module %>.Endpoint,
       live_reload: [
         patterns: [
           ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
@@ -178,7 +178,7 @@ defmodule Mix.Tasks.Lvn.Gen do
     \e[93;1m# lib/<%= Macro.underscore(context.web_module) %>/endpoint.ex\e[0m
 
     # \e[36mLVN - Optional\e[0m
-    # Add the LiveViewNative.LiveRealoder to your endpoint
+    # Add the LiveViewNative.LiveReloader to your endpoint
     if code_reloading? do
       socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
       plug Phoenix.LiveReloader
