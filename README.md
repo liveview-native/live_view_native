@@ -64,16 +64,7 @@ then run:
 $ mix lvn.setup
 ```
 
-This task will several other tasks that will generate multiple files into your project.
+This task will run several other tasks that will generate multiple files into your project.
 A list of changes to several files in your Phoenix app will be printed after the task
 completes. Please make sure to complete all of the `Required` changes otherwise LiveView Native
 will not run properly.
-
-
-## Learn more
-
-  * Official website: https://native.live
-  * Guides: https://hexdocs.pm/live_view_native/overview.html
-  * Docs: https://hexdocs.pm/live_view_native
-  * Forum: https://elixirforum.com/c/elixir-framework-forums/liveview-native-forum
-  * Source: https://github.com/liveview-native/live_view_native
