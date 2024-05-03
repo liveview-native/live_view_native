@@ -69,6 +69,10 @@ defmodule Mix.LiveViewNative.Context do
     end
   end
 
+  def valid_module?(module_name) do
+    Mix.Phoenix.Context.valid?(module_name)
+  end
+
   def apps(format, default_app \\ :live_view_native) do
     plugin_otp_app_name =
       format

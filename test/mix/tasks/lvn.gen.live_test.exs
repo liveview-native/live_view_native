@@ -22,6 +22,16 @@ defmodule Mix.Tasks.Lvn.Gen.LiveTest do
       end
     end
 
+    test "will raise with message if invalid schema is given", config do
+      in_tmp_live_project config.test, fn ->
+        assert_raise(Mix.Error, fn() ->
+          Gen.Live.run(["gameboy", "home"])
+        end)
+        refute_file "lib/live_view_native_web/live/gameboy/home_live.gameboy.neex"
+        refute_file "lib/live_view_native_web/live/home_live.gameboy.ex"
+      end
+    end
+
     test "will raise with message if invalid format is given", config do
       in_tmp_live_project config.test, fn ->
         assert_raise(Mix.Error, fn() ->

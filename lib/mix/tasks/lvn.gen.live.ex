@@ -19,8 +19,8 @@ defmodule Mix.Tasks.Lvn.Gen.Live do
         "mix lvn.gen.live must be invoked from within your *_web application root directory"
       )
     end
-    context = Context.build(args, __MODULE__)
 
+    context = Context.build(args, __MODULE__)
     files = files_to_be_generated(context)
 
     Context.prompt_for_conflicts(files)
@@ -35,7 +35,7 @@ defmodule Mix.Tasks.Lvn.Gen.Live do
   ]
 
   @doc false
-  def validate_args!([format, _name | _] = args) do
+  def validate_args!([format, live_view_module| _] = args) do
     cond do
       not Context.valid_format?(format) ->
         formats =
@@ -51,6 +51,11 @@ defmodule Mix.Tasks.Lvn.Gen.Live do
         Please see the documentation for how to register new LiveView Native plugins
         """)
 
+      not Context.valid_module?(live_view_module) ->
+        Mix.raise("""
+        Expected "#{live_view_module}", to be a valid module name
+        """)
+
       true ->
         args
     end
@@ -64,7 +69,7 @@ defmodule Mix.Tasks.Lvn.Gen.Live do
       |> Enum.join("\n")
 
     Mix.raise("""
-    You must pass a valid format and the name of the parent LiveView. Available formats:
+    You must pass a valid format and the name of the parent LiveView module. Available formats:
     #{formats}
 
     Example: mix lvn.gen.live swiftui Home
