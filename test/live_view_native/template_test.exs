@@ -95,6 +95,27 @@ defmodule LiveViewNative.TemplateTest do
         """
         |> render() =~ ~S(<Foo data="[1,2,3]"></Foo>)
     end
+
+    test "style will encode quotes" do
+      assigns = %{}
+
+      assert ~LVN"""
+      <Foo style={"foo(bar);foo(\"bar\")"}></Foo>
+      """
+      |> render() =~ ~S'<Foo style="foo(bar);foo(&quot;bar&quot;)"></Foo>'
+    end
+
+    test "style as a list" do
+      assigns = %{}
+
+      assert ~LVN"""
+      <Foo style={[
+        "foo(bar)",
+        ~S'foo("bar")'
+      ]}></Foo>
+      """
+      |> render() =~ ~S'<Foo style="foo(bar);foo(&quot;bar&quot;)"></Foo>'
+    end
   end
 
   describe "tag name" do

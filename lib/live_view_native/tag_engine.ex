@@ -5,6 +5,7 @@ defmodule LiveViewNative.TagEngine do
 
   @behaviour Phoenix.LiveView.TagEngine
 
+  @doc false
   @impl true
   def handle_attributes(ast, meta) do
     if is_list(ast) and literal_keys?(ast) do
@@ -179,6 +180,7 @@ defmodule LiveViewNative.TagEngine do
   # specially handled, so we keep them as strings shape.
   defp safe_unless_special("aria"), do: :aria
   defp safe_unless_special("class"), do: :class
+  defp safe_unless_special("style"), do: :style
   defp safe_unless_special(name), do: {:safe, name}
 
   @doc false

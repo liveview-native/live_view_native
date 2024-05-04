@@ -24,6 +24,9 @@ defmodule LiveViewNative.Template do
   defp build_attrs([{:class, v} | t]),
     do: [" class=\"", class_value(v), ?" | build_attrs(t)]
 
+  defp build_attrs([{:style, v} | t]),
+    do: [" style=\"", style_value(v), ?" | build_attrs(t)]
+
   defp build_attrs([{:aria, v} | t]) when is_list(v),
     do: nested_attrs(v, " aria", t)
 
@@ -35,6 +38,9 @@ defmodule LiveViewNative.Template do
 
   defp build_attrs([{"class", v} | t]),
     do: [" class=\"", class_value(v), ?" | build_attrs(t)]
+
+  defp build_attrs([{"style", v} | t]),
+    do: [" style=\"", style_value(v), ?" | build_attrs(t)]
 
   defp build_attrs([{"aria", v} | t]) when is_list(v),
     do: nested_attrs(v, " aria", t)
@@ -76,14 +82,32 @@ defmodule LiveViewNative.Template do
   end
 
   defp list_class_value(value) do
+    list_value(value, " ")
+  end
+
+  def style_value(value) when is_list(value) do
+    value
+    |> list_style_value()
+    |> attr_escape()
+  end
+
+  def style_value(value) do
+    attr_escape(value)
+  end
+
+  defp list_style_value(value) do
+    list_value(value, ";")
+  end
+
+  def list_value(value, joiner) do
     value
     |> Enum.flat_map(fn
       nil -> []
       false -> []
-      inner when is_list(inner) -> [list_class_value(inner)]
+      inner when is_list(inner) -> [list_value(inner, joiner)]
       other -> [other]
     end)
-    |> Enum.join(" ")
+    |> Enum.join(joiner)
   end
 
   defp key_escape(value) when is_atom(value), do: String.replace(Atom.to_string(value), "_", "-")
