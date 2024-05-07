@@ -79,12 +79,19 @@ defmodule LiveViewNative.TemplateTest do
     end
 
     test "json encode maps" do
-      assigns = %{}
+      assigns = %{
+        data: %{"a" => %{"b" => 1}, "c" => [1, 2]}
+      }
 
-      assert ~LVN"""
-      <Foo data={%{a: 1}} b="asf" c={123} />
-      """
-      |> render() =~ ~S(<Foo data="{\"a\":1}" b="asf" c="123"></Foo>)
+      doc =
+        ~LVN"""
+        <Foo data={@data} d="asf" e={123} />
+        """
+        |> render()
+        |> Floki.parse_document!()
+
+      [json_data] = Floki.attribute(doc, "data")
+      assert assigns.data == Jason.decode!(json_data)
     end
 
     test "json encode list" do
