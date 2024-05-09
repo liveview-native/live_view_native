@@ -13,19 +13,7 @@ defimpl LiveViewNative.Template.Safe, for: [List, Map] do
   def to_iodata(data) do
     data
     |> Jason.encode!()
-    |> escape()
-  end
-
-  defp escape(<<?"::utf8, rest::bits>>) do
-    [~S(\") | escape(rest)]
-  end
-
-  defp escape(<<char::utf8, rest::bits>>) do
-    [char | escape(rest)]
-  end
-
-  defp escape(<<>>) do
-    []
+    |> Phoenix.HTML.Engine.html_escape()
   end
 end
 
