@@ -146,6 +146,10 @@ defmodule <%= inspect context.native_module %> do
       _ -> nil
     end
 
+    live_form_quoted = quote do
+      import LiveViewNative.LiveForm.Components
+    end
+
     core_component_module = Module.concat([<%= inspect context.web_module %>, CoreComponents, plugin.module_suffix])
 
     core_component_quoted = try do
@@ -159,10 +163,26 @@ defmodule <%= inspect context.native_module %> do
     end<% end %>
 
     <%= case {@gettext, @live_form?} do %>
-      <% {true, true} -> %>[gettext_quoted, plugin_component_quoted, core_component_quoted, verified_routes()]
-      <% {false, true} -> %>[plugin_component_quoted, core_component_quoted, verified_routes()]
-      <% {true, false} -> %>[gettext_quoted, verified_routes()]
-      <% {false, false} -> %>[verified_routes()]
+      <% {true, true} -> %>[
+        gettext_quoted,
+        plugin_component_quoted,
+        live_form_quoted,
+        core_component_quoted,
+        verified_routes()
+      ]
+      <% {false, true} -> %>[
+        plugin_component_quoted,
+        live_form_quoted,
+        core_component_quoted,
+        verified_routes()
+      ]
+      <% {true, false} -> %>[
+        gettext_quoted,
+        verified_routes()
+      ]
+      <% {false, false} -> %>[
+        verified_routes()
+      ]
     <% end %>
   end
 
