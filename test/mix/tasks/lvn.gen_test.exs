@@ -17,6 +17,19 @@ defmodule Mix.Tasks.Lvn.GenTest do
         assert_file "lib/live_view_native_native.ex", fn file ->
           assert file =~ "LiveViewNativeNative"
         end
+        # assert_file "config/config.exs", fn file ->
+        #   assert file =~ """
+        #     config :phoenix_template, :format_encoders, gameboy: Phoenix.HTML.Engine
+        #     """
+
+        #   assert file =~ """
+        #     config :phoenix, :template_engines, neext: LiveViewNative.Engine
+        #     """
+
+        #   assert file =~ """
+        #       "text/gameboy" => ["gameboy"]
+        #     """
+        # end
       end
     end
 

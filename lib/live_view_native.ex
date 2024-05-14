@@ -102,6 +102,8 @@ defmodule LiveViewNative do
         module_suffix: config[:module_suffix],
         template_engine: config[:template_engine],
         stylesheet_rules_parser: config[:stylesheet_rules_parser]
+
+      def __lvn_client__, do: true
     end
   end
 

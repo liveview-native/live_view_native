@@ -68,9 +68,7 @@ defmodule Mix.Tasks.Lvn.Gen do
   end
 
   defp print_config(context) do
-    plugins =
-      LiveViewNative.plugins()
-      |> Map.values()
+    plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
     plugins? = length(plugins) > 0
 
@@ -135,9 +133,7 @@ defmodule Mix.Tasks.Lvn.Gen do
   end
 
   defp print_router(context) do
-    plugins =
-      LiveViewNative.plugins()
-      |> Map.values()
+    plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
     plugins? = length(plugins) > 0
 
@@ -226,9 +222,7 @@ defmodule Mix.Tasks.Lvn.Gen do
   end
 
   defp copy_new_files(%Context{} = context, files) do
-    plugins =
-      LiveViewNative.plugins()
-      |> Map.values()
+    plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
     plugins? = length(plugins) > 0
 
