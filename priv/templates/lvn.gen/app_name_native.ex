@@ -147,7 +147,7 @@ defmodule <%= inspect context.native_module %> do
     end
 
     live_form_quoted = quote do
-      import LiveViewNative.LiveForm.Components
+      import LiveViewNative.LiveForm.Component
     end
 
     core_component_module = Module.concat([<%= inspect context.web_module %>, CoreComponents, plugin.module_suffix])
