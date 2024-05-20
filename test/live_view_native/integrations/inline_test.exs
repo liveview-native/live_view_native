@@ -2,8 +2,8 @@ defmodule LiveViewNative.InlineRenderTest do
   use ExUnit.Case, async: false
 
   import Phoenix.ConnTest
-  import Plug.Conn, only: [put_req_header: 3]
   import Phoenix.LiveViewTest
+  import LiveViewNativeTest
 
   @endpoint LiveViewNativeTest.Endpoint
 
@@ -18,29 +18,25 @@ defmodule LiveViewNative.InlineRenderTest do
   end
 
   test "can render the gameboy format", %{conn: conn} do
-    conn = put_req_header(conn, "accept", "text/gameboy")
-    {:ok, lv, _body} = live(conn, "/inline")
+    {:ok, lv, _body} = native(conn, "/inline", :gameboy)
 
     assert lv |> element("gameboy") |> render() =~ "Inline GameBoy Render 100"
   end
 
   test "can render the gameboy format with tv target", %{conn: conn} do
-    conn = put_req_header(conn, "accept", "text/gameboy")
-    {:ok, lv, _body} = live(conn, "/inline?_interface[target]=tv")
+    {:ok, lv, _body} = native(conn, "/inline", :gameboy, %{"target" => "tv"})
 
     assert lv |> element("gameboytv") |> render() =~ "TV Target Inline GameBoy Render 100"
   end
 
   test "can render the switch format", %{conn: conn} do
-    conn = put_req_header(conn, "accept", "text/switch")
-    {:ok, lv, _body} = live(conn, "/inline")
+    {:ok, lv, _body} = native(conn, "/inline", :switch)
 
     assert lv |> element("switch") |> render() =~ "Inline Switch Render 100"
   end
 
   test "can render the switch format with tv target", %{conn: conn} do
-    conn = put_req_header(conn, "accept", "text/switch")
-    {:ok, lv, _body} = live(conn, "/inline?_interface[target]=tv")
+    {:ok, lv, _body} = native(conn, "/inline", :switch, %{"target" => "tv"})
 
     assert lv |> element("switchtv") |> render() =~ "TV Target Inline Switch Render 100"
   end
