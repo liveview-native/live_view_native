@@ -2,8 +2,8 @@ defmodule LiveViewNative.TemplateRenderTest do
   use ExUnit.Case, async: false
 
   import Phoenix.ConnTest
-  import Plug.Conn, only: [put_req_header: 3]
   import Phoenix.LiveViewTest
+  import LiveViewNativeTest
 
   @endpoint LiveViewNativeTest.Endpoint
 
@@ -18,29 +18,25 @@ defmodule LiveViewNative.TemplateRenderTest do
   end
 
   test "can render the gameboy format", %{conn: conn} do
-    conn = put_req_header(conn, "accept", "text/gameboy")
-    {:ok, lv, _html} = live(conn, "/template")
+    {:ok, lv, _html} = native(conn, "/template", :gameboy)
 
     assert lv |> element("gameboy") |> render() =~ "Template GameBoy Render 200"
   end
 
   test "can render the gameboy format with tv target", %{conn: conn} do
-    conn = put_req_header(conn, "accept", "text/gameboy")
-    {:ok, lv, _html} = live(conn, "/template?_interface[target]=tv")
+    {:ok, lv, _html} = native(conn, "/template", :gameboy, %{"target" => "tv"})
 
     assert lv |> element("gameboytv") |> render() =~ "TV Target Template GameBoy Render 200"
   end
 
   test "can render the switch format", %{conn: conn} do
-    conn = put_req_header(conn, "accept", "text/switch")
-    {:ok, lv, _html} = live(conn, "/template")
+    {:ok, lv, _html} = native(conn, "/template", :switch)
 
     assert lv |> element("switch") |> render() =~ "Template Switch Render 200"
   end
 
   test "can render the switch format with tv target", %{conn: conn} do
-    conn = put_req_header(conn, "accept", "text/switch")
-    {:ok, lv, _html} = live(conn, "/template?_interface[target]=tv")
+    {:ok, lv, _html} = native(conn, "/template", :switch, %{"target" => "tv"})
 
     assert lv |> element("switchtv") |> render() =~ "TV Target Template Switch Render 200"
   end

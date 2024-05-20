@@ -1,21 +1,14 @@
 defmodule LiveViewNative.Utils do
   @moduledoc false
-  alias Phoenix.LiveView.Socket
 
-  def get_format(%Socket{private: %{connect_info: %{private: %{phoenix_format: format}}}}),
+  def get_format(%{:_format => format}),
     do: format
-  def get_format(%Socket{private: %{connect_params: %{"_format" => format}}}),
-    do: format
-  def get_format(_socket),
+  def get_format(_assigns),
     do: "html"
 
-  def get_interface(%{socket: %Socket{private: %{connect_params: %{"_interface" => interface}}}}),
+  def get_interface(%{:_interface => interface}),
     do: interface
-  def get_interface(%{conn: %Plug.Conn{params: %{"_interface" => interface}}}),
-    do: interface
-  def get_interface(%{socket: %Socket{private: %{connect_info: %Plug.Conn{params: %{"_interface" => interface}}}}}),
-    do: interface
-  def get_interface(_assigns),
+  def get_interface(_session),
     do: %{}
 
   def stringify_format(format) when is_binary(format), do: format

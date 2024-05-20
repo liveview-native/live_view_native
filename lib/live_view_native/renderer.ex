@@ -4,6 +4,7 @@ defmodule LiveViewNative.Renderer do
   """
 
   import LiveViewNative.Utils, only: [
+    get_interface: 1,
     stringify_format: 1
   ]
 
@@ -63,7 +64,7 @@ defmodule LiveViewNative.Renderer do
       quote do
         @doc false
         def unquote(name)(var!(assigns)) do
-          interface = LiveViewNative.Utils.get_interface(var!(assigns))
+          interface = get_interface(var!(assigns))
           apply(__MODULE__, unquote(name), [var!(assigns), interface])
         end
       end
