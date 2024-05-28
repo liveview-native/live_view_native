@@ -9,10 +9,10 @@ defmodule LiveViewNative.Component do
   * format specific layouts
 
   LiveView Native Components differ from Phoenix Components in that they make
-  user of a two-argument function instead of a single argument function. For example,
+  use of a two-argument function instead of a single argument function. For example,
   with a Phoenix Component that has a template named `foo_bar.html.heex` it would define
   `foo_bar/1` as the rendering function for that template when embeded. LiveView Native Components
-  would definee `foo_bar/2` for `foo_bar.swiftui.neex` with the 1st argument still being `assings` and
+  would definee `foo_bar/2` for `foo_bar.swiftui.neex` with the 1st argument still being `assigns` and
   the 2nd argument being `interface` map with information about the native client that is connecting.
 
   For more information on template embedding see `LiveViewNative.Renderer.embed_templates/2`
@@ -209,7 +209,7 @@ defmodule LiveViewNative.Component do
 
   One common misconception is that LiveView Native templates are just HTML or XML. This is not true.
   Both HTML and XML have specifications that at times conflict with the needs of how LiveView Native client
-  UI frameworks should be represented. Think of LiveView Native templates as a composable markup who's specificatin
+  UI frameworks should be represented. Think of LiveView Native templates as a composable markup whose specification
   is currently under development. As we continue to expand the LiveView Native ecosystem this list will likely grow:
 
   * casing - `~LVN` does not enforce downcasing of tag names so `<Text>` is a valid tag name
