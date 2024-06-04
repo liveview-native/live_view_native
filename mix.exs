@@ -41,6 +41,7 @@ defmodule LiveViewNative.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
+      {:sourceror, "== 1.2.1"},
       {:live_view_native_test, github: "liveview-native/live_view_native_test", branch: "main", only: :test}
     ]
   end
