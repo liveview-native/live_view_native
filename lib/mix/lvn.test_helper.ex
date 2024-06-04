@@ -38,7 +38,7 @@ defmodule Mix.Lvn.TestHelper do
 
         File.write!(".formatter.exs", """
         [
-          import_deps: [:phoenix, :ecto, :ecto_sql],
+          import_deps: [:phoenix],
           inputs: ["*.exs"]
         ]
         """)

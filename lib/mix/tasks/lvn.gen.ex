@@ -2,6 +2,8 @@ defmodule Mix.Tasks.Lvn.Gen do
   use Mix.Task
 
   alias Mix.LiveViewNative.Context
+  alias Sourceror.Zipper
+
   import Mix.LiveViewNative.Context, only: [
     compile_string: 1,
     last?: 2
@@ -40,11 +42,355 @@ defmodule Mix.Tasks.Lvn.Gen do
       Context.prompt_for_conflicts(files)
 
       copy_new_files(context, files)
+      setup(context)
     end
 
     if Keyword.get(context.opts, :info, true) do
-      print_shell_instructions(context)
+      # print_shell_instructions(context)
     end
+  end
+
+  @doc false
+  def setup(context) do
+    config =
+      File.read!("config/config.exs")
+
+    dev =
+      File.read!("config/dev.exs")
+
+    context
+    |> patch_config(config)
+    |> patch_dev(dev)
+  end
+
+  @doc false
+  def patch_config(context, config) do
+    {context, config}
+    |> build_plugins()
+    # |> build_mime_types()
+    # |> build_format_encoders()
+    # |> build_template_engines()
+    # |> write_file("config/config.exs", config)
+  end
+
+  def build_plugins({context, config}) do
+    plugins = Mix.LiveViewNative.plugins() |> Map.values()
+
+    patches = """
+      config :live_view_native, :plugins, [<%= for plugin <- plugins do %>
+        <%= inspect plugin.__struct__ %><%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+      ]
+      """
+      |> compile_string()
+      |> Sourceror.parse_string!()
+      |> generate_patches(Sourceror.parse_string!(config))
+
+    config = Sourceror.patch_string(config, patches)
+
+    {context, config}
+  end
+
+  defp generate_patches_for({:config, _meta, _args} = config, source_zip),
+    do: generate_patches_for({:__block__, [], [config]}, source_zip)
+
+  defp generate_patches_for({:__block__, _meta, blocks}, source) do
+    Enum.reduce(blocks, {source, []}, &block_handler/2)
+  end
+
+  defp block_handler({:config, _meta, args} = quoted, {source, patches}) do
+    range = Sourceror.get_range(quoted)
+
+    kv = case args do
+      [root_key, key, _opts] -> [root_key, key]
+      [root_key, _opts] -> [root_key]
+    end
+
+    source
+    |> Zipper.zip()
+    # |> Zipper.find(&(match?({:config, _meta, }))
+  end
+
+  defp block_handler({:config, _meta, [root_key, opts]} = quoted, {source, patches}) do
+      range = Sourceror.get_range(quoted)
+  end
+
+  defp merge_opts(source, change) when is_list(source) and is_list(change) do
+
+  end
+
+  defp merge_opts(source, change) when is_map(source) and is_map(change) do
+
+  end
+
+  @doc false
+  def patch_plugins({context, config}) do
+    plugins = Mix.LiveViewNative.plugins() |> Map.values()
+
+    config =
+      config
+      |> Sourceror.parse_string!()
+      |> Zipper.zip()
+      |> Zipper.find(&match?({:config, _, [{:__block__, _, [:live_view_native]} | _]}, &1))
+      |> case do
+        nil ->
+          %{start: [line: line, column: column], end: _} =
+            config
+            |> Sourceror.parse_string!()
+            |> Zipper.zip()
+            |> Zipper.find(&match?({:import_config, _, _}, &1))
+            |> Zipper.node()
+            |> Sourceror.get_range()
+
+          range = %{
+            start: [line: line, column: column],
+            end: [line: line, column: column]
+          }
+
+          change = """
+          config :live_view_native, plugins: [<%= for plugin <- plugins do %>
+            <%= inspect plugin.__struct__ %><%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+          ]
+          """
+          |> compile_string()
+
+          Sourceror.patch_string(config, [%{range: range, change: change}])
+
+        zipper ->
+          {_plugins_key, quoted_plugins_list} =
+            zipper
+            |> Zipper.subtree()
+            |> Zipper.find(&match?({{:__block__, _, [:plugins]}, {:__block__, _, plugins_list}} when is_list(plugins_list), &1))
+            |> Zipper.node()
+
+          range = Sourceror.get_range(quoted_plugins_list)
+
+          {existing_plugins, _} = Code.eval_quoted(quoted_plugins_list)
+          plugins = Enum.map(plugins, &(&1.__struct__))
+
+          plugins_list =
+            (existing_plugins ++ plugins)
+            |> Enum.uniq()
+            |> Enum.sort()
+
+          change = """
+            [<%= for plugin <- plugins_list do %>
+              <%= inspect plugin %><%= unless last?.(plugins_list, plugin) do %>,<% end %><% end %>
+            ]
+            """
+            |> String.trim_trailing()
+            |> EEx.eval_string(plugins_list: plugins_list, last?: &last?/2)
+
+          Sourceror.patch_string(config, [%{range: range, change: change, preserve_indentation: false}])
+      end
+
+    {context, config}
+  end
+
+  @doc false
+  def patch_mime_types({context, config}) do
+    plugins = Mix.LiveViewNative.plugins() |> Map.values()
+
+    config =
+      config
+      |> Sourceror.parse_string!()
+      |> Zipper.zip()
+      |> Zipper.find(&match?({:config, _, [{:__block__, _, [:mime]}, {:__block__, _, [:types]} | _]}, &1))
+      |> case do
+        nil ->
+          %{start: [line: line, column: column], end: _} =
+            config
+            |> Sourceror.parse_string!()
+            |> Zipper.zip()
+            |> Zipper.find(&match?({:import_config, _, _}, &1))
+            |> Zipper.node()
+            |> Sourceror.get_range()
+
+          range = %{
+            start: [line: line, column: column],
+            end: [line: line, column: column]
+          }
+
+          change = """
+          config :mime, :types, %{<%= for plugin <- plugins do %>
+            "text/<%= plugin.format %>" => ["<%= plugin.format %>"]<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+          }
+
+          """
+          |> compile_string()
+
+          Sourceror.patch_string(config, [%{range: range, change: change}])
+
+        zipper ->
+          quoted_map =
+            zipper
+            |> Zipper.subtree()
+            |> Zipper.find(&match?({:%{}, _, _}, &1))
+            |> Zipper.node()
+
+          range = Sourceror.get_range(quoted_map)
+
+          types =
+            quoted_map
+            |> Code.eval_quoted()
+            |> elem(0)
+            |> Map.values()
+            |> Kernel.++(Enum.map(plugins, &(Atom.to_string(&1.format))))
+            |> List.flatten()
+            |> Enum.uniq()
+            |> Enum.sort()
+
+          change = """
+            %{<%= for type <- types do %>
+              "text/<%= type %>" => ["<%= type %>"]<%= unless last?.(types, type) do %>,<% end %><% end %>
+            }
+            """
+            |> String.trim_trailing()
+            |> EEx.eval_string(types: types, last?: &last?/2)
+
+          Sourceror.patch_string(config, [%{range: range, change: change, preserve_indentation: false}])
+      end
+
+    {context, config}
+  end
+
+  @doc false
+  def patch_format_encoders({context, config}) do
+    plugins = Mix.LiveViewNative.plugins() |> Map.values()
+
+    config =
+      config
+      |> Sourceror.parse_string!()
+      |> Zipper.zip()
+      |> Zipper.find(&match?({:config, _, [{:__block__, _, [:phoenix_template]}, {:__block__, _, [:format_encoders]} | _]}, &1))
+      |> case do
+        nil ->
+          %{start: [line: line, column: column], end: _} =
+            config
+            |> Sourceror.parse_string!()
+            |> Zipper.zip()
+            |> Zipper.find(&match?({:import_config, _, _}, &1))
+            |> Zipper.node()
+            |> Sourceror.get_range()
+
+          range = %{
+            start: [line: line, column: column],
+            end: [line: line, column: column]
+          }
+
+          change = """
+          config :phoenix_template, format_encoders: [<%= for plugin <- plugins do %>
+            <%= plugin.format %>: Phoenix.HTML.Engine<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+          ]
+
+          """
+          |> compile_string()
+
+          Sourceror.patch_string(config, [%{range: range, change: change}])
+
+        zipper ->
+          quoted =
+            zipper
+            |> Zipper.subtree()
+            |> Zipper.find(&match?({:__block__, _, [encoders_list]} when is_list(encoders_list), &1))
+            |> Zipper.node()
+
+          range = Sourceror.get_range(quoted)
+
+          encoders =
+            quoted
+            |> Code.eval_quoted()
+            |> elem(0)
+            |> Kernel.++(Enum.map(plugins, (&({&1.format, Phoenix.HTML.Engine}))))
+            |> Enum.uniq()
+            |> Enum.sort()
+
+          change = """
+            [<%= for {format, engine} = encoder <- encoders do %>
+              <%= format %>: <%= inspect engine %><%= unless last?.(encoders, encoder) do %>,<% end %><% end %>
+            ]
+            """
+            |> String.trim_trailing()
+            |> EEx.eval_string(encoders: encoders, last?: &last?/2)
+
+          Sourceror.patch_string(config, [%{range: range, change: change, preserve_indentation: false}])
+      end
+
+    {context, config}
+  end
+
+  @doc false
+  def patch_template_engines({context, config}) do
+
+
+    config =
+      config
+      |> Sourceror.parse_string!()
+      |> Zipper.zip()
+      |> Zipper.find(&match?({:config, _, [{:__block__, _, [:phoenix]}, {:__block__, _, [:template_engines]} | _]}, &1))
+      |> case do
+        nil ->
+          %{start: [line: line, column: column], end: _} =
+            config
+            |> Sourceror.parse_string!()
+            |> Zipper.zip()
+            |> Zipper.find(&match?({:import_config, _, _}, &1))
+            |> Zipper.node()
+            |> Sourceror.get_range()
+
+          range = %{
+            start: [line: line, column: column],
+            end: [line: line, column: column]
+          }
+
+          change = """
+          config :phoenix, :template_engines,
+            neex: LiveViewNative.Engine
+
+          """
+          |> compile_string()
+
+          Sourceror.patch_string(config, [%{range: range, change: change}])
+
+        zipper ->
+          quoted =
+            zipper
+            |> Zipper.subtree()
+            |> Zipper.find(&match?({:__block__, _, [engines_list]} when is_list(engines_list), &1))
+            |> Zipper.node()
+
+          range = Sourceror.get_range(quoted)
+
+          template_engines =
+            quoted
+            |> Code.eval_quoted()
+            |> elem(0)
+            |> Kernel.++([neex: LiveViewNative.Engine])
+            |> Enum.uniq()
+            |> Enum.sort()
+
+          change = """
+            [<%= for {format, engine} = template_engine <- template_engines do %>
+              <%= format %>: <%= inspect engine %><%= unless last?.(template_engines, template_engine) do %>,<% end %><% end %>
+            ]
+            """
+            |> String.trim_trailing()
+            |> EEx.eval_string(template_engines: template_engines, last?: &last?/2)
+
+          Sourceror.patch_string(config, [%{range: range, change: change, preserve_indentation: false}])
+
+      end
+
+    {context, config}
+  end
+
+  defp write_file({context, config}, path, original) do
+
+    File.write!(path, config)
+  end
+
+  def patch_dev(context, dev) do
+
+    context
   end
 
   defp print_shell_instructions(context) do
@@ -122,7 +468,11 @@ defmodule Mix.Tasks.Lvn.Gen do
         patterns: [
           ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
           ~r"priv/gettext/.*(po)$",
-          ~r"lib/anotherone_web/(controllers|live|components)/.*(ex|heex\e[32;1m|neex\e[0m)$"
+          ~r"lib/anotherone_web/(controllers|live|components)/.*(ex|heex\e[32;1m|neex\e[0m)$",
+
+          ~r"lib/anotherone_web/(live|components)/.*(ex|neex)$",
+          ~r"priv/static/assets/*.styles$",
+          ~r"lib/anotherone_web/(styles)/.*ex$"
         ]
       ]
     """
