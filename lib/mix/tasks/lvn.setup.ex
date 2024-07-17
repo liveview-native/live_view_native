@@ -61,7 +61,7 @@ defmodule Mix.Tasks.Lvn.Setup do
 
     if stylesheet_opt? && !stylesheet_app? do
       Mix.shell().info("""
-      `live_view_native_styelsheet` is not included as a dependency. Please add it and re-run
+      `live_view_native_stylesheet` is not included as a dependency. Please add it and re-run
       this setup task. If you do not wish to use `live_view_native_stylesheet` run this task as
       `mix lvn.setup --no-stylesheet`
       """)
