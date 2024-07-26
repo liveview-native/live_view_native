@@ -1,12 +1,16 @@
 defmodule Mix.Tasks.Lvn.Gen do
   use Mix.Task
 
-  alias Mix.LiveViewNative.Context
+  alias Mix.LiveViewNative.{CodeGen, Context}
   alias Sourceror.Zipper
 
   import Mix.LiveViewNative.Context, only: [
     compile_string: 1,
     last?: 2
+  ]
+
+  import Mix.LiveViewNative.CodeGen, only: [
+    build_patch: 2
   ]
 
   @shortdoc "Generates the Native module and prints configuration instructions"
@@ -44,499 +48,467 @@ defmodule Mix.Tasks.Lvn.Gen do
       copy_new_files(context, files)
       setup(context)
     end
-
-    if Keyword.get(context.opts, :info, true) do
-      # print_shell_instructions(context)
-    end
   end
 
   @doc false
   def setup(context) do
-    config =
-      File.read!("config/config.exs")
-
-    dev =
-      File.read!("config/dev.exs")
-
     context
-    |> patch_config(config)
-    |> patch_dev(dev)
+    |> patch_config()
+    |> patch_dev()
+    |> patch_endpoint()
+    |> patch_router()
   end
 
   @doc false
-  def patch_config(context, config) do
-    {context, config}
-    |> build_plugins()
-    # |> build_mime_types()
-    # |> build_format_encoders()
-    # |> build_template_engines()
-    # |> write_file("config/config.exs", config)
-  end
-
-  def build_plugins({context, config}) do
-    plugins = Mix.LiveViewNative.plugins() |> Map.values()
-
-    patches = """
-      config :live_view_native, :plugins, [<%= for plugin <- plugins do %>
-        <%= inspect plugin.__struct__ %><%= unless last?(plugins, plugin) do %>,<% end %><% end %>
-      ]
-      """
-      |> compile_string()
-      |> Sourceror.parse_string!()
-      |> generate_patches(Sourceror.parse_string!(config))
-
-    config = Sourceror.patch_string(config, patches)
+  def patch_config(context) do
+    original = config = File.read!("config/config.exs")
 
     {context, config}
-  end
+    |> patch_plugins()
+    |> patch_mime_types()
+    |> patch_format_encoders()
+    |> patch_template_engines()
+    |> write_file("config/config.exs", original)
 
-  defp generate_patches_for({:config, _meta, _args} = config, source_zip),
-    do: generate_patches_for({:__block__, [], [config]}, source_zip)
-
-  defp generate_patches_for({:__block__, _meta, blocks}, source) do
-    Enum.reduce(blocks, {source, []}, &block_handler/2)
-  end
-
-  defp block_handler({:config, _meta, args} = quoted, {source, patches}) do
-    range = Sourceror.get_range(quoted)
-
-    kv = case args do
-      [root_key, key, _opts] -> [root_key, key]
-      [root_key, _opts] -> [root_key]
-    end
-
-    source
-    |> Zipper.zip()
-    # |> Zipper.find(&(match?({:config, _meta, }))
-  end
-
-  defp block_handler({:config, _meta, [root_key, opts]} = quoted, {source, patches}) do
-      range = Sourceror.get_range(quoted)
-  end
-
-  defp merge_opts(source, change) when is_list(source) and is_list(change) do
-
-  end
-
-  defp merge_opts(source, change) when is_map(source) and is_map(change) do
-
+    context
   end
 
   @doc false
   def patch_plugins({context, config}) do
     plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
-    config =
-      config
-      |> Sourceror.parse_string!()
-      |> Zipper.zip()
-      |> Zipper.find(&match?({:config, _, [{:__block__, _, [:live_view_native]} | _]}, &1))
-      |> case do
-        nil ->
-          %{start: [line: line, column: column], end: _} =
-            config
-            |> Sourceror.parse_string!()
-            |> Zipper.zip()
-            |> Zipper.find(&match?({:import_config, _, _}, &1))
-            |> Zipper.node()
-            |> Sourceror.get_range()
+    change = """
+    config :live_view_native, plugins: [<%= for plugin <- plugins do %>
+      <%= inspect plugin.__struct__ %><%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+    ]
+    """
+    |> compile_string()
 
-          range = %{
-            start: [line: line, column: column],
-            end: [line: line, column: column]
-          }
+    matcher = &(match?({:import_config, _, _}, &1))
 
-          change = """
-          config :live_view_native, plugins: [<%= for plugin <- plugins do %>
-            <%= inspect plugin.__struct__ %><%= unless last?(plugins, plugin) do %>,<% end %><% end %>
-          ]
-          """
-          |> compile_string()
+    fail_msg = """
+    failed to merge or inject the following in code into config/config.exs
 
-          Sourceror.patch_string(config, [%{range: range, change: change}])
+    #{change}
 
-        zipper ->
-          {_plugins_key, quoted_plugins_list} =
-            zipper
-            |> Zipper.subtree()
-            |> Zipper.find(&match?({{:__block__, _, [:plugins]}, {:__block__, _, plugins_list}} when is_list(plugins_list), &1))
-            |> Zipper.node()
+    you can do this manually or inspect config/config.exs for errors and try again
+    """
 
-          range = Sourceror.get_range(quoted_plugins_list)
-
-          {existing_plugins, _} = Code.eval_quoted(quoted_plugins_list)
-          plugins = Enum.map(plugins, &(&1.__struct__))
-
-          plugins_list =
-            (existing_plugins ++ plugins)
-            |> Enum.uniq()
-            |> Enum.sort()
-
-          change = """
-            [<%= for plugin <- plugins_list do %>
-              <%= inspect plugin %><%= unless last?.(plugins_list, plugin) do %>,<% end %><% end %>
-            ]
-            """
-            |> String.trim_trailing()
-            |> EEx.eval_string(plugins_list: plugins_list, last?: &last?/2)
-
-          Sourceror.patch_string(config, [%{range: range, change: change, preserve_indentation: false}])
-      end
+    config = CodeGen.patch(config, change, merge: &merge_plugins/2, inject: {:before, matcher}, fail_msg: fail_msg)
 
     {context, config}
+  end
+
+  defp merge_plugins(source, change) do
+    quoted_change = Sourceror.parse_string!(change)
+
+    source
+    |> Sourceror.parse_string!()
+    |> Zipper.zip()
+    |> Zipper.find(&match?({:config, _, [{:__block__, _, [:live_view_native]} | _]}, &1))
+    |> case do
+      nil -> :error
+      found ->
+        Zipper.find(found, &match?({{:__block__, _, [:plugins]}, _}, &1))
+        |> case do
+          nil -> :error
+          %{node: {{:__block__, _, [:plugins]}, quoted_source_block}} ->
+            {:config, _, [_, [{_, quoted_change_block}]]} = quoted_change
+            range = Sourceror.get_range(quoted_source_block)
+            source_list = Code.eval_quoted(quoted_source_block) |> elem(0)
+            change_list = Code.eval_quoted(quoted_change_block) |> elem(0)
+
+            plugins_list = (source_list ++ change_list) |> Enum.uniq() |> Enum.sort()
+
+            change = """
+              [<%= for plugin <- plugins_list do %>
+                <%= inspect plugin %><%= unless last?(plugins_list, plugin) do %>,<% end %><% end %>
+              ]
+              """
+              |> compile_string()
+              |> String.trim()
+
+            [build_patch(range, change)]
+        end
+    end
   end
 
   @doc false
   def patch_mime_types({context, config}) do
     plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
-    config =
-      config
-      |> Sourceror.parse_string!()
-      |> Zipper.zip()
-      |> Zipper.find(&match?({:config, _, [{:__block__, _, [:mime]}, {:__block__, _, [:types]} | _]}, &1))
-      |> case do
-        nil ->
-          %{start: [line: line, column: column], end: _} =
-            config
-            |> Sourceror.parse_string!()
-            |> Zipper.zip()
-            |> Zipper.find(&match?({:import_config, _, _}, &1))
-            |> Zipper.node()
-            |> Sourceror.get_range()
+    change = """
+    config :mime, :types, %{<%= for plugin <- plugins do %>
+      "text/<%= plugin.format %>" => ["<%= plugin.format %>"]<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+    }
+    """
+    |> compile_string()
 
-          range = %{
-            start: [line: line, column: column],
-            end: [line: line, column: column]
-          }
+    matcher = &(match?({:import_config, _, _}, &1))
 
-          change = """
-          config :mime, :types, %{<%= for plugin <- plugins do %>
-            "text/<%= plugin.format %>" => ["<%= plugin.format %>"]<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
-          }
+    fail_msg = """
+    failed to merge or inject the following in code into config/config.exs
 
-          """
-          |> compile_string()
+    #{change}
 
-          Sourceror.patch_string(config, [%{range: range, change: change}])
+    you can do this manually or inspect config/config.exs for errors and try again
+    """
 
-        zipper ->
-          quoted_map =
-            zipper
-            |> Zipper.subtree()
-            |> Zipper.find(&match?({:%{}, _, _}, &1))
-            |> Zipper.node()
-
-          range = Sourceror.get_range(quoted_map)
-
-          types =
-            quoted_map
-            |> Code.eval_quoted()
-            |> elem(0)
-            |> Map.values()
-            |> Kernel.++(Enum.map(plugins, &(Atom.to_string(&1.format))))
-            |> List.flatten()
-            |> Enum.uniq()
-            |> Enum.sort()
-
-          change = """
-            %{<%= for type <- types do %>
-              "text/<%= type %>" => ["<%= type %>"]<%= unless last?.(types, type) do %>,<% end %><% end %>
-            }
-            """
-            |> String.trim_trailing()
-            |> EEx.eval_string(types: types, last?: &last?/2)
-
-          Sourceror.patch_string(config, [%{range: range, change: change, preserve_indentation: false}])
-      end
+    config = CodeGen.patch(config, change, merge: &merge_mime_types/2, inject: {:before, matcher}, fail_msg: fail_msg)
 
     {context, config}
+  end
+
+  defp merge_mime_types(source, change) do
+    quoted_change = Sourceror.parse_string!(change)
+
+    source
+    |> Sourceror.parse_string!()
+    |> Zipper.zip()
+    |> Zipper.find(&match?({:config, _, [{:__block__, _, [:mime]}, {:__block__, _, [:types]} | _]}, &1))
+    |> case do
+      nil -> :error
+      %{node: {:config, _, [_, _, quoted_source_map]}} ->
+        {:config, _, [_, _, quoted_change_map]} = quoted_change
+        range = Sourceror.get_range(quoted_source_map)
+        source_map = Code.eval_quoted(quoted_source_map) |> elem(0)
+        change_map = Code.eval_quoted(quoted_change_map) |> elem(0)
+
+        plugins_list = Map.merge(source_map, change_map) |> Map.to_list()
+
+        change = """
+          %{<%= for {mime_type, extension} = plugin <- plugins_list do %>
+            <%= inspect mime_type %> => <%= inspect extension %><%= unless last?(plugins_list, plugin) do %>,<% end %><% end %>
+          }
+          """
+          |> compile_string()
+          |> String.trim()
+
+        [build_patch(range, change)]
+    end
   end
 
   @doc false
   def patch_format_encoders({context, config}) do
     plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
-    config =
-      config
-      |> Sourceror.parse_string!()
-      |> Zipper.zip()
-      |> Zipper.find(&match?({:config, _, [{:__block__, _, [:phoenix_template]}, {:__block__, _, [:format_encoders]} | _]}, &1))
-      |> case do
-        nil ->
-          %{start: [line: line, column: column], end: _} =
-            config
-            |> Sourceror.parse_string!()
-            |> Zipper.zip()
-            |> Zipper.find(&match?({:import_config, _, _}, &1))
-            |> Zipper.node()
-            |> Sourceror.get_range()
+    change = """
+    config :phoenix_template, :format_encoders, [<%= for plugin <- plugins do %>
+      <%= plugin.format %>: Phoenix.HTML.Engine<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+    ]
+    """
+    |> compile_string()
 
-          range = %{
-            start: [line: line, column: column],
-            end: [line: line, column: column]
-          }
+    matcher = &(match?({:import_config, _, _}, &1))
 
-          change = """
-          config :phoenix_template, format_encoders: [<%= for plugin <- plugins do %>
-            <%= plugin.format %>: Phoenix.HTML.Engine<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
-          ]
+    fail_msg = """
+    failed to merge or inject the following in code into config/config.exs
 
-          """
-          |> compile_string()
+    #{change}
 
-          Sourceror.patch_string(config, [%{range: range, change: change}])
+    you can do this manually or inspect config/config.exs for errors and try again
+    """
 
-        zipper ->
-          quoted =
-            zipper
-            |> Zipper.subtree()
-            |> Zipper.find(&match?({:__block__, _, [encoders_list]} when is_list(encoders_list), &1))
-            |> Zipper.node()
-
-          range = Sourceror.get_range(quoted)
-
-          encoders =
-            quoted
-            |> Code.eval_quoted()
-            |> elem(0)
-            |> Kernel.++(Enum.map(plugins, (&({&1.format, Phoenix.HTML.Engine}))))
-            |> Enum.uniq()
-            |> Enum.sort()
-
-          change = """
-            [<%= for {format, engine} = encoder <- encoders do %>
-              <%= format %>: <%= inspect engine %><%= unless last?.(encoders, encoder) do %>,<% end %><% end %>
-            ]
-            """
-            |> String.trim_trailing()
-            |> EEx.eval_string(encoders: encoders, last?: &last?/2)
-
-          Sourceror.patch_string(config, [%{range: range, change: change, preserve_indentation: false}])
-      end
+    config = CodeGen.patch(config, change, merge: &merge_format_encoders/2, inject: {:before, matcher}, fail_msg: fail_msg)
 
     {context, config}
+  end
+
+  defp merge_format_encoders(source, change) do
+    quoted_change = Sourceror.parse_string!(change)
+
+    source
+    |> Sourceror.parse_string!()
+    |> Zipper.zip()
+    |> Zipper.find(&match?({:config, _, [{:__block__, _, [:phoenix_template]}, {:__block__, _, [:format_encoders]} | _]}, &1))
+    |> case do
+      nil -> :error
+      %{node: {:config, _, [_, _, quoted_source_list]}} ->
+        {:config, _, [_, _, quoted_change_list]} = quoted_change
+        range = Sourceror.get_range(quoted_source_list)
+        source_list = Code.eval_quoted(quoted_source_list) |> elem(0)
+        change_list = Code.eval_quoted(quoted_change_list) |> elem(0)
+
+        plugins_list =
+          (source_list ++ change_list)
+          |> Enum.uniq_by(fn({x, _}) -> x end)
+          |> Enum.sort_by(fn({x, _}) -> x end)
+
+        change = """
+          [<%= for {format, encoder} = plugin <- plugins_list do %>
+            <%= Atom.to_string(format) %>: <%= inspect encoder %><%= unless last?(plugins_list, plugin) do %>,<% end %><% end %>
+          ]
+          """
+          |> compile_string()
+          |> String.trim()
+
+        [build_patch(range, change)]
+    end
   end
 
   @doc false
   def patch_template_engines({context, config}) do
+    change = """
+    config :phoenix, :template_engines, [
+      neex: LiveViewNative.Engine
+    ]
+    """
+    |> compile_string()
 
+    matcher = &(match?({:import_config, _, _}, &1))
 
-    config =
-      config
-      |> Sourceror.parse_string!()
-      |> Zipper.zip()
-      |> Zipper.find(&match?({:config, _, [{:__block__, _, [:phoenix]}, {:__block__, _, [:template_engines]} | _]}, &1))
-      |> case do
-        nil ->
-          %{start: [line: line, column: column], end: _} =
-            config
-            |> Sourceror.parse_string!()
-            |> Zipper.zip()
-            |> Zipper.find(&match?({:import_config, _, _}, &1))
-            |> Zipper.node()
-            |> Sourceror.get_range()
+    fail_msg = """
+    failed to merge or inject the following in code into config/config.exs
 
-          range = %{
-            start: [line: line, column: column],
-            end: [line: line, column: column]
-          }
+    #{change}
 
-          change = """
-          config :phoenix, :template_engines,
-            neex: LiveViewNative.Engine
+    you can do this manually or inspect config/config.exs for errors and try again
+    """
 
-          """
-          |> compile_string()
-
-          Sourceror.patch_string(config, [%{range: range, change: change}])
-
-        zipper ->
-          quoted =
-            zipper
-            |> Zipper.subtree()
-            |> Zipper.find(&match?({:__block__, _, [engines_list]} when is_list(engines_list), &1))
-            |> Zipper.node()
-
-          range = Sourceror.get_range(quoted)
-
-          template_engines =
-            quoted
-            |> Code.eval_quoted()
-            |> elem(0)
-            |> Kernel.++([neex: LiveViewNative.Engine])
-            |> Enum.uniq()
-            |> Enum.sort()
-
-          change = """
-            [<%= for {format, engine} = template_engine <- template_engines do %>
-              <%= format %>: <%= inspect engine %><%= unless last?.(template_engines, template_engine) do %>,<% end %><% end %>
-            ]
-            """
-            |> String.trim_trailing()
-            |> EEx.eval_string(template_engines: template_engines, last?: &last?/2)
-
-          Sourceror.patch_string(config, [%{range: range, change: change, preserve_indentation: false}])
-
-      end
+    config = CodeGen.patch(config, change, merge: &merge_template_engines/2, inject: {:before, matcher}, fail_msg: fail_msg)
 
     {context, config}
   end
 
-  defp write_file({context, config}, path, original) do
+  defp merge_template_engines(source, change) do
+    quoted_change = Sourceror.parse_string!(change)
 
-    File.write!(path, config)
-  end
+    source
+    |> Sourceror.parse_string!()
+    |> Zipper.zip()
+    |> Zipper.find(&match?({:config, _, [{:__block__, _, [:phoenix]}, {:__block__, _, [:template_engines]} | _]}, &1))
+    |> case do
+      nil -> :error
+      %{node: {:config, _, [_, _, quoted_source_list]}} ->
+        {:config, _, [_, _, quoted_change_list]} = quoted_change
+        range = Sourceror.get_range(quoted_source_list)
+        source_list = Code.eval_quoted(quoted_source_list) |> elem(0)
+        change_list = Code.eval_quoted(quoted_change_list) |> elem(0)
 
-  def patch_dev(context, dev) do
+        plugins_list =
+          (source_list ++ change_list)
+          |> Enum.uniq_by(fn({x, _}) -> x end)
+          |> Enum.sort_by(fn({x, _}) -> x end)
 
-    context
-  end
+        change = """
+          [<%= for {extension, engine} = plugin <- plugins_list do %>
+            <%= Atom.to_string(extension) %>: <%= inspect engine %><%= unless last?(plugins_list, plugin) do %>,<% end %><% end %>
+          ]
+          """
+          |> compile_string()
+          |> String.trim()
 
-  defp print_shell_instructions(context) do
-    context
-    |> print_instructions()
-    |> print_config()
-    |> print_dev()
-    |> print_router()
-    |> print_endpoint()
-  end
-
-  defp print_instructions(context) do
-    """
-    The following are configurations that should be added to your application.
-
-    Follow each section as there are multiple files that require editing.
-    """
-    |> Mix.shell().info()
-
-    context
-  end
-
-  defp print_config(context) do
-    plugins = Mix.LiveViewNative.plugins() |> Map.values()
-
-    plugins? = length(plugins) > 0
-
-    """
-    \e[93;1m# config/config.exs\e[0m
-
-    # \e[91;1mLVN - Required\e[0m
-    # Registers each available plugin<%= unless plugins? do %>
-    \e[93;1m# Hint: if you add this config to your app populated with client plugins
-    # and run `mix lvn.gen` this configuration's placeholders will be populated\e[0m<% end %>
-    config :live_view_native, plugins: [\e[32;1m<%= if plugins? do %><%= for plugin <- plugins do %>
-      LiveViewNative.<%= plugin.module_suffix %><%= unless last?(plugins, plugin) do %>,<% end %><% end %><% else %>
-      # LiveViewNative.SwiftUI<% end %>\e[0m
-    ]
-
-    # \e[91;1mLVN - Required\e[0m
-    # Each format must be registered as a mime type add to
-    # existing configuration if one exists as this will overwrite
-    config :mime, :types, %{\e[32;1m<%= if plugins? do %><%= for plugin <- plugins do %>
-      "text/<%= plugin.format %>" => ["<%= plugin.format %>"]<%= unless last?(plugins, plugin) do %>,<% end %><% end %><% else %>
-      # "text/swiftui" => ["swiftui"]<% end %>\e[0m
-    }
-
-    # \e[91;1mLVN - Required\e[0m
-    # Phoenix must know how to encode each LVN format
-    config :phoenix_template, :format_encoders, [\e[32;1m<%= if plugins? do %><%= for plugin <- plugins do %>
-      <%= plugin.format %>: Phoenix.HTML.Engine<%= unless last?(plugins, plugin) do %>,<% end %><% end %><% else %>
-      # swiftui: Phoenix.HTML.Engine<% end %>\e[0m
-    ]
-
-    # \e[91;1mLVN - Required\e[0m
-    # Phoenix must know how to compile neex templates
-    config :phoenix, :template_engines, [
-      \e[32;1mneex: LiveViewNative.Engine\e[0m
-    ]
-    """
-    |> compile_string()
-    |> Mix.shell().info()
-
-    context
-  end
-
-  defp print_dev(context) do
-    """
-    \e[93;1m# config/dev.exs\e[0m
-
-    # \e[36mLVN - Optional\e[0m
-    # Allows LVN templates to be subject to LiveReload changes
-    config :<%= context.context_app %>, <%= inspect context.web_module %>.Endpoint,
-      live_reload: [
-        patterns: [
-          ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-          ~r"priv/gettext/.*(po)$",
-          ~r"lib/anotherone_web/(controllers|live|components)/.*(ex|heex\e[32;1m|neex\e[0m)$",
-
-          ~r"lib/anotherone_web/(live|components)/.*(ex|neex)$",
-          ~r"priv/static/assets/*.styles$",
-          ~r"lib/anotherone_web/(styles)/.*ex$"
-        ]
-      ]
-    """
-    |> compile_string()
-    |> Mix.shell().info()
-
-    context
-  end
-
-  defp print_router(context) do
-    plugins = Mix.LiveViewNative.plugins() |> Map.values()
-
-    plugins? = length(plugins) > 0
-
-    layouts =
-      [html: {Module.concat(context.web_module, Layouts), :root}]
-      |> Kernel.++(
-        plugins
-        |> Enum.map(&({&1.format, {Module.concat([context.web_module, Layouts, &1.module_suffix]), :root}})
-      ))
-
-    """
-    \e[93;1m# lib/<%= Macro.underscore(context.web_module) %>/router.ex\e[0m
-
-    # \e[91;1mLVN - Required\e[0m
-    # add the formats to the `accepts` plug for the pipeline used by your LiveView Native app
-    plug :accepts, [
-      "html",\e[32;1m<%= if plugins? do %><%= for plugin <- plugins do %>
-      "<%= plugin.format %>"<%= unless last?(plugins, plugin) do %>,<% end %><% end %><% else %>
-      # "swiftui"<% end %>\e[0m
-    ]
-
-    # \e[91;1mLVN - Required\e[0m
-    # add the root layout for each format
-    plug :put_root_layout, [
-      html: <%= inspect(layouts[:html]) %>,\e[32;1m<%= if plugins? do %><%= for plugin <- plugins do %>
-      <%= plugin.format %>: <%= inspect(layouts[plugin.format]) %><%= unless last?(plugins, plugin) do %>,<% end %><% end %><% else %>
-      # swiftui: {<%= inspect(layouts[:html] |> elem(0)) %>, :root}<% end %>\e[0m
-    ]
-    """
-    |> compile_string()
-    |> Mix.shell().info()
-
-    context
-  end
-
-  defp print_endpoint(context) do
-    """
-    \e[93;1m# lib/<%= Macro.underscore(context.web_module) %>/endpoint.ex\e[0m
-
-    # \e[36mLVN - Optional\e[0m
-    # Add the LiveViewNative.LiveReloader to your endpoint
-    if code_reloading? do
-      socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
-      plug Phoenix.LiveReloader
-      \e[32;1mplug LiveViewNative.LiveReloader\e[0m
-      plug Phoenix.CodeReloader
-      plug Phoenix.Ecto.CheckRepoStatus, otp_app: :form_demo
+        [build_patch(range, change)]
     end
-    """
-    |> compile_string()
-    |> Mix.shell.info()
+  end
+
+  @doc false
+  def patch_dev(context) do
+    original = dev = File.read!("config/dev.exs")
+
+    {context, dev}
+    |> patch_live_reload_patterns()
+    |> write_file("config/dev.exs", original)
 
     context
+  end
+
+  @doc false
+  def patch_live_reload_patterns({context, config}) do
+    web_path = Mix.Phoenix.web_path(context.context_app)
+
+    change = """
+    [
+      ~r"<%= web_path %>/(live|components)/.*neex$"
+    ]
+    """
+    |> compile_string()
+
+    fail_msg = """
+    failed to merge the following live_reload pattern into config/dev.exs
+
+    #{change}
+
+    you can do this manually or inspect config/dev.exs for errors and try again
+    """
+
+    config = CodeGen.patch(config, change, merge: &merge_live_reload_patterns/2, fail_msg: fail_msg)
+
+    {context, config}
+  end
+
+  defp merge_live_reload_patterns(source, change) do
+    quoted_change_list = Sourceror.parse_string!(change)
+
+    source
+    |> Sourceror.parse_string!()
+    |> Zipper.zip()
+    |> Zipper.find(&match?({{:__block__, _, [:live_reload]}, {:__block__, _, [[{{:__block__, _, [:patterns]}, _patterns} | _]]}}, &1))
+    |> case do
+      nil -> :error
+      %{node: {{:__block__, _, [:live_reload]}, {:__block__, _, [[{{:__block__, _, [:patterns]}, quoted_source_list} | _]]}}} ->
+        range = Sourceror.get_range(quoted_source_list)
+        {:__block__, _, [quoted_source_members]} = quoted_source_list
+        {:__block__, _, [quoted_change_members]} = quoted_change_list
+
+        source_list = Enum.map(quoted_source_members, &Sourceror.to_string/1)
+        change_list = Enum.map(quoted_change_members, &Sourceror.to_string/1)
+
+        patterns = Enum.uniq(source_list ++ change_list)
+
+        change = """
+          [<%= for pattern <- patterns do %>
+            <%= pattern %><%= unless last?(patterns, pattern) do %>,<% end %><% end %>
+          ]
+          """
+          |> compile_string()
+          |> String.trim()
+
+        [build_patch(range, change)]
+    end
+  end
+
+  @doc false
+  def patch_endpoint(context) do
+    path =
+      Mix.Phoenix.web_path(context.context_app)
+      |> Path.join("endpoint.ex")
+
+    original = endpoint = File.read!(path)
+
+    change = "plug LiveViewNative.LiveReloader"
+
+    matcher = &(match?({:plug, {}, [{:__aliases__, {}, [:Phoenix, :LiveReloader]}]}, &1))
+    endpoint = CodeGen.patch(endpoint, change, inject: {:after, matcher})
+
+    write_file({context, endpoint}, path, original)
+
+    context
+  end
+
+  @doc false
+  def patch_router(context) do
+    path =
+      Mix.Phoenix.web_path(context.context_app)
+      |> Path.join("router.ex")
+
+    original = router = File.read!(path)
+
+    quoted_source = Sourceror.parse_string!(router)
+
+    quoted_source
+    |> Zipper.zip()
+    |> Zipper.find(&(match?({:pipeline, _, [{:__block__, _, [:browser]} | _]}, &1)))
+    |> case do
+      nil -> Mix.shell.info("No browser pipeline!")
+      _quoted_browser_pipeline ->
+          {context, router}
+          |> patch_accepts()
+          |> patch_root_layouts()
+          |> write_file(path, original)
+    end
+
+    context
+  end
+
+  def patch_accepts({context, router}) do
+    change =
+      Mix.LiveViewNative.plugins()
+      |> Map.values()
+      |> Enum.map(&(Atom.to_string(&1.format)))
+
+    router = CodeGen.patch(router, change, merge: &merge_accepts/2)
+
+    {context, router}
+  end
+
+  defp merge_accepts(source, new_formats) do
+    source
+    |> Sourceror.parse_string!()
+    |> Zipper.zip()
+    |> Zipper.find(&(match?({:pipeline, _, [{:__block__, _, [:browser]} | _]}, &1)))
+    |> Zipper.find(&(match?({:plug, _, [{:__block__, _, [:accepts]} | _]}, &1)))
+    |> case do
+      nil ->
+        """
+        The :accepts plug is missing from the :browser pipeline.
+        LiveView Native requires the following formats to be accepted: #{inspect new_formats}
+        """
+        |> Mix.shell.info()
+
+      %{node: {:plug, _, [{:__block__, _, [:accepts]}, quoted_format_list]}}->
+        range = Sourceror.get_range(quoted_format_list)
+        old_formats = Code.eval_quoted(quoted_format_list) |> elem(0)
+
+        formats = (old_formats ++ new_formats) |> Enum.uniq() |> Enum.sort()
+
+        change = """
+          [<%= for format <- formats do %>
+            <%= inspect format %><%= unless last?(formats, format) do %>,<% end %><% end %>
+          ]
+          """
+          |> compile_string()
+          |> String.trim()
+
+        [build_patch(range, change)]
+    end
+  end
+
+  def patch_root_layouts({context, router}) do
+    base_module =
+      Mix.Phoenix.base()
+      |> Mix.Phoenix.web_module()
+
+    change =
+      Mix.LiveViewNative.plugins()
+      |> Map.values()
+      |> Enum.map(fn(plugin) ->
+        {plugin.format, {Module.concat([base_module, :Layouts, plugin.module_suffix]), :root}}
+      end)
+
+    router = CodeGen.patch(router, change, merge: &merge_root_layouts/2)
+
+    {context, router}
+  end
+
+  defp merge_root_layouts(source, new_root_layouts) do
+    source
+    |> Sourceror.parse_string!()
+    |> Zipper.zip()
+    |> Zipper.find(&(match?({:pipeline, _, [{:__block__, _, [:browser]} | _]}, &1)))
+    |> Zipper.find(&(match?({:plug, _, [{:__block__, _, [:put_root_layout]} | _]}, &1)))
+    |> case do
+      nil ->
+        """
+        The :put_root_layout plug is missing from the :browser pipeline.
+        LiveView Native requires the following root_layouts: #{inspect new_root_layouts}
+        """
+        |> Mix.shell.info()
+
+      %{node: {:plug, _, [{:__block__, _, [:put_root_layout]}, quoted_root_layouts]} = quoted_plug}->
+        range = Sourceror.get_range(quoted_plug)
+        old_root_layouts = Code.eval_quoted(quoted_root_layouts) |> elem(0)
+
+        root_layouts =
+          (old_root_layouts ++ new_root_layouts)
+          |> Enum.uniq_by(fn({format, _}) -> format end)
+          |> Enum.sort_by(fn({format, _}) -> format end)
+
+        change = """
+          plug :put_root_layout,<%= for {format, layout_tuple} = root_layout <- root_layouts do %>
+            <%= format %>: <%= inspect layout_tuple %><%= unless last?(root_layouts, root_layout) do %>,<% end %><% end %>
+          """
+          |> compile_string()
+          |> String.trim()
+
+        [build_patch(range, change)]
+    end
+  end
+
+  defp write_file({context, source}, path, original) do
+    Rewrite.TextDiff.format(original, source)
+    |> Mix.shell.info
+    File.write!(path, source)
   end
 
   @doc false

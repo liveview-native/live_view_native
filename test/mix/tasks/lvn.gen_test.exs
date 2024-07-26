@@ -18,6 +18,9 @@ defmodule Mix.Tasks.Lvn.GenTest do
         File.mkdir_p!("config")
         File.write!("config/config.exs", File.read!(Path.join(@templates, "config-1")))
         File.write!("config/dev.exs", File.read!(Path.join(@templates, "dev-1")))
+        File.mkdir_p!("lib/live_view_native_web")
+        File.write!("lib/live_view_native_web/endpoint.ex", File.read!(Path.join(@templates, "endpoint-1")))
+        File.write!("lib/live_view_native_web/router.ex", File.read!(Path.join(@templates, "router-1")))
 
         Gen.run([])
 
@@ -41,16 +44,60 @@ defmodule Mix.Tasks.Lvn.GenTest do
             """
 
           assert file =~ """
-            config :phoenix_template, format_encoders: [
+            config :phoenix_template, :format_encoders, [
               gameboy: Phoenix.HTML.Engine,
               switch: Phoenix.HTML.Engine
             ]
             """
 
           assert file =~ """
-            config :phoenix, :template_engines,
+            config :phoenix, :template_engines, [
               neex: LiveViewNative.Engine
+            ]
             """
+        end
+
+        assert_file "config/dev.exs", fn file ->
+          assert file =~ """
+            config :live_view_native, LiveViewNativeWeb.Endpoint,
+              live_reload: [
+                patterns: [
+                  ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+                  ~r"priv/gettext/.*(po)$",
+                  ~r"lib/live_view_native_web/(controllers|live|components)/.*(ex|heex)$",
+                  ~r"lib/live_view_native_web/(live|components)/.*neex$"
+                ]
+              ]
+            """
+        end
+
+        assert_file "lib/live_view_native_web/endpoint.ex", fn file ->
+          assert file =~ """
+              plug Phoenix.LiveReloader
+              plug LiveViewNative.LiveReloader
+          """
+        end
+
+        assert_file "lib/live_view_native_web/router.ex", fn file ->
+          assert file =~ """
+            pipeline :browser do
+              plug :accepts, [
+                "gameboy",
+                "html",
+                "switch"
+              ]
+              plug :fetch_session
+              plug :fetch_live_flash
+
+              plug :put_root_layout,
+                gameboy: {LiveViewNativeWeb.Layouts.GameBoy, :root},
+                html: {LiveViewNativeWeb.Layouts, :root},
+                switch: {LiveViewNativeWeb.Layouts.Switch, :root}
+
+              plug :protect_from_forgery
+              plug :put_secure_browser_headers
+            end
+          """
         end
       end
     end
@@ -72,6 +119,9 @@ defmodule Mix.Tasks.Lvn.GenTest do
           File.mkdir_p!("config")
           File.write!("config/config.exs", File.read!(Path.join(@templates, "config-1")))
           File.write!("config/dev.exs", File.read!(Path.join(@templates, "dev-1")))
+          File.mkdir_p!("lib/live_view_native_web")
+          File.write!("lib/live_view_native_web/endpoint.ex", File.read!(Path.join(@templates, "endpoint-1")))
+          File.write!("lib/live_view_native_web/router.ex", File.read!(Path.join(@templates, "router-1")))
 
           Gen.run([])
 
@@ -95,15 +145,16 @@ defmodule Mix.Tasks.Lvn.GenTest do
               """
 
             assert file =~ """
-              config :phoenix_template, format_encoders: [
+              config :phoenix_template, :format_encoders, [
                 gameboy: Phoenix.HTML.Engine,
                 switch: Phoenix.HTML.Engine
               ]
               """
 
             assert file =~ """
-              config :phoenix, :template_engines,
+              config :phoenix, :template_engines, [
                 neex: LiveViewNative.Engine
+              ]
               """
           end
         end)
@@ -133,7 +184,7 @@ defmodule Mix.Tasks.Lvn.GenTest do
         config :logger, :level, :debug
         """
 
-      {_, result} = Gen.build_plugins({%{}, config})
+      {_, result} = Gen.patch_plugins({%{}, config})
 
       assert  result =~ """
         config :live_view_native, plugins: [
