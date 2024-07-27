@@ -1,4 +1,6 @@
 defmodule Mix.LiveViewNative.CodeGen do
+  @moduledoc false
+
   alias Sourceror.Zipper
 
   def patch(source, change, opts \\ []) do
