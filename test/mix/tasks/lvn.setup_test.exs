@@ -16,11 +16,11 @@ defmodule Mix.Tasks.Lvn.SetupTest do
     test "generates the `Native` module into the project's lib directory and injects config", config do
       in_tmp_live_project config.test, fn ->
         File.mkdir_p!("config")
-        File.write!("config/config.exs", File.read!(Path.join(@templates, "config-1")))
-        File.write!("config/dev.exs", File.read!(Path.join(@templates, "dev-1")))
+        File.write!("config/config.exs", File.read!(Path.join(@templates, "config")))
+        File.write!("config/dev.exs", File.read!(Path.join(@templates, "dev")))
         File.mkdir_p!("lib/live_view_native_web")
-        File.write!("lib/live_view_native_web/endpoint.ex", File.read!(Path.join(@templates, "endpoint-1")))
-        File.write!("lib/live_view_native_web/router.ex", File.read!(Path.join(@templates, "router-1")))
+        File.write!("lib/live_view_native_web/endpoint.ex", File.read!(Path.join(@templates, "endpoint")))
+        File.write!("lib/live_view_native_web/router.ex", File.read!(Path.join(@templates, "router")))
 
         Setup.run([])
 
@@ -117,11 +117,11 @@ defmodule Mix.Tasks.Lvn.SetupTest do
       in_tmp_live_umbrella_project config.test, fn ->
         File.cd!("live_view_native_web", fn ->
           File.mkdir_p!("config")
-          File.write!("config/config.exs", File.read!(Path.join(@templates, "config-1")))
-          File.write!("config/dev.exs", File.read!(Path.join(@templates, "dev-1")))
+          File.write!("config/config.exs", File.read!(Path.join(@templates, "config")))
+          File.write!("config/dev.exs", File.read!(Path.join(@templates, "dev")))
           File.mkdir_p!("lib/live_view_native_web")
-          File.write!("lib/live_view_native_web/endpoint.ex", File.read!(Path.join(@templates, "endpoint-1")))
-          File.write!("lib/live_view_native_web/router.ex", File.read!(Path.join(@templates, "router-1")))
+          File.write!("lib/live_view_native_web/endpoint.ex", File.read!(Path.join(@templates, "endpoint")))
+          File.write!("lib/live_view_native_web/router.ex", File.read!(Path.join(@templates, "router")))
 
           Setup.run([])
 
