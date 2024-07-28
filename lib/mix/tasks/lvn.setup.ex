@@ -45,6 +45,7 @@ defmodule Mix.Tasks.Lvn.Setup do
     |> run_generators()
   end
 
+  @doc false
   def run_setups(context) do
     web_path = Mix.Phoenix.web_path(context.context_app)
 
@@ -79,6 +80,7 @@ defmodule Mix.Tasks.Lvn.Setup do
     context
   end
 
+  @doc false
   def run_generators(context) do
     task = &Mix.Tasks.Lvn.Gen.gen/1
     Mix.Project.deps_tree()
@@ -552,7 +554,8 @@ defmodule Mix.Tasks.Lvn.Setup do
     end
   end
 
-  defp write_files({context, source_files}) do
+  @doc false
+  def write_files({context, source_files}) do
     Enum.each(source_files, fn({_key, {source, path}}) ->
       write_file({context, {source, path}})
     end)
