@@ -41,7 +41,7 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
         nil -> acc
         setup_task ->
           if Kernel.function_exported?(setup_task, :generators, 1) do
-            [setup_task.setup(context) | acc]
+            [setup_task.generators(context) | acc]
           else
             acc
           end

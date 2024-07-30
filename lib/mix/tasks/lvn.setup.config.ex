@@ -91,8 +91,8 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
 
   @doc false
   def patch_config({context, %{config: {source, path}} = source_files}) do
-    {_context, source} =
-      {context, source}
+    {_context, {source, _path}} =
+      {context, {source, path}}
       |> patch_plugins()
       |> patch_mime_types()
       |> patch_format_encoders()
@@ -102,11 +102,10 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  def patch_plugins({context, source}) do
+  def patch_plugins({context, {source, path}}) do
     plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
     change = """
-
     config :live_view_native, plugins: [<%= for plugin <- plugins do %>
       <%= inspect plugin.__struct__ %><%= unless last?(plugins, plugin) do %>,<% end %><% end %>
     ]
@@ -124,9 +123,9 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_plugins/2, inject: {:before, matcher}, fail_msg: fail_msg)
+    source = CodeGen.patch(source, change, merge: &merge_plugins/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
 
-    {context, source}
+    {context, {source, path}}
   end
 
   defp merge_plugins(source, change) do
@@ -164,11 +163,10 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  def patch_mime_types({context, source}) do
+  def patch_mime_types({context, {source, path}}) do
     plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
     change = """
-
     config :mime, :types, %{<%= for plugin <- plugins do %>
       "text/<%= plugin.format %>" => ["<%= plugin.format %>"]<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
     }
@@ -186,9 +184,9 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_mime_types/2, inject: {:before, matcher}, fail_msg: fail_msg)
+    source = CodeGen.patch(source, change, merge: &merge_mime_types/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
 
-    {context, source}
+    {context, {source, path}}
   end
 
   defp merge_mime_types(source, change) do
@@ -221,11 +219,10 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  def patch_format_encoders({context, source}) do
+  def patch_format_encoders({context, {source, path}}) do
     plugins = Mix.LiveViewNative.plugins() |> Map.values()
 
     change = """
-
     config :phoenix_template, :format_encoders, [<%= for plugin <- plugins do %>
       <%= plugin.format %>: Phoenix.HTML.Engine<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
     ]
@@ -243,9 +240,9 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_format_encoders/2, inject: {:before, matcher}, fail_msg: fail_msg)
+    source = CodeGen.patch(source, change, merge: &merge_format_encoders/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
 
-    {context, source}
+    {context, {source, path}}
   end
 
   defp merge_format_encoders(source, change) do
@@ -281,9 +278,8 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  def patch_template_engines({context, source}) do
+  def patch_template_engines({context, {source, path}}) do
     change = """
-
     config :phoenix, :template_engines, [
       neex: LiveViewNative.Engine
     ]
@@ -301,9 +297,9 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_template_engines/2, inject: {:before, matcher}, fail_msg: fail_msg)
+    source = CodeGen.patch(source, change, merge: &merge_template_engines/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
 
-    {context, source}
+    {context, {source, path}}
   end
 
   defp merge_template_engines(source, change) do
@@ -341,15 +337,15 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   @doc false
   def patch_dev({context, %{dev: {source, path}} = source_files}) do
 
-    {_context, source} =
-      {context, source}
+    {_context, {source, _path}} =
+      {context, {source, path}}
       |> patch_live_reload_patterns()
 
     {context, %{source_files | dev: {source, path}}}
   end
 
   @doc false
-  def patch_live_reload_patterns({context, source}) do
+  def patch_live_reload_patterns({context, {source, path}}) do
     web_path = Mix.Phoenix.web_path(context.context_app)
 
     change = """
@@ -367,9 +363,9 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/dev.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_live_reload_patterns/2, fail_msg: fail_msg)
+    source = CodeGen.patch(source, change, merge: &merge_live_reload_patterns/2, fail_msg: fail_msg, path: path)
 
-    {context, source}
+    {context, {source, path}}
   end
 
   defp merge_live_reload_patterns(source, change) do
@@ -408,7 +404,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     change = "plug LiveViewNative.LiveReloader\n"
 
     matcher = &(match?({:plug, _, [{:__aliases__, _, [:Phoenix, :LiveReloader]}]}, &1))
-    source = CodeGen.patch(source, change, merge: &merge_endpoint/2, inject: {:after, matcher})
+    source = CodeGen.patch(source, change, merge: &merge_endpoint/2, inject: {:after, matcher}, path: path)
 
     {context, %{source_files | endpoint: {source, path}}}
   end
@@ -437,8 +433,8 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
         {context, source_files}
 
       _quoted_browser_pipeline ->
-          {_context, source} =
-            {context, source}
+          {_context, {source, _path}} =
+            {context, {source, path}}
             |> patch_accepts()
             |> patch_root_layouts()
 
@@ -447,15 +443,15 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  def patch_accepts({context, source}) do
+  def patch_accepts({context, {source, path}}) do
     change =
       Mix.LiveViewNative.plugins()
       |> Map.values()
       |> Enum.map(&(Atom.to_string(&1.format)))
 
-    source = CodeGen.patch(source, change, merge: &merge_accepts/2)
+    source = CodeGen.patch(source, change, merge: &merge_accepts/2, path: path)
 
-    {context, source}
+    {context, {source, path}}
   end
 
   defp merge_accepts(source, new_formats) do
@@ -491,7 +487,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  def patch_root_layouts({context, router}) do
+  def patch_root_layouts({context, {source, path}}) do
     base_module =
       Mix.Phoenix.base()
       |> Mix.Phoenix.web_module()
@@ -503,9 +499,9 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
         {plugin.format, {Module.concat([base_module, :Layouts, plugin.module_suffix]), :root}}
       end)
 
-    router = CodeGen.patch(router, change, merge: &merge_root_layouts/2)
+    source = CodeGen.patch(source, change, merge: &merge_root_layouts/2, path: path)
 
-    {context, router}
+    {context, {source, path}}
   end
 
   defp merge_root_layouts(source, new_root_layouts) do

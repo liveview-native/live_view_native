@@ -16,8 +16,8 @@ defmodule Mix.LiveViewNative.CodeGen do
           :error -> build_patches(source, change, Keyword.delete(opts, :merge))
           patches -> patches
         end
-      {_, {:before, matcher}} -> inject_before(source, change, matcher)
-      {_, {:after, matcher}} -> inject_after(source, change, matcher)
+      {_, {:before, matcher}} -> inject_before(source, change, matcher, Keyword.get(opts, :path))
+      {_, {:after, matcher}} -> inject_after(source, change, matcher, Keyword.get(opts, :path))
       {_, :head} -> inject_head(source, change)
       {_, :eof} -> inject_eof(source, change)
       _ ->
@@ -29,7 +29,7 @@ defmodule Mix.LiveViewNative.CodeGen do
     end
   end
 
-  defp inject_before(source, change, matcher) do
+  defp inject_before(source, change, matcher, path) do
     quoted_source = Sourceror.parse_string!(source)
     case get_matched_range(quoted_source, matcher) do
       {:ok, %{start: [line: line, column: column], end: _}} ->
@@ -39,11 +39,19 @@ defmodule Mix.LiveViewNative.CodeGen do
         }
 
         [build_patch(range, change)]
-      :error -> []
+      :error ->
+        """
+        The following change failed to be applied to #{path}
+
+        #{change}
+        """
+        |> Mix.shell.info()
+
+        []
     end
   end
 
-  defp inject_after(source, change, matcher) do
+  defp inject_after(source, change, matcher, path) do
     quoted_source = Sourceror.parse_string!(source)
     case get_matched_range(quoted_source, matcher) do
       {:ok, %{start: [line: _, column: column], end: [line: line, column: _]}} ->
@@ -55,8 +63,12 @@ defmodule Mix.LiveViewNative.CodeGen do
         [build_patch(range, change)]
       :error ->
         """
-        The following change tried to be applied to
+        The following change failed to be applied to #{path}
+
+        #{change}
         """
+        |> Mix.shell.info()
+
         []
     end
   end

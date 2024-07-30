@@ -269,7 +269,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         config :logger, :level, :debug
         """
 
-      {_, result} = Config.patch_plugins({%{}, config})
+      {_, {result, _}} = Config.patch_plugins({%{}, {config, "config/config.exs"}})
 
       assert  result =~ """
         config :live_view_native, plugins: [
@@ -290,7 +290,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         }
         """
 
-      {_, result} = Config.patch_mime_types({%{}, config})
+      {_, {result, _}} = Config.patch_mime_types({%{}, {config, "config/config.exs"}})
 
       assert result =~ """
         config :mime, :types, %{
@@ -309,7 +309,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         ]
         """
 
-      {_, result} = Config.patch_format_encoders({%{}, config})
+      {_, {result, _}} = Config.patch_format_encoders({%{}, {config, "config/config.exs"}})
 
       assert result =~ """
         config :phoenix_template, :format_encoders, [
@@ -327,7 +327,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         ]
         """
 
-      {_, result} = Config.patch_template_engines({%{}, config})
+      {_, {result, _}} = Config.patch_template_engines({%{}, {config, "config/config.exs"}})
 
       assert result =~ """
         config :phoenix, :template_engines, [
