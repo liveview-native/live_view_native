@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
 
   alias Mix.LiveViewNative.Context
 
-  @shortdoc "Configure LiveView Native within a project"
+  @shortdoc "Configure LiveView Native within a Phoenix LiveView application"
 
   @moduledoc """
   #{@shortdoc}
@@ -39,9 +39,10 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
       end)
       |> case do
         nil -> acc
-        setup_task ->
-          if Kernel.function_exported?(setup_task, :generators, 1) do
-            [setup_task.generators(context) | acc]
+        task ->
+          Code.ensure_loaded(task)
+          if Kernel.function_exported?(task, :generators, 1) do
+            [task.generators(context) | acc]
           else
             acc
           end

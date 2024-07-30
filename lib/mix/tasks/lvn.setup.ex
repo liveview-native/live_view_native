@@ -27,7 +27,7 @@ defmodule Mix.Tasks.Lvn.Setup do
       [] -> :noop
       deps ->
         """
-        <%= IO.ANSI.red() %><%= IO.ANSI.bright() %>The following dependencies are missing from your project:<%= IO.ANSI.reset() %>
+        <%= IO.ANSI.red() %><%= IO.ANSI.bright() %>The following dependencies are missing from your application:<%= IO.ANSI.reset() %>
         <%= for dep <- deps do %>
         * <%= dep %><% end %>
 
@@ -38,7 +38,7 @@ defmodule Mix.Tasks.Lvn.Setup do
     end
 
     """
-    To setup your application with LiveView Native run
+    To setup your application with LiveView Native run:
 
     > mix lvn.setup.config
     > mix lvn.setup.gen

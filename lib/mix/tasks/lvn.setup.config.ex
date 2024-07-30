@@ -13,7 +13,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     build_patch: 2
   ]
 
-  @shortdoc "Configure LiveView Native within a project"
+  @shortdoc "Configure LiveView Native within a Phoenix LiveView application"
 
   @moduledoc """
   #{@shortdoc}
@@ -36,6 +36,12 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     args
     |> Context.build(__MODULE__)
     |> run_setups()
+
+    """
+
+    Don't forget to run #{IO.ANSI.green()}#{IO.ANSI.bright()}mix lvn.setup.gen#{IO.ANSI.reset()}
+    """
+    |> Mix.shell.info()
   end
 
   @doc false
@@ -59,6 +65,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
       |> case do
         nil -> acc
         task ->
+          Code.ensure_loaded(task)
           if Kernel.function_exported?(task, :config, 1) do
             [&task.config/1 | acc]
           else
