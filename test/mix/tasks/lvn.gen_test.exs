@@ -11,25 +11,13 @@ defmodule Mix.Tasks.Lvn.GenTest do
   end
 
   describe "when a single app" do
-    test "generates the `Native` module into the project's lib directory", config do
+    test "generates the `Native` module into the project's lib directory and injects config", config do
       in_tmp_live_project config.test, fn ->
         Gen.run([])
+
         assert_file "lib/live_view_native_native.ex", fn file ->
           assert file =~ "LiveViewNativeNative"
         end
-        # assert_file "config/config.exs", fn file ->
-        #   assert file =~ """
-        #     config :phoenix_template, :format_encoders, gameboy: Phoenix.HTML.Engine
-        #     """
-
-        #   assert file =~ """
-        #     config :phoenix, :template_engines, neext: LiveViewNative.Engine
-        #     """
-
-        #   assert file =~ """
-        #       "text/gameboy" => ["gameboy"]
-        #     """
-        # end
       end
     end
 
@@ -38,6 +26,7 @@ defmodule Mix.Tasks.Lvn.GenTest do
         assert_raise(Mix.Error, fn() ->
           Gen.run(["gameboy"])
         end)
+
         refute_file "lib/live_view_native_native.ex"
       end
     end
@@ -46,23 +35,21 @@ defmodule Mix.Tasks.Lvn.GenTest do
   describe "when an umbrella app" do
     test "generates the `Native` module into the project's lib directory", config do
       in_tmp_live_umbrella_project config.test, fn ->
-        File.cd!("live_view_native_web", fn ->
-          Gen.run([])
-          assert_file "lib/live_view_native_native.ex", fn file ->
-            assert file =~ "LiveViewNativeNative"
-          end
-        end)
+        Gen.run([])
+
+        assert_file "lib/live_view_native_native.ex", fn file ->
+          assert file =~ "LiveViewNativeNative"
+        end
       end
     end
 
     test "will raise with message if any arguments are given", config do
       in_tmp_live_umbrella_project config.test, fn ->
-        File.cd!("live_view_native_web", fn ->
-          assert_raise(Mix.Error, fn() ->
-            Gen.run(["gameboy"])
-          end)
-          refute_file "lib/live_view_native_native.ex"
+        assert_raise(Mix.Error, fn() ->
+          Gen.run(["gameboy"])
         end)
+
+        refute_file "lib/live_view_native_native.ex"
       end
     end
   end

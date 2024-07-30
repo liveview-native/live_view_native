@@ -119,9 +119,8 @@ defmodule Mix.LiveViewNative.Context do
     Keyword.put(opts, :context_app, String.to_atom(string))
   end
 
-  defmacro compile_string(string) do
-    EEx.compile_string(string)
-  end
+  defmacro compile_string(string),
+    do: EEx.compile_string(string)
 
   def last?(plugins, plugin),
     do: Enum.at(plugins, -1) == plugin

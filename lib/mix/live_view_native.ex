@@ -10,7 +10,9 @@ defmodule Mix.LiveViewNative do
         Enum.reduce(spec[:modules], %{}, fn(module, plugins) ->
           if Code.ensure_loaded?(module) && Kernel.function_exported?(module, :__lvn_client__, 0) do
             client = struct(module)
-            Map.put(plugins, client.format, client)
+            format = Atom.to_string(client.format)
+
+            Map.put(plugins, format, client)
           else
             plugins
           end
