@@ -38,7 +38,7 @@ defmodule Mix.Tasks.Lvn do
   defp general() do
     Application.ensure_all_started(:live_view_native)
     Mix.shell().info "LiveView Native v#{Application.spec(:live_view_native, :vsn)}"
-    Mix.shell().info "Deploy LiveView applications to anything with a screen."
+    Mix.shell().info "Build LiveView applications for anything with a screen."
     Mix.shell().info "\n## Options\n"
     Mix.shell().info "-v, --version        # Prints LiveView Native version\n"
     Mix.Tasks.Help.run(["--search", "lvn."])

@@ -38,7 +38,7 @@ defmodule Mix.LiveViewNative.CodeGen do
           end: [line: line, column: column]
         }
 
-        [newline(line, column), build_patch(range, change)]
+        [build_patch(range, change)]
       :error -> []
     end
   end
@@ -46,13 +46,13 @@ defmodule Mix.LiveViewNative.CodeGen do
   defp inject_after(source, change, matcher) do
     quoted_source = Sourceror.parse_string!(source)
     case get_matched_range(quoted_source, matcher) do
-      {:ok, %{start: _, end: [line: line, column: column]}} ->
+      {:ok, %{start: [line: _, column: column], end: [line: line, column: _]}} ->
         range = %{
           start: [line: line + 1, column: column],
           end: [line: line + 1, column: column]
         }
 
-        [newline(line + 1, column), build_patch(range, change)]
+        [build_patch(range, change)]
       :error ->
         """
         The following change tried to be applied to
@@ -70,7 +70,7 @@ defmodule Mix.LiveViewNative.CodeGen do
       end: [line: line, column: column]
     }
 
-    [newline(line, column), build_patch(range, change)]
+    [build_patch(range, change)]
   end
 
   defp inject_eof(source, change) do
@@ -82,7 +82,7 @@ defmodule Mix.LiveViewNative.CodeGen do
       end: [line: line + 1, column: column]
     }
 
-    [newline(line + 1, column), build_patch(range, change)]
+    [build_patch(range, change)]
   end
 
   defp get_matched_range(quoted, matcher) do
@@ -99,14 +99,5 @@ defmodule Mix.LiveViewNative.CodeGen do
     do: %{
       range: range,
       change: change
-    }
-
-  def newline(line, column),
-    do: %{
-      range: %{
-        start: [line: line, column: column],
-        end: [line: line, column: column]
-      },
-      change: "\n"
     }
 end

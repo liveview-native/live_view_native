@@ -2,10 +2,11 @@ defmodule Mix.Tasks.Lvn.SetupTest do
   use ExUnit.Case
 
   import Mix.Lvn.TestHelper
+  import ExUnit.CaptureIO
 
   @templates Path.join(File.cwd!(), "test/mix/tasks/templates")
 
-  alias Mix.Tasks.Lvn.Setup
+  alias Mix.Tasks.Lvn.Setup.{Config, Gen}
 
   setup do
     Mix.Task.clear()
@@ -22,9 +23,29 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         File.write!("lib/live_view_native_web/endpoint.ex", File.read!(Path.join(@templates, "endpoint")))
         File.write!("lib/live_view_native_web/router.ex", File.read!(Path.join(@templates, "router")))
 
-        Setup.run([])
+        capture_io("y\ny\ny\ny\n", fn ->
+          Config.run([])
+        end)
+
+        Gen.run([])
 
         assert_file "lib/live_view_native_native.ex", fn file ->
+          assert file =~ "LiveViewNativeNative"
+        end
+
+        assert_file "lib/live_view_native_web/components/layouts_gameboy/app.gameboy.neex"
+        assert_file "lib/live_view_native_web/components/layouts_gameboy/root.gameboy.neex", fn file ->
+          assert file =~ "app.gameboy"
+        end
+        assert_file "lib/live_view_native_web/components/layouts.gameboy.ex", fn file ->
+          assert file =~ "LiveViewNativeNative"
+        end
+
+        assert_file "lib/live_view_native_web/components/layouts_switch/app.switch.neex"
+        assert_file "lib/live_view_native_web/components/layouts_switch/root.switch.neex", fn file ->
+          assert file =~ "app.switch"
+        end
+        assert_file "lib/live_view_native_web/components/layouts.switch.ex", fn file ->
           assert file =~ "LiveViewNativeNative"
         end
 
@@ -105,7 +126,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
     test "will raise with message if any arguments are given", config do
       in_tmp_live_project config.test, fn ->
         assert_raise(Mix.Error, fn() ->
-          Setup.run(["gameboy"])
+          Config.run(["gameboy"])
         end)
         refute_file "lib/live_view_native_native.ex"
       end
@@ -123,9 +144,30 @@ defmodule Mix.Tasks.Lvn.SetupTest do
           File.write!("lib/live_view_native_web/endpoint.ex", File.read!(Path.join(@templates, "endpoint")))
           File.write!("lib/live_view_native_web/router.ex", File.read!(Path.join(@templates, "router")))
 
-          Setup.run([])
+
+          capture_io("y\ny\ny\ny\n", fn ->
+            Config.run([])
+          end)
+
+          Gen.run([])
 
           assert_file "lib/live_view_native_native.ex", fn file ->
+            assert file =~ "LiveViewNativeNative"
+          end
+
+          assert_file "lib/live_view_native_web/components/layouts_gameboy/app.gameboy.neex"
+          assert_file "lib/live_view_native_web/components/layouts_gameboy/root.gameboy.neex", fn file ->
+            assert file =~ "app.gameboy"
+          end
+          assert_file "lib/live_view_native_web/components/layouts.gameboy.ex", fn file ->
+            assert file =~ "LiveViewNativeNative"
+          end
+
+          assert_file "lib/live_view_native_web/components/layouts_switch/app.switch.neex"
+          assert_file "lib/live_view_native_web/components/layouts_switch/root.switch.neex", fn file ->
+            assert file =~ "app.switch"
+          end
+          assert_file "lib/live_view_native_web/components/layouts.switch.ex", fn file ->
             assert file =~ "LiveViewNativeNative"
           end
 
@@ -208,7 +250,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
       in_tmp_live_umbrella_project config.test, fn ->
         File.cd!("live_view_native_web", fn ->
           assert_raise(Mix.Error, fn() ->
-            Setup.run(["gameboy"])
+            Config.run(["gameboy"])
           end)
           refute_file "lib/live_view_native_native.ex"
         end)
@@ -227,7 +269,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         config :logger, :level, :debug
         """
 
-      {_, result} = Setup.patch_plugins({%{}, config})
+      {_, result} = Config.patch_plugins({%{}, config})
 
       assert  result =~ """
         config :live_view_native, plugins: [
@@ -248,7 +290,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         }
         """
 
-      {_, result} = Setup.patch_mime_types({%{}, config})
+      {_, result} = Config.patch_mime_types({%{}, config})
 
       assert result =~ """
         config :mime, :types, %{
@@ -267,7 +309,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         ]
         """
 
-      {_, result} = Setup.patch_format_encoders({%{}, config})
+      {_, result} = Config.patch_format_encoders({%{}, config})
 
       assert result =~ """
         config :phoenix_template, :format_encoders, [
@@ -285,7 +327,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         ]
         """
 
-      {_, result} = Setup.patch_template_engines({%{}, config})
+      {_, result} = Config.patch_template_engines({%{}, config})
 
       assert result =~ """
         config :phoenix, :template_engines, [

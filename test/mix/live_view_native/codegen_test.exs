@@ -23,6 +23,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       config :live_view_native, plugins: [
         SwiftUI
       ]
+
       """
 
       matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
@@ -47,6 +48,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       config :live_view_native, plugins: [
         SwiftUI
       ]
+
       """
 
       matcher = &(match?({:config, _, [{:__block__, _, [:other]} | _]}, &1))
@@ -61,12 +63,15 @@ defmodule Mix.LiveViewNative.CodeGenTest do
     test "inject after" do
       source = """
       config :logger, :level, :debug
+      config :logger, :backends, []
       """
 
       change = """
+
       config :live_view_native, plugins: [
         SwiftUI
       ]
+
       """
 
       matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
@@ -79,18 +84,23 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       config :live_view_native, plugins: [
         SwiftUI
       ]
+
+      config :logger, :backends, []
       """
     end
 
     test "inject after not matched" do
       source = """
       config :logger, :level, :debug
+      config :logger, :backends, []
       """
 
       change = """
+
       config :live_view_native, plugins: [
         SwiftUI
       ]
+
       """
 
       matcher = &(match?({:config, _, [{:__block__, _, [:other]} | _]}, &1))
@@ -99,6 +109,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
 
       assert source == """
       config :logger, :level, :debug
+      config :logger, :backends, []
       """
     end
 
@@ -111,6 +122,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       config :live_view_native, plugins: [
         SwiftUI
       ]
+
       """
 
       source = CodeGen.patch(source, change, inject: :head)
@@ -130,6 +142,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       """
 
       change = """
+
       config :live_view_native, plugins: [
         SwiftUI
       ]
@@ -157,6 +170,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       """
 
       change = """
+
       config :live_view_native, plugins: [
         SwiftUI
       ]
@@ -183,6 +197,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       """
 
       change = """
+
       config :live_view_native, plugins: [
         SwiftUI
       ]
