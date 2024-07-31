@@ -320,7 +320,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         """
     end
 
-    test "when :phonex config exists the :template_engines list is updated and duplicates are removed" do
+    test "when :phoenix config exists the :template_engines list is updated and duplicates are removed" do
       config = """
         config :phoenix, :template_engines, [
           other: Other.Engine,
@@ -335,6 +335,41 @@ defmodule Mix.Tasks.Lvn.SetupTest do
           other: Other.Engine
         ]
         """
+    end
+  end
+
+  describe "router codgen scenarios" do
+    test "patch_layouts when this old style of router layout option is being used, rewrite as the new keyword list with html" do
+      config = """
+          pipeline :browser do
+            plug :accepts, ["html"]
+            plug :fetch_session
+            plug :fetch_live_flash
+
+            plug :put_root_layout, {LiveViewNativeWeb.Layouts, :root}
+
+            plug :protect_from_forgery
+            plug :put_secure_browser_headers
+          end
+        """
+
+      {_, {result, _}} = Config.patch_root_layouts({%{}, {config, "live_view_native_web/router.ex"}})
+
+      assert result =~ """
+        pipeline :browser do
+          plug :accepts, ["html"]
+          plug :fetch_session
+          plug :fetch_live_flash
+
+          plug :put_root_layout,
+            gameboy: {LiveViewNativeWeb.Layouts.GameBoy, :root},
+            html: {LiveViewNativeWeb.Layouts, :root},
+            switch: {LiveViewNativeWeb.Layouts.Switch, :root}
+
+          plug :protect_from_forgery
+          plug :put_secure_browser_headers
+        end
+      """
     end
   end
 end

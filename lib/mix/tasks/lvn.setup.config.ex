@@ -527,7 +527,12 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
 
       %{node: {:plug, _, [{:__block__, _, [:put_root_layout]}, quoted_root_layouts]} = quoted_plug}->
         range = Sourceror.get_range(quoted_plug)
-        old_root_layouts = Code.eval_quoted(quoted_root_layouts) |> elem(0)
+        old_root_layouts =
+          (Code.eval_quoted(quoted_root_layouts) |> elem(0))
+          |> case do
+            old_root_layout when is_tuple(old_root_layout) -> [html: old_root_layout]
+            old_root_layouts -> old_root_layouts
+          end
 
         root_layouts =
           (old_root_layouts ++ new_root_layouts)
