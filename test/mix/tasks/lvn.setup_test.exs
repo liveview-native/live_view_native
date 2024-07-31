@@ -338,6 +338,37 @@ defmodule Mix.Tasks.Lvn.SetupTest do
     end
   end
 
+  describe "dev codgen scenarios" do
+    test "when the :live_reload_patterns had additional keywords items" do
+      config = """
+        config :live_view_native, LiveViewNativeWeb.Endpoint,
+          live_reload: [
+            other: :thing,
+            patterns: [
+              ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+              ~r"priv/gettext/.*(po)$",
+              ~r"lib/live_view_native_web/(controllers|live|components)/.*(ex|heex)$"
+            ]
+          ]
+        """
+
+      {_, {result, _}} = Config.patch_live_reload_patterns({%{context_app: :live_view_native}, {config, "config/config.exs"}})
+
+      assert  result =~ """
+        config :live_view_native, LiveViewNativeWeb.Endpoint,
+          live_reload: [
+            other: :thing,
+            patterns: [
+              ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+              ~r"priv/gettext/.*(po)$",
+              ~r"lib/live_view_native_web/(controllers|live|components)/.*(ex|heex)$",
+              ~r"lib/live_view_native_web/(live|components)/.*neex$"
+            ]
+          ]
+        """
+    end
+  end
+
   describe "router codgen scenarios" do
     test "patch_layouts when this old style of router layout option is being used, rewrite as the new keyword list with html" do
       config = """

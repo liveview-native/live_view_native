@@ -381,28 +381,35 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     source
     |> Sourceror.parse_string!()
     |> Zipper.zip()
-    |> Zipper.find(&match?({{:__block__, _, [:live_reload]}, {:__block__, _, [[{{:__block__, _, [:patterns]}, _patterns} | _]]}}, &1))
+    |> Zipper.find(&match?({{:__block__, _, [:live_reload]}, {:__block__, _, _}}, &1))
     |> case do
       nil -> :error
-      %{node: {{:__block__, _, [:live_reload]}, {:__block__, _, [[{{:__block__, _, [:patterns]}, quoted_source_list} | _]]}}} ->
-        range = Sourceror.get_range(quoted_source_list)
-        {:__block__, _, [quoted_source_members]} = quoted_source_list
-        {:__block__, _, [quoted_change_members]} = quoted_change_list
+      %{node: {{:__block__, _, [:live_reload]}, {:__block__, _, [live_reload_kw_list]}}} ->
+        live_reload_kw_list
+        |> Zipper.zip()
+        |> Zipper.find(&match?({{:__block__, _, [:patterns]}, _}, &1))
+        |> case do
+          nil -> :error
+          %{node: {{:__block__, _, [:patterns]}, quoted_source_list}} ->
+            range = Sourceror.get_range(quoted_source_list)
+            {:__block__, _, [quoted_source_members]} = quoted_source_list
+            {:__block__, _, [quoted_change_members]} = quoted_change_list
 
-        source_list = Enum.map(quoted_source_members, &Sourceror.to_string/1)
-        change_list = Enum.map(quoted_change_members, &Sourceror.to_string/1)
+            source_list = Enum.map(quoted_source_members, &Sourceror.to_string/1)
+            change_list = Enum.map(quoted_change_members, &Sourceror.to_string/1)
 
-        patterns = Enum.uniq(source_list ++ change_list)
+            patterns = Enum.uniq(source_list ++ change_list)
 
-        change = """
-          [<%= for pattern <- patterns do %>
-            <%= pattern %><%= unless last?(patterns, pattern) do %>,<% end %><% end %>
-          ]
-          """
-          |> compile_string()
-          |> String.trim()
+            change = """
+              [<%= for pattern <- patterns do %>
+                <%= pattern %><%= unless last?(patterns, pattern) do %>,<% end %><% end %>
+              ]
+              """
+              |> compile_string()
+              |> String.trim()
 
-        [build_patch(range, change)]
+            [build_patch(range, change)]
+        end
     end
   end
 
