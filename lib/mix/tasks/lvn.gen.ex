@@ -20,6 +20,7 @@ defmodule Mix.Tasks.Lvn.Gen do
   ## Options
 
   * `--no-live-form` - don't include `LiveViewNative.LiveForm` content in the `Native` module
+  * `--no-gettext` - don't include Gettext support
   """
 
   @impl true
@@ -46,7 +47,8 @@ defmodule Mix.Tasks.Lvn.Gen do
   def switches, do: [
     context_app: :string,
     web: :string,
-    live_form: :boolean
+    live_form: :boolean,
+    gettext: :boolean
   ]
 
   @doc false
@@ -57,6 +59,7 @@ defmodule Mix.Tasks.Lvn.Gen do
 
     --no-live-form
     --context-app
+    --no-gettext
     --web
     """)
   end
@@ -82,6 +85,9 @@ defmodule Mix.Tasks.Lvn.Gen do
     live_form? =
       Keyword.get(context.opts, :live_form, true) && Enum.member?(apps, :live_view_native_live_form)
 
+    gettext? =
+      Keyword.get(context.opts, :gettext, true) && Enum.member?(apps, :gettext)
+
     binding = [
       context: context,
       plugins: plugins,
@@ -89,7 +95,7 @@ defmodule Mix.Tasks.Lvn.Gen do
       last?: &last?/2,
       assigns: %{
         live_form?: live_form?,
-        gettext: true,
+        gettext: gettext?,
         formats: formats(),
         layouts: layouts(context.web_module)
       }

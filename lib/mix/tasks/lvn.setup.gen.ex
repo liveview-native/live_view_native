@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
 
   alias Mix.LiveViewNative.Context
 
-  @shortdoc "Configure LiveView Native within a Phoenix LiveView application"
+  @shortdoc "Run LiveView Native setup generators within a Phoenix LiveView application"
 
   @moduledoc """
   #{@shortdoc}
@@ -11,6 +11,10 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
   This setup will
 
       $ mix lvn.setup.config
+
+    ## Options
+
+    * `--no-gettext` - don't include Gettext support
 
   """
 
@@ -56,20 +60,29 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
     end)
   end
 
-  def generators(_context) do
+  def generators(context) do
     plugins = Mix.LiveViewNative.plugins() |> Map.keys()
+
+    apps = Mix.Project.deps_apps()
+
+    gen_args =
+      (Keyword.get(context.opts, :gettext, true) && Enum.member?(apps, :gettext))
+      |> if do
+        []
+      else
+        ["--no-gettext"]
+      end
 
     layout_tasks = Enum.map(plugins, &({"lvn.gen.layout", [&1]}))
 
-    [{"lvn.gen", []}] ++ layout_tasks
+    [{"lvn.gen", gen_args}] ++ layout_tasks
   end
 
   @doc false
   def switches, do: [
     context_app: :string,
     web: :string,
-    stylesheet: :boolean,
-    live_form: :boolean
+    gettext: :boolean
   ]
 
   @doc false
@@ -80,8 +93,7 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
 
     --context-app
     --web
-    --no-stylesheet
-    --no-live-form
+    --no-gettext
     """)
   end
 end

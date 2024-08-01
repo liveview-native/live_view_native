@@ -36,6 +36,7 @@ defmodule LiveViewNative.MixProject do
       {:phoenix_template, "~> 1.0.4"},
       {:phoenix_html, "~> 3.3 or ~> 4.0 or ~> 4.1"},
       {:floki, ">= 0.30.0", only: :test},
+      {:gettext, "~> 0.24", only: :test},
       {:plug, "~> 1.15"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
