@@ -403,4 +403,26 @@ defmodule Mix.Tasks.Lvn.SetupTest do
       """
     end
   end
+
+  describe "Gettext support" do
+    test "is available by default", config do
+      in_tmp_live_project config.test, fn ->
+        Gen.run([])
+
+        assert_file "lib/live_view_native_native.ex", fn file ->
+          assert file =~ "Gettext"
+        end
+      end
+    end
+
+    test "can be turned off via a switch", config do
+      in_tmp_live_project config.test, fn ->
+        Gen.run(["--no-gettext"])
+
+        assert_file "lib/live_view_native_native.ex", fn file ->
+          refute file =~ "Gettext"
+        end
+      end
+    end
+  end
 end
