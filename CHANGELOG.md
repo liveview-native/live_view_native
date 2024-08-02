@@ -1,4 +1,6 @@
-## v0.3.0-rc.2
+## v0.3.0-rc.3
+
+*Note that v0.3.0-rc.2 was skipped due to a bad release issue*
 
 ### Breaking changes sine RC.1
 
