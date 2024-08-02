@@ -1,18 +1,18 @@
-## v0.2
+## v0.3.0-rc.2
 
-### New Features and Improvements
+### Breaking changes sine RC.1
 
-* Fix ets table generation
-* Fix regression with external HTML templates when using `render_native/1`
-* Use default Phoenix context for non-LVN render
-* Added support for LiveView Native stylesheets (PR [#64](https://github.com/liveview-native/live_view_native/pull/64))
-* Added support for Phoenix layouts to native platforms (PR [#68](https://github.com/liveview-native/live_view_native/pull/68))
-* Improved `mix lvn.install` task (PR [#75](https://github.com/liveview-native/live_view_native/pull/75))
+* the SwiftUI UtilityClasses stylesheet has been removed in favor of using `style` attr
 
-###
+### New
 
-### Breaking Changes
+* `lvn.setup` is now brokwn into two tasks: `lvn.setup.config` and `lvn.setup.gen`, the former uses
+a codegen to inject into your application. There are yet to be addressed edge cases with this, see Known Issues
+* the `style` attribute was introduced in `live_view_native_stylesheet`. See that library for more information
+* more progress on stability and performance has been made for the SwiftUI client
 
-* Standardized connection format (PR [#60](https://github.com/liveview-native/live_view_native/pull/60))
-* Removed modifiers system (PR [#82](https://github.com/liveview-native/live_view_native/pull/82))
-* Renamed `web` platform to `html` (PR [#81](https://github.com/liveview-native/live_view_native/pull/81))
+### Known Issues
+
+* The codegen configuration is intended to be used with new projects, projects that have deviated from the standard config/config.exs format
+and are not using environment config files such as config/dev.exs will see a broken installation process. This will be addressed
+prior to v0.3.0 final
