@@ -46,18 +46,9 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
 
   @doc false
   def run_setups(context) do
-    web_path = Mix.Phoenix.web_path(context.context_app)
-
-    source_files = build_file_map(%{
-      config: "config/config.exs",
-      dev: "config/dev.exs",
-      endpoint: Path.join(web_path, "endpoint.ex"),
-      router: Path.join(web_path, "router.ex")
-    })
-
     Mix.Project.deps_tree()
     |> Enum.filter(fn({_app, deps}) -> Enum.member?(deps, :live_view_native) end)
-    |> Enum.reduce([&config/1], fn({app, _deps}, acc) ->
+    |> Enum.reduce([&build_changes/1], fn({app, _deps}, acc) ->
       Application.spec(app)[:modules]
       |> Enum.find(fn(module) ->
         Regex.match?(~r/Mix\.Tasks\.Lvn\.(.+)\.Setup\.Config/, Atom.to_string(module))
@@ -66,55 +57,85 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
         nil -> acc
         task ->
           Code.ensure_loaded(task)
-          if Kernel.function_exported?(task, :config, 1) do
-            [&task.config/1 | acc]
+          if Kernel.function_exported?(task, :build_changes, 1) do
+            [&task.build_changes/1 | acc]
           else
             acc
           end
       end
     end)
     |> Enum.reverse()
-    |> Enum.reduce({context, source_files}, &(&1.(&2)))
-    |> write_files()
+    |> Enum.map(&(&1.(context)))
+    |> List.flatten()
+    |> Enum.group_by(
+      fn({_data, _patch_fn, path}) -> path end,
+      fn({data, patch_fn, _path}) -> {data, patch_fn} end
+    )
+    |> Enum.each(fn({path, change_sets}) ->
+      case File.read(path) do
+        {:ok, source} ->
+          source =
+            change_sets
+            |> Enum.group_by(
+              fn({_data, patch_fn}) -> patch_fn end,
+              fn({data, _patch_fn}) -> data end
+            )
+            |> Enum.reduce(source, fn({patch_fn, data}, source) ->
+              case patch_fn.(context, data, source, path) do
+                {:ok, source} -> source
+                {:error, msg} ->
+                  Mix.shell().info(msg)
+                  source
+              end
+            end)
+
+            write_file(context, source, path)
+        :error ->
+          """
+          Cannot read the #{path} for configuration.
+          Please see the documentation for manual configuration
+          """
+          |> Mix.shell().info()
+      end
+    end)
 
     context
   end
 
-  @doc false
-  def build_file_map(file_map) do
-    Enum.into(file_map, %{}, fn({key, path}) ->
-      {key, {File.read!(path), path}}
-    end)
+  def build_changes(context) do
+    web_path = Mix.Phoenix.web_path(context.context_app)
+    endpoint_path = Path.join(web_path, "endpoint.ex")
+    router_path = Path.join(web_path, "router.ex")
+
+    [
+      {patch_plugins_data(context), &patch_plugins/4, "config/config.exs"},
+      {patch_mime_types_data(context), &patch_mime_types/4, "config/config.exs"},
+      {patch_format_encoders_data(context), &patch_format_encoders/4, "config/config.exs"},
+      {patch_template_engines_data(context), &patch_template_engines/4, "config/config.exs"},
+      {patch_live_reload_patterns_data(context), &patch_live_reload_patterns/4, "config/dev.exs"},
+      {nil, &patch_livereloader/4, endpoint_path},
+      {patch_browser_pipeline_data(context), &patch_browser_pipeline/4, router_path}
+    ]
   end
 
   @doc false
-  def config({context, source_files}) do
-    {context, source_files}
-    |> patch_config()
-    |> patch_dev()
-    |> patch_endpoint()
-    |> patch_router()
+  def patch_plugins_data(_context) do
+    Mix.LiveViewNative.plugins()
+    |> Map.values()
+    |> Enum.map(&(&1.__struct__))
   end
 
   @doc false
-  def patch_config({context, %{config: {source, path}} = source_files}) do
-    {_context, {source, _path}} =
-      {context, {source, path}}
-      |> patch_plugins()
-      |> patch_mime_types()
-      |> patch_format_encoders()
-      |> patch_template_engines()
-
-    {context, %{source_files | config: {source, path}}}
-  end
-
-  @doc false
-  def patch_plugins({context, {source, path}}) do
-    plugins = Mix.LiveViewNative.plugins() |> Map.values()
+  def patch_plugins(_context, plugins, source, path) do
+    plugins =
+      plugins
+      |> List.flatten()
+      |> Enum.uniq()
+      |> Enum.sort()
 
     change = """
     config :live_view_native, plugins: [<%= for plugin <- plugins do %>
-      <%= inspect plugin.__struct__ %><%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+      <%= inspect plugin %><%= unless last?(plugins, plugin) do %>,<% end %><% end %>
     ]
 
     """
@@ -130,9 +151,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_plugins/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
-
-    {context, {source, path}}
+    CodeGen.patch(source, change, merge: &merge_plugins/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
   end
 
   defp merge_plugins(source, change) do
@@ -169,13 +188,23 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
+  defp patch_mime_types_data(_context) do
+    Mix.LiveViewNative.plugins()
+    |> Map.values()
+    |> Enum.map(&(&1.format))
+  end
+
   @doc false
-  def patch_mime_types({context, {source, path}}) do
-    plugins = Mix.LiveViewNative.plugins() |> Map.values()
+  def patch_mime_types(_context, formats, source, path) do
+    formats =
+      formats
+      |> List.flatten()
+      |> Enum.uniq()
+      |> Enum.sort()
 
     change = """
-    config :mime, :types, %{<%= for plugin <- plugins do %>
-      "text/<%= plugin.format %>" => ["<%= plugin.format %>"]<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+    config :mime, :types, %{<%= for format <- formats do %>
+      "text/<%= format %>" => ["<%= format %>"]<%= unless last?(formats, format) do %>,<% end %><% end %>
     }
 
     """
@@ -191,9 +220,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_mime_types/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
-
-    {context, {source, path}}
+    CodeGen.patch(source, change, merge: &merge_mime_types/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
   end
 
   defp merge_mime_types(source, change) do
@@ -225,13 +252,23 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
+  defp patch_format_encoders_data(_context) do
+    Mix.LiveViewNative.plugins()
+    |> Map.values()
+    |> Enum.map(&(&1.format))
+  end
+
   @doc false
-  def patch_format_encoders({context, {source, path}}) do
-    plugins = Mix.LiveViewNative.plugins() |> Map.values()
+  def patch_format_encoders(_context, formats, source, path) do
+    formats =
+      formats
+      |> List.flatten()
+      |> Enum.uniq()
+      |> Enum.sort()
 
     change = """
-    config :phoenix_template, :format_encoders, [<%= for plugin <- plugins do %>
-      <%= plugin.format %>: Phoenix.HTML.Engine<%= unless last?(plugins, plugin) do %>,<% end %><% end %>
+    config :phoenix_template, :format_encoders, [<%= for format <- formats do %>
+      <%= format %>: Phoenix.HTML.Engine<%= unless last?(formats, format) do %>,<% end %><% end %>
     ]
 
     """
@@ -247,9 +284,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_format_encoders/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
-
-    {context, {source, path}}
+    CodeGen.patch(source, change, merge: &merge_format_encoders/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
   end
 
   defp merge_format_encoders(source, change) do
@@ -284,11 +319,21 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
+  defp patch_template_engines_data(_context) do
+    [{:neex, LiveViewNative.Engine}]
+  end
+
   @doc false
-  def patch_template_engines({context, {source, path}}) do
+  def patch_template_engines(_context, template_engines, source, path) do
+    template_engines =
+      template_engines
+      |> List.flatten()
+      |> Enum.uniq_by(fn({ext, _engine}) -> ext end)
+      |> Enum.sort_by(fn({ext, _engine}) -> ext end)
+
     change = """
-    config :phoenix, :template_engines, [
-      neex: LiveViewNative.Engine
+    config :phoenix, :template_engines, [<%= for {ext, engine} <- template_engines do %>
+      <%= ext%>: <%= inspect engine %><%= unless last?(template_engines, {ext, engine}) do %>,<% end %><% end %>
     ]
 
     """
@@ -304,9 +349,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_template_engines/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
-
-    {context, {source, path}}
+    CodeGen.patch(source, change, merge: &merge_template_engines/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
   end
 
   defp merge_template_engines(source, change) do
@@ -341,23 +384,23 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
-  @doc false
-  def patch_dev({context, %{dev: {source, path}} = source_files}) do
+  defp patch_live_reload_patterns_data(context) do
+    web_path = Mix.Phoenix.web_path(context.context_app)
 
-    {_context, {source, _path}} =
-      {context, {source, path}}
-      |> patch_live_reload_patterns()
-
-    {context, %{source_files | dev: {source, path}}}
+    [~s'~r"#{web_path}/(live|components)/.*neex$"']
   end
 
   @doc false
-  def patch_live_reload_patterns({context, {source, path}}) do
-    web_path = Mix.Phoenix.web_path(context.context_app)
+  def patch_live_reload_patterns(_context, patterns, source, path) do
+    patterns =
+      patterns
+      |> List.flatten()
+      |> Enum.uniq()
+      |> Enum.sort()
 
     change = """
-    [
-      ~r"<%= web_path %>/(live|components)/.*neex$"
+    [<%= for pattern <- patterns do %>
+      <%= pattern %><%= unless last?(patterns, pattern) do %>,<% end %><% end %>
     ]
     """
     |> compile_string()
@@ -370,9 +413,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/dev.exs for errors and try again
     """
 
-    source = CodeGen.patch(source, change, merge: &merge_live_reload_patterns/2, fail_msg: fail_msg, path: path)
-
-    {context, {source, path}}
+    CodeGen.patch(source, change, merge: &merge_live_reload_patterns/2, fail_msg: fail_msg, path: path)
   end
 
   defp merge_live_reload_patterns(source, change) do
@@ -413,17 +454,13 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
-  @doc false
-  def patch_endpoint({context, %{endpoint: {source, path}} = source_files}) do
+  defp patch_livereloader(_context, _data, source, path) do
     change = "plug LiveViewNative.LiveReloader\n"
-
     matcher = &(match?({:plug, _, [{:__aliases__, _, [:Phoenix, :LiveReloader]}]}, &1))
-    source = CodeGen.patch(source, change, merge: &merge_endpoint/2, inject: {:after, matcher}, path: path)
-
-    {context, %{source_files | endpoint: {source, path}}}
+    CodeGen.patch(source, change, merge: &merge_livereloader/2, inject: {:after, matcher}, path: path)
   end
 
-  defp merge_endpoint(source, _change) do
+  defp merge_livereloader(source, _change) do
     source
     |> Sourceror.parse_string!()
     |> Zipper.zip()
@@ -434,38 +471,70 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
+  defp patch_browser_pipeline_data(context) do
+    [
+      accepts: patch_accepts_data(context),
+      root_layouts: patch_root_layouts_data(context)
+    ]
+  end
+
   @doc false
-  def patch_router({context, %{router: {source, path}} = source_files}) do
+  def patch_browser_pipeline(context, data, source, path) do
     quoted_source = Sourceror.parse_string!(source)
+
+    data = List.flatten(data)
 
     quoted_source
     |> Zipper.zip()
     |> Zipper.find(&(match?({:pipeline, _, [{:__block__, _, [:browser]} | _]}, &1)))
     |> case do
       nil ->
-        Mix.shell.info("No browser pipeline!")
-        {context, source_files}
+        msg =
+          """
+          No :browser_pipeline found in application router.
+          You will need to manually configure your router for LiveView Native.
+          Plase see the docs on how to do this.
+          """
+
+        {:error, msg}
 
       _quoted_browser_pipeline ->
-          {_context, {source, _path}} =
-            {context, {source, path}}
-            |> patch_accepts()
-            |> patch_root_layouts()
+        accepts_data = Keyword.get(data, :accepts)
+        root_layouts_data = Keyword.get(data, :root_layouts)
 
-          {context, %{source_files | router: {source, path}}}
+        source =
+          [
+            {accepts_data, &patch_accepts/4},
+            {root_layouts_data, &patch_root_layouts/4}
+          ]
+          |> Enum.reduce(source, fn({data, patch_fn}, source) ->
+            case patch_fn.(context, data, source, path) do
+              {:ok, source} -> source
+              {:error, msg} ->
+                Mix.shell().info(msg)
+                source
+            end
+          end)
+
+        {:ok, source}
     end
   end
 
+  def patch_accepts_data(_context) do
+    Mix.LiveViewNative.plugins()
+    |> Map.values()
+    |> Enum.map(&(Atom.to_string(&1.format)))
+  end
+
   @doc false
-  def patch_accepts({context, {source, path}}) do
-    change =
-      Mix.LiveViewNative.plugins()
-      |> Map.values()
-      |> Enum.map(&(Atom.to_string(&1.format)))
+  def patch_accepts(_context, formats, source, path) do
+    formats =
+      formats
+      |> List.flatten()
+      |> Enum.uniq()
+      |> Enum.sort()
 
-    source = CodeGen.patch(source, change, merge: &merge_accepts/2, path: path)
-
-    {context, {source, path}}
+    CodeGen.patch(source, formats, merge: &merge_accepts/2, path: path)
   end
 
   defp merge_accepts(source, new_formats) do
@@ -500,22 +569,27 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
-  @doc false
-  def patch_root_layouts({context, {source, path}}) do
+  def patch_root_layouts_data(_context) do
     base_module =
       Mix.Phoenix.base()
       |> Mix.Phoenix.web_module()
 
-    change =
-      Mix.LiveViewNative.plugins()
-      |> Map.values()
-      |> Enum.map(fn(plugin) ->
-        {plugin.format, {Module.concat([base_module, :Layouts, plugin.module_suffix]), :root}}
-      end)
+    Mix.LiveViewNative.plugins()
+    |> Map.values()
+    |> Enum.map(fn(plugin) ->
+      {plugin.format, {Module.concat([base_module, :Layouts, plugin.module_suffix]), :root}}
+    end)
+  end
 
-    source = CodeGen.patch(source, change, merge: &merge_root_layouts/2, path: path)
+  @doc false
+  def patch_root_layouts(_context, layouts, source, path) do
+    layouts =
+      layouts
+      |> List.flatten()
+      |> Enum.uniq_by(fn({format, _layout_mod}) -> format end)
+      |> Enum.sort_by(fn({format, _layout_mod}) -> format end)
 
-    {context, {source, path}}
+    CodeGen.patch(source, layouts, merge: &merge_root_layouts/2, path: path)
   end
 
   defp merge_root_layouts(source, new_root_layouts) do
@@ -558,13 +632,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  def write_files({context, source_files}) do
-    Enum.each(source_files, fn({_key, {source, path}}) ->
-      write_file({context, {source, path}})
-    end)
-  end
-
-  defp write_file({context, {source, path}}) do
+  def write_file(context, source, path) do
     original = File.read!(path)
 
     if original != source do
@@ -578,10 +646,10 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
           |> TextDiff.format(source)
           |> Mix.shell.info()
 
-          write_file({context, {source, path}})
+          write_file(context, source, path)
         "y" -> File.write!(path, source)
         "n" -> nil
-        _other -> write_file({context, {source, path}})
+        _other -> write_file(context, source, path)
       end
     end
   end

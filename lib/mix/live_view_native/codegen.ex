@@ -4,9 +4,11 @@ defmodule Mix.LiveViewNative.CodeGen do
   alias Sourceror.Zipper
 
   def patch(source, change, opts \\ []) do
-    patches = build_patches(source, change, opts)
-
-    Sourceror.patch_string(source, patches)
+    case build_patches(source, change, opts) do
+      {:error, msg} -> {:error, msg}
+      patches when is_list(patches) ->
+        {:ok, Sourceror.patch_string(source, patches)}
+    end
   end
 
   defp build_patches(source, change, opts) do
@@ -21,11 +23,7 @@ defmodule Mix.LiveViewNative.CodeGen do
       {_, :head} -> inject_head(source, change)
       {_, :eof} -> inject_eof(source, change)
       _ ->
-        if fail_msg = Keyword.get(opts, :fail_msg) do
-          Mix.shell.info(fail_msg)
-        end
-
-        []
+        {:error, Keyword.get(opts, :fail_msg, "")}
     end
   end
 
@@ -40,14 +38,13 @@ defmodule Mix.LiveViewNative.CodeGen do
 
         [build_patch(range, change)]
       :error ->
-        """
-        The following change failed to be applied to #{path}
+        msg =
+          """
+          The following change failed to be applied to #{path}
 
-        #{change}
-        """
-        |> Mix.shell.info()
-
-        []
+          #{change}
+          """
+        {:error, msg}
     end
   end
 
@@ -62,14 +59,14 @@ defmodule Mix.LiveViewNative.CodeGen do
 
         [build_patch(range, change)]
       :error ->
-        """
-        The following change failed to be applied to #{path}
+        msg =
+          """
+          The following change failed to be applied to #{path}
 
-        #{change}
-        """
-        |> Mix.shell.info()
+          #{change}
+          """
 
-        []
+        {:error, msg}
     end
   end
 
