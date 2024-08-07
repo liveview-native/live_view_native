@@ -35,7 +35,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
 
     context = Context.build(args, __MODULE__)
 
-    run_changesets(context, build_changesets())
+    run_changesets(context, build_all_changesets())
 
     """
 
@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  defp build_changesets() do
+  defp build_all_changesets() do
     Mix.Project.deps_tree()
     |> Enum.filter(fn({_app, deps}) -> Enum.member?(deps, :live_view_native) end)
     |> Enum.reduce([&build_changesets/1], fn({app, _deps}, acc) ->
@@ -65,6 +65,23 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
       end
     end)
     |> Enum.reverse()
+  end
+
+  @doc false
+  def build_changesets(context) do
+    web_path = Mix.Phoenix.web_path(context.context_app)
+    endpoint_path = Path.join(web_path, "endpoint.ex")
+    router_path = Path.join(web_path, "router.ex")
+
+    [
+      {patch_plugins_data(context), &patch_plugins/4, "config/config.exs"},
+      {patch_mime_types_data(context), &patch_mime_types/4, "config/config.exs"},
+      {patch_format_encoders_data(context), &patch_format_encoders/4, "config/config.exs"},
+      {patch_template_engines_data(context), &patch_template_engines/4, "config/config.exs"},
+      {patch_live_reload_patterns_data(context), &patch_live_reload_patterns/4, "config/dev.exs"},
+      {nil, &patch_livereloader/4, endpoint_path},
+      {patch_browser_pipeline_data(context), &patch_browser_pipeline/4, router_path}
+    ]
   end
 
   @doc false
@@ -105,23 +122,6 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end)
 
     context
-  end
-
-  @doc false
-  def build_changesets(context) do
-    web_path = Mix.Phoenix.web_path(context.context_app)
-    endpoint_path = Path.join(web_path, "endpoint.ex")
-    router_path = Path.join(web_path, "router.ex")
-
-    [
-      {patch_plugins_data(context), &patch_plugins/4, "config/config.exs"},
-      {patch_mime_types_data(context), &patch_mime_types/4, "config/config.exs"},
-      {patch_format_encoders_data(context), &patch_format_encoders/4, "config/config.exs"},
-      {patch_template_engines_data(context), &patch_template_engines/4, "config/config.exs"},
-      {patch_live_reload_patterns_data(context), &patch_live_reload_patterns/4, "config/dev.exs"},
-      {nil, &patch_livereloader/4, endpoint_path},
-      {patch_browser_pipeline_data(context), &patch_browser_pipeline/4, router_path}
-    ]
   end
 
   defp patch_plugins_data(_context) do
