@@ -33,9 +33,9 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
       )
     end
 
-    args
-    |> Context.build(__MODULE__)
-    |> run_setups()
+    context = Context.build(args, __MODULE__)
+
+    run_changesets(context, build_changesets())
 
     """
 
@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
-  def run_setups(context) do
+  defp build_changesets() do
     Mix.Project.deps_tree()
     |> Enum.filter(fn({_app, deps}) -> Enum.member?(deps, :live_view_native) end)
     |> Enum.reduce([&build_changesets/1], fn({app, _deps}, acc) ->
@@ -65,6 +65,11 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
       end
     end)
     |> Enum.reverse()
+  end
+
+  @doc false
+  def run_changesets(context, changesets) do
+    changesets
     |> Enum.map(&(&1.(context)))
     |> List.flatten()
     |> Enum.group_by(
