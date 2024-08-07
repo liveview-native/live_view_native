@@ -28,7 +28,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
 
       matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
 
-      source = CodeGen.patch(source, change, inject: {:before, matcher}, path: "config/config.exs")
+      {:ok, source} = CodeGen.patch(source, change, inject: {:before, matcher}, path: "config/config.exs")
 
       assert source == """
       config :live_view_native, plugins: [
@@ -53,11 +53,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
 
       matcher = &(match?({:config, _, [{:__block__, _, [:other]} | _]}, &1))
 
-      source = CodeGen.patch(source, change, inject: {:before, matcher}, path: "config/config.exs")
-
-      assert source == """
-      config :logger, :level, :debug
-      """
+      assert {:error, _msg} = CodeGen.patch(source, change, inject: {:before, matcher}, path: "config/config.exs")
     end
 
     test "inject after" do
@@ -76,7 +72,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
 
       matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
 
-      source = CodeGen.patch(source, change, inject: {:after, matcher}, path: "config/config.exs")
+      {:ok, source} = CodeGen.patch(source, change, inject: {:after, matcher}, path: "config/config.exs")
 
       assert source == """
       config :logger, :level, :debug
@@ -105,12 +101,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
 
       matcher = &(match?({:config, _, [{:__block__, _, [:other]} | _]}, &1))
 
-      source = CodeGen.patch(source, change, inject: {:after, matcher}, path: "config/config.exs")
-
-      assert source == """
-      config :logger, :level, :debug
-      config :logger, :backends, []
-      """
+      assert {:error, _msg} = CodeGen.patch(source, change, inject: {:after, matcher}, path: "config/config.exs")
     end
 
     test "inject head" do
@@ -125,7 +116,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
 
       """
 
-      source = CodeGen.patch(source, change, inject: :head)
+      {:ok, source} = CodeGen.patch(source, change, inject: :head)
 
       assert source == """
       config :live_view_native, plugins: [
@@ -148,7 +139,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       ]
       """
 
-      source = CodeGen.patch(source, change, inject: :eof)
+      {:ok, source} = CodeGen.patch(source, change, inject: :eof)
 
       assert source == """
       config :logger, :level, :debug
@@ -178,7 +169,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
 
       merge = &merger/2
 
-      source = CodeGen.patch(source, change, merge: merge)
+      {:ok, source} = CodeGen.patch(source, change, merge: merge)
 
       assert source == """
       config :logger, :level, :debug
@@ -207,7 +198,7 @@ defmodule Mix.LiveViewNative.CodeGenTest do
 
       matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
 
-      source = CodeGen.patch(source, change, merge: merge, inject: {:after, matcher}, path: "config/config.exs")
+      {:ok, source} = CodeGen.patch(source, change, merge: merge, inject: {:after, matcher}, path: "config/config.exs")
 
       assert source == """
       config :logger, :level, :debug

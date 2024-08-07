@@ -260,7 +260,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
 
   describe "config codgen scenarios" do
     test "when :live_view_native config exists the :plugins list is updated and duplicates are removed" do
-      config = """
+      source = """
         config :live_view_native, plugins: [
           LiveViewNativeTest.Other,
           LiveViewNativeTest.Switch
@@ -269,7 +269,12 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         config :logger, :level, :debug
         """
 
-      {_, {result, _}} = Config.patch_plugins({%{}, {config, "config/config.exs"}})
+      data = [
+        LiveViewNativeTest.GameBoy,
+        LiveViewNativeTest.Switch
+      ]
+
+      {:ok, result} = Config.patch_plugins(%{}, data, source, "config/config.exs")
 
       assert  result =~ """
         config :live_view_native, plugins: [
@@ -283,14 +288,16 @@ defmodule Mix.Tasks.Lvn.SetupTest do
     end
 
     test "when :mimes config exists the :types map is updated and duplicates are removed" do
-      config = """
+      source = """
         config :mime, :types, %{
           "text/other" => ["other"],
           "text/switch" => ["switch"]
         }
         """
 
-      {_, {result, _}} = Config.patch_mime_types({%{}, {config, "config/config.exs"}})
+      data = [:gameboy]
+
+      {:ok, result} = Config.patch_mime_types(%{}, data, source, "config/config.exs")
 
       assert result =~ """
         config :mime, :types, %{
@@ -302,14 +309,16 @@ defmodule Mix.Tasks.Lvn.SetupTest do
     end
 
     test "when :phonex_template config exists the :format_encoders list is updated and duplicates are removed" do
-      config = """
+      source = """
         config :phoenix_template, :format_encoders, [
           other: Other.Engine,
           switch: Phoenix.HTML.Engine
         ]
         """
 
-      {_, {result, _}} = Config.patch_format_encoders({%{}, {config, "config/config.exs"}})
+      data = [:gameboy]
+
+      {:ok, result} = Config.patch_format_encoders(%{}, data, source, "config/config.exs")
 
       assert result =~ """
         config :phoenix_template, :format_encoders, [
@@ -321,13 +330,15 @@ defmodule Mix.Tasks.Lvn.SetupTest do
     end
 
     test "when :phoenix config exists the :template_engines list is updated and duplicates are removed" do
-      config = """
+      source = """
         config :phoenix, :template_engines, [
           other: Other.Engine,
         ]
         """
 
-      {_, {result, _}} = Config.patch_template_engines({%{}, {config, "config/config.exs"}})
+      data = [{:neex, LiveViewNative.Engine}]
+
+      {:ok, result} = Config.patch_template_engines(%{}, data, source, "config/config.exs")
 
       assert result =~ """
         config :phoenix, :template_engines, [
@@ -340,7 +351,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
 
   describe "dev codgen scenarios" do
     test "when the :live_reload_patterns had additional keywords items" do
-      config = """
+      source = """
         config :live_view_native, LiveViewNativeWeb.Endpoint,
           live_reload: [
             other: :thing,
@@ -352,7 +363,11 @@ defmodule Mix.Tasks.Lvn.SetupTest do
           ]
         """
 
-      {_, {result, _}} = Config.patch_live_reload_patterns({%{context_app: :live_view_native}, {config, "config/config.exs"}})
+      data = [
+        ~s'~r"lib/live_view_native_web/(live|components)/.*neex$"'
+      ]
+
+      {:ok, result} = Config.patch_live_reload_patterns(%{context_app: :live_view_native}, data, source, "config/config.exs")
 
       assert  result =~ """
         config :live_view_native, LiveViewNativeWeb.Endpoint,
@@ -371,7 +386,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
 
   describe "router codgen scenarios" do
     test "patch_layouts when this old style of router layout option is being used, rewrite as the new keyword list with html" do
-      config = """
+      source = """
           pipeline :browser do
             plug :accepts, ["html"]
             plug :fetch_session
@@ -384,7 +399,12 @@ defmodule Mix.Tasks.Lvn.SetupTest do
           end
         """
 
-      {_, {result, _}} = Config.patch_root_layouts({%{}, {config, "live_view_native_web/router.ex"}})
+      data = [
+        {:gameboy, {LiveViewNativeWeb.Layouts.GameBoy, :root}},
+        {:switch, {LiveViewNativeWeb.Layouts.Switch, :root}},
+      ]
+
+      {:ok, result} = Config.patch_root_layouts(%{}, data, source, "live_view_native_web/router.ex")
 
       assert result =~ """
         pipeline :browser do
