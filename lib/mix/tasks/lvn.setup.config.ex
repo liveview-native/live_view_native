@@ -87,6 +87,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   @doc false
   def run_changesets(context, changesets) do
     changesets
+    |> List.wrap()
     |> Enum.map(&(&1.(context)))
     |> List.flatten()
     |> Enum.group_by(
