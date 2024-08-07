@@ -48,7 +48,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   def run_setups(context) do
     Mix.Project.deps_tree()
     |> Enum.filter(fn({_app, deps}) -> Enum.member?(deps, :live_view_native) end)
-    |> Enum.reduce([&build_changes/1], fn({app, _deps}, acc) ->
+    |> Enum.reduce([&build_changesets/1], fn({app, _deps}, acc) ->
       Application.spec(app)[:modules]
       |> Enum.find(fn(module) ->
         Regex.match?(~r/Mix\.Tasks\.Lvn\.(.+)\.Setup\.Config/, Atom.to_string(module))
@@ -57,8 +57,8 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
         nil -> acc
         task ->
           Code.ensure_loaded(task)
-          if Kernel.function_exported?(task, :build_changes, 1) do
-            [&task.build_changes/1 | acc]
+          if Kernel.function_exported?(task, :build_changesets, 1) do
+            [&task.build_changesets/1 | acc]
           else
             acc
           end
@@ -102,7 +102,8 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     context
   end
 
-  def build_changes(context) do
+  @doc false
+  def build_changesets(context) do
     web_path = Mix.Phoenix.web_path(context.context_app)
     endpoint_path = Path.join(web_path, "endpoint.ex")
     router_path = Path.join(web_path, "router.ex")
@@ -118,8 +119,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     ]
   end
 
-  @doc false
-  def patch_plugins_data(_context) do
+  defp patch_plugins_data(_context) do
     Mix.LiveViewNative.plugins()
     |> Map.values()
     |> Enum.map(&(&1.__struct__))
@@ -520,7 +520,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
-  def patch_accepts_data(_context) do
+  defp patch_accepts_data(_context) do
     Mix.LiveViewNative.plugins()
     |> Map.values()
     |> Enum.map(&(Atom.to_string(&1.format)))
@@ -569,7 +569,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     end
   end
 
-  def patch_root_layouts_data(_context) do
+  defp patch_root_layouts_data(_context) do
     base_module =
       Mix.Phoenix.base()
       |> Mix.Phoenix.web_module()
