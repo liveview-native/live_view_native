@@ -131,6 +131,12 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         refute_file "lib/live_view_native_native.ex"
       end
     end
+
+    test "does not error when files are missing", config do
+      in_tmp_live_project config.test, fn ->
+        Config.run([])
+      end
+    end
   end
 
   describe "when an umbrella app" do
