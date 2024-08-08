@@ -113,7 +113,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
             end)
 
             write_file(context, source, path)
-        :error ->
+        {:error, _reason} ->
           """
           Cannot read the #{path} for configuration.
           Please see the documentation for manual configuration
