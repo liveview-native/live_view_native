@@ -68,17 +68,33 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   @doc false
+  def config_path_for(file) do
+    config_dir =
+      Mix.Project.config()
+      |> Keyword.fetch(:config_path)
+      |> case do
+        {:ok, path} -> Path.dirname(path)
+        :error -> "config/"
+      end
+
+    Path.join(config_dir, file)
+  end
+
+  @doc false
   def build_changesets(context) do
+    config_path = config_path_for("config.exs")
+    dev_path = config_path_for("dev.exs")
+
     web_path = Mix.Phoenix.web_path(context.context_app)
     endpoint_path = Path.join(web_path, "endpoint.ex")
     router_path = Path.join(web_path, "router.ex")
 
     [
-      {patch_plugins_data(context), &patch_plugins/4, "config/config.exs"},
-      {patch_mime_types_data(context), &patch_mime_types/4, "config/config.exs"},
-      {patch_format_encoders_data(context), &patch_format_encoders/4, "config/config.exs"},
-      {patch_template_engines_data(context), &patch_template_engines/4, "config/config.exs"},
-      {patch_live_reload_patterns_data(context), &patch_live_reload_patterns/4, "config/dev.exs"},
+      {patch_plugins_data(context), &patch_plugins/4, config_path},
+      {patch_mime_types_data(context), &patch_mime_types/4, config_path},
+      {patch_format_encoders_data(context), &patch_format_encoders/4, config_path},
+      {patch_template_engines_data(context), &patch_template_engines/4, config_path},
+      {patch_live_reload_patterns_data(context), &patch_live_reload_patterns/4, dev_path},
       {nil, &patch_livereloader/4, endpoint_path},
       {patch_browser_pipeline_data(context), &patch_browser_pipeline/4, router_path}
     ]
