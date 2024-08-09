@@ -634,7 +634,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     original = File.read!(path)
 
     if original != source do
-      "#{IO.ANSI.yellow()}Write to #{IO.ANSI.green()}#{IO.ANSI.bright()}#{path}#{IO.ANSI.reset()}\n(y)es (n)o (d)iff\n>"
+      "#{IO.ANSI.yellow()}Write to #{IO.ANSI.green()}#{IO.ANSI.bright()}#{path}#{IO.ANSI.reset()}\n(Y)es (n)o (d)iff\n>"
       |> Mix.Shell.IO.prompt()
       |> String.trim()
       |> case do
@@ -645,7 +645,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
           |> Mix.shell.info()
 
           write_file(context, source, path)
-        "y" -> File.write!(path, source)
+        char when char in ["y", "Y", "\n"] -> File.write!(path, source)
         "n" -> nil
         _other -> write_file(context, source, path)
       end
