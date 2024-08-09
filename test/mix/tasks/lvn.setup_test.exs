@@ -353,6 +353,32 @@ defmodule Mix.Tasks.Lvn.SetupTest do
         ]
         """
     end
+
+    test "when an unexpected import_config exists" do
+      source = """
+        if File.exists?("config/locals.exs"), do: import_config("config/locals.exs")
+
+        import_config "\#{config_env()}.exs"
+        """
+
+      data = [
+        LiveViewNativeTest.GameBoy,
+        LiveViewNativeTest.Switch
+      ]
+
+      {:ok, result} = Config.patch_plugins(%{}, data, source, "config/config.exs")
+
+      assert  result =~ """
+        if File.exists?("config/locals.exs"), do: import_config("config/locals.exs")
+
+        config :live_view_native, plugins: [
+          LiveViewNativeTest.GameBoy,
+          LiveViewNativeTest.Switch
+        ]
+
+        import_config "\#{config_env()}.exs"
+        """
+    end
   end
 
   describe "dev codgen scenarios" do

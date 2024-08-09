@@ -147,8 +147,6 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     """
     |> compile_string()
 
-    matcher = &(match?({:import_config, _, _}, &1))
-
     fail_msg = """
     failed to merge or inject the following in code into config/config.exs
 
@@ -157,7 +155,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    CodeGen.patch(source, change, merge: &merge_plugins/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
+    CodeGen.patch(source, change, merge: &merge_plugins/2, inject: {:before, &import_config_matcher/1}, fail_msg: fail_msg, path: path)
   end
 
   defp merge_plugins(source, change) do
@@ -216,8 +214,6 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     """
     |> compile_string()
 
-    matcher = &(match?({:import_config, _, _}, &1))
-
     fail_msg = """
     failed to merge or inject the following in code into config/config.exs
 
@@ -226,7 +222,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    CodeGen.patch(source, change, merge: &merge_mime_types/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
+    CodeGen.patch(source, change, merge: &merge_mime_types/2, inject: {:before, &import_config_matcher/1}, fail_msg: fail_msg, path: path)
   end
 
   defp merge_mime_types(source, change) do
@@ -280,8 +276,6 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     """
     |> compile_string()
 
-    matcher = &(match?({:import_config, _, _}, &1))
-
     fail_msg = """
     failed to merge or inject the following in code into config/config.exs
 
@@ -290,7 +284,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    CodeGen.patch(source, change, merge: &merge_format_encoders/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
+    CodeGen.patch(source, change, merge: &merge_format_encoders/2, inject: {:before, &import_config_matcher/1}, fail_msg: fail_msg, path: path)
   end
 
   defp merge_format_encoders(source, change) do
@@ -345,8 +339,6 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     """
     |> compile_string()
 
-    matcher = &(match?({:import_config, _, _}, &1))
-
     fail_msg = """
     failed to merge or inject the following in code into config/config.exs
 
@@ -355,7 +347,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
     you can do this manually or inspect config/config.exs for errors and try again
     """
 
-    CodeGen.patch(source, change, merge: &merge_template_engines/2, inject: {:before, matcher}, fail_msg: fail_msg, path: path)
+    CodeGen.patch(source, change, merge: &merge_template_engines/2, inject: {:before, &import_config_matcher/1}, fail_msg: fail_msg, path: path)
   end
 
   defp merge_template_engines(source, change) do
@@ -659,6 +651,12 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
       end
     end
   end
+
+  def import_config_matcher({:import_config, meta, _args}),
+    do: Keyword.get(meta, :column) == 1
+
+  def import_config_matcher(_other),
+    do: false
 
   @doc false
   def switches, do: [
