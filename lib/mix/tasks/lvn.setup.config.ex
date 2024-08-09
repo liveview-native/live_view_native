@@ -645,7 +645,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
           |> Mix.shell.info()
 
           write_file(context, source, path)
-        char when char in ["y", "Y", "\n"] -> File.write!(path, source)
+        char when char in ["y", "Y", ""] -> File.write!(path, source)
         "n" -> nil
         _other -> write_file(context, source, path)
       end
