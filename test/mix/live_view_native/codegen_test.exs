@@ -39,6 +39,31 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       """
     end
 
+    test "inject before explicit first match" do
+      source = """
+      config :logger, :level, :debug
+      """
+
+      change = """
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+
+      """
+
+      matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
+
+      {:ok, source} = CodeGen.patch(source, change, inject: {:before, {:first, matcher}}, path: "config/config.exs")
+
+      assert source == """
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+
+      config :logger, :level, :debug
+      """
+    end
+
     test "inject before not matched" do
       source = """
       config :logger, :level, :debug
@@ -73,6 +98,35 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
 
       {:ok, source} = CodeGen.patch(source, change, inject: {:after, matcher}, path: "config/config.exs")
+
+      assert source == """
+      config :logger, :level, :debug
+
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+
+      config :logger, :backends, []
+      """
+    end
+
+    test "inject after last match" do
+      source = """
+      config :logger, :level, :debug
+      config :logger, :backends, []
+      """
+
+      change = """
+
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+
+      """
+
+      matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
+
+      {:ok, source} = CodeGen.patch(source, change, inject: {:after, {:last, matcher}}, path: "config/config.exs")
 
       assert source == """
       config :logger, :level, :debug
