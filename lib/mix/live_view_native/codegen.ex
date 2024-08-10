@@ -40,7 +40,7 @@ defmodule Mix.LiveViewNative.CodeGen do
       :error ->
         msg =
           """
-          The following change failed to be applied to #{path}
+          #{IO.ANSI.red()}#{IO.ANSI.bright()}The following change failed to be applied to #{path}#{IO.ANSI.reset()}
 
           #{change}
           """
@@ -61,7 +61,7 @@ defmodule Mix.LiveViewNative.CodeGen do
       :error ->
         msg =
           """
-          The following change failed to be applied to #{path}
+          #{IO.ANSI.red()}#{IO.ANSI.bright()}The following change failed to be applied to #{path}#{IO.ANSI.reset()}
 
           #{change}
           """
@@ -70,25 +70,24 @@ defmodule Mix.LiveViewNative.CodeGen do
     end
   end
 
-  defp inject_head(source, change) do
-    quoted_source = Sourceror.parse_string!(source)
-    %{start: [line: line, column: column], end: _} = Sourceror.get_range(quoted_source)
-
+  defp inject_head(_source, change) do
     range = %{
-      start: [line: line, column: column],
-      end: [line: line, column: column]
+      start: [line: 1, column: 1],
+      end: [line: 1, column: 1]
     }
 
     [build_patch(range, change)]
   end
 
   defp inject_eof(source, change) do
-    quoted_source = Sourceror.parse_string!(source)
-    %{start: _, end: [line: line, column: column]} = Sourceror.get_range(quoted_source)
+    line =
+      source
+      |> String.split("\n")
+      |> length()
 
     range = %{
-      start: [line: line + 1, column: column],
-      end: [line: line + 1, column: column]
+      start: [line: line, column: 1],
+      end: [line: line, column: 1]
     }
 
     [build_patch(range, change)]
