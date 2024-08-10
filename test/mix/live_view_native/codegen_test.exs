@@ -39,6 +39,31 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       """
     end
 
+    test "inject before explicit first match" do
+      source = """
+      config :logger, :level, :debug
+      """
+
+      change = """
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+
+      """
+
+      matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
+
+      {:ok, source} = CodeGen.patch(source, change, inject: {:before, {:first, matcher}}, path: "config/config.exs")
+
+      assert source == """
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+
+      config :logger, :level, :debug
+      """
+    end
+
     test "inject before not matched" do
       source = """
       config :logger, :level, :debug
@@ -82,6 +107,33 @@ defmodule Mix.LiveViewNative.CodeGenTest do
       ]
 
       config :logger, :backends, []
+      """
+    end
+
+    test "inject after last match" do
+      source = """
+      config :logger, :level, :debug
+      config :logger, :backends, []
+      """
+
+      change = """
+
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+      """
+
+      matcher = &(match?({:config, _, [{:__block__, _, [:logger]} | _]}, &1))
+
+      {:ok, source} = CodeGen.patch(source, change, inject: {:after, {:last, matcher}}, path: "config/config.exs")
+
+      assert source == """
+      config :logger, :level, :debug
+      config :logger, :backends, []
+
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
       """
     end
 
@@ -148,6 +200,34 @@ defmodule Mix.LiveViewNative.CodeGenTest do
         SwiftUI
       ]
       """
+    end
+
+    test "inject eof where last node is a comment" do
+      source = """
+      config :logger, :level, :debug
+
+      # Some comment
+      """
+
+      change = """
+
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+      """
+
+      {:ok, source} = CodeGen.patch(source, change, inject: :eof)
+
+      assert source == """
+      config :logger, :level, :debug
+
+      # Some comment
+
+      config :live_view_native, plugins: [
+        SwiftUI
+      ]
+      """
+
     end
 
     test "merge" do
