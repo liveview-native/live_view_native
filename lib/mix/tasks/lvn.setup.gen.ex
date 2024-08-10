@@ -30,6 +30,15 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
     args
     |> Context.build(__MODULE__)
     |> run_generators()
+
+    version = Application.spec(:live_view_native)[:vsn]
+
+    """
+
+    Now that your app is configured please follow these instructions for enabling a LiveView for LiveView Native
+    https://hexdocs.pm/live_view_native/#{version}/LiveViewNative.html#module-enabling-liveview-for-native
+    """
+    |> Mix.shell.info()
   end
 
   @doc false

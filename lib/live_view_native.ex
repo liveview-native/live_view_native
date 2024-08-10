@@ -1,5 +1,5 @@
 defmodule LiveViewNative do
-  @moduledoc """
+  @moduledoc ~S'''
   This module should be used for creating new LiveView Native Clients.
 
   ## Configuration
@@ -70,7 +70,51 @@ defmodule LiveViewNative do
   You are now ready to create your first LiveView Native app. Refer to
   the documentation in `LiveViewNative.LiveView` on how to configure
   your live views for native.
-  """
+
+  ## Enabling LiveView for Native
+
+  Now that your application is configured you will need to enable a LiveView for Native.
+
+  Assuming your application has the following LiveView route:
+
+      live "/", HomeLive
+
+  You'll need to add the `user MyAppNative, :live_view` to that module:
+
+      defmodule MyAppWeb.HomeLive do
+        use MyAppWeb, :live_view
+        use MyAppNative, :live_view
+
+  Next you should use the `mix lvn.gen.live` task to generate
+  the LiveView Native render component and template.
+
+      > mix lvn.gen.live swiftui Home
+
+  This will generate the following files in your project:
+
+    * lib/my_app_web/live/home_live.swiftui.ex
+    * lib/my_app_web/live/swiftui/home_live.swiftui.neex
+
+  Just like a regular LiveView you can decide not to use the template and render
+  templates in-line inside the render component:
+
+      defmodule MyAppWeb.HomeLive.SwiftUI do
+        use MyAppNative, [:render_component, format: :swiftui]
+
+        def render(assigns, _interface) do
+          ~LVN"""
+          <Text>Hello, LiveView Native!</Text>
+          """
+        end
+      end
+
+  Note that unlike a regular LiveView that has `render/1` the
+  LiveView Native render component uses `render/2` as the 2nd argument
+  will include interface information about the client.
+
+  You can read more in `LiveViewNative.Component`
+  '''
+
   import LiveViewNative.Utils, only: [stringify_format: 1]
 
   @doc """
