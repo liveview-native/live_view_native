@@ -62,7 +62,11 @@ and follow the instructions on how to complete the setup process.
 
 ## Native Clients
 
-LiveView Native enables native client frameworks such as the [LiveView Native SwiftUI Client](https://github.com/liveview-native/liveview-client-swiftui) and the [LiveView Native Jetpack Client (In Progress)](https://github.com/liveview-native/liveview-client-jetpack).
+LiveView Native enables client frameworks such as:
+
+* [SwiftUI Client](https://github.com/liveview-native/liveview-client-swiftui)
+* [Jetpack Client (In Progress)](https://github.com/liveview-native/liveview-client-jetpack)
+* [HTML Client](https://github.com/liveview-native/liveview-client-html)
 
 ### SwiftUI Client
 
