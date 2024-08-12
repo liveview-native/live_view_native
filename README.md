@@ -41,7 +41,9 @@ end
 
 ## Getting started
 
-In addition to `live_view_native` you may want to include some additional libraries:
+To get started with LiveView Native, you'll need to have an existing [Phoenix Application](https://hexdocs.pm/phoenix/up_and_running.html) or create a new one.
+
+Add `live_view_native` to your list of dependencies in the `mix.exs` file. In addition to `live_view_native` you may want to include some additional libraries:
 
 ```elixir
 {:live_view_native, "~> 0.3.0-rc.4"},
@@ -57,3 +59,19 @@ $ mix lvn.setup
 ```
 
 and follow the instructions on how to complete the setup process.
+
+## Native Clients
+
+LiveView Native enables client frameworks such as:
+
+| UI Framework     | Devices                                              | LiveView Client |
+|------------------|------------------------------------------------------|-----------------|
+| SwiftUI          | iPhone, iPad, AppleTV, Apple Watch, MacOS, Apple Vision Pro | [LiveView Native SwiftUI](https://github.com/liveview-native/liveview-client-swiftui) |
+| JetPack Compose  | Android family                                       | [LiveView Native Jetpack](https://github.com/liveview-native/liveview-client-jetpack) |
+| HTML             |                                                    | [LiveView Native HTML](https://github.com/liveview-native/liveview-client-html) |
+
+## Questions?
+
+Have a question or want some help with LiveView Native?
+
+Check out the `#liveview-native` channel on the [Elixir Lang Slack](https://elixir-lang.slack.com/).
