@@ -93,30 +93,29 @@ defmodule Mix.LiveViewNative.CodeGen do
     [build_patch(range, change)]
   end
 
-  defp get_matched_range(quoted, {:first, matcher}) do
-    quoted
-    |> Zipper.zip()
-    |> Zipper.find(matcher)
-    |> case do
-      nil -> :error
-      found -> {:ok, Zipper.node(found) |> Sourceror.get_range()}
-    end
-  end
+  defp get_matched_range(quoted, matcher) when is_function(matcher),
+    do: get_matched_range(quoted, {:first, matcher})
 
-  defp get_matched_range(quoted, {:last, matcher}) do
+  defp get_matched_range(quoted, {position, matcher}) do
     quoted
     |> Zipper.zip()
-    |> find_last(matcher)
+    |> find(position, matcher)
     |> case do
       :error -> :error
       {:ok, node} -> {:ok, Sourceror.get_range(node)}
     end
   end
 
-  defp get_matched_range(quoted, matcher) when is_function(matcher),
-    do: get_matched_range(quoted, {:first, matcher})
+  defp find(zipper, :first, matcher) do
+    zipper
+    |> Zipper.find(matcher)
+    |> case do
+      nil -> :error
+      zipper -> {:ok, Zipper.node(zipper)}
+    end
+  end
 
-  defp find_last(zipper, matcher) do
+  defp find(zipper, :last, matcher) do
     {_zipper, last_match} =
       Zipper.traverse(zipper, :error, fn(zipper, last_match) ->
         node = Zipper.node(zipper)
