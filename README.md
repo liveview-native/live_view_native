@@ -71,10 +71,10 @@ and follow the instructions on how to complete the setup process.
 To try out new features or get the latest bugfixes you can also use the `main` branch for LiveView Native dependencies.
 
 ```elixir
-{:live_view_native, github: "liveview-native/live_view_native"},
+{:live_view_native, github: "liveview-native/live_view_native", override: true},
 {:live_view_native_stylesheet, github: "liveview-native/live_view_native_stylesheet"},
 {:live_view_native_swiftui, github: "liveview-native/liveview-client-swiftui"},
-{:live_view_native_live_form, github: "liveview-native/live_view_native_live_form"}
+{:live_view_native_live_form, github: "liveview-native/liveview-native-live-form"}
 ```
 
 However, be aware that active changes may make your development experience unstable.
