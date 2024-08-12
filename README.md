@@ -68,14 +68,6 @@ LiveView Native enables client frameworks such as:
 * [Jetpack Client (In Progress)](https://github.com/liveview-native/liveview-client-jetpack)
 * [HTML Client](https://github.com/liveview-native/liveview-client-html)
 
-### SwiftUI Client
-
-To create your first LiveView Native LiveView, go to the [LiveView Native SwiftUI Client Usage](https://github.com/liveview-native/liveview-client-swiftui?tab=readme-ov-file#usage) guide on GitHub. Alternatively, you can read the [LiveView Native SwiftUI Documentation](https://hexdocs.pm/live_view_native_swiftui/0.3.0-rc.1/readme.html) where you can find documentation, examples, and interactive Livebook guides. 
-
-### Jetpack (Android) Client
-
-The Jetpack client is in progress. You can follow our progress on the [LiveView Native JetPack Client](https://github.com/liveview-native/liveview-client-jetpack) repository.
-
 ## Questions?
 
 Have a question or want some help with LiveView Native?
