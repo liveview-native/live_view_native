@@ -115,7 +115,9 @@ defmodule LiveViewNative do
   You can read more in `LiveViewNative.Component`
   '''
 
-  import LiveViewNative.Utils, only: [stringify_format: 1]
+  import LiveViewNative.Utils, only: [
+    stringify_format: 1
+  ]
 
   @doc """
   Uses LiveViewNative for creating new clients
@@ -163,10 +165,13 @@ defmodule LiveViewNative do
   @doc"""
   Fetches a plugin based upon the format name
 
-  Follows the same return types as `Map.fetch!/2`
+  If the format is not present `LiveViewNative.PluginError` is raised
   """
   def fetch_plugin!(format) do
-    Map.fetch!(plugins(), stringify_format(format))
+    case fetch_plugin(format) do
+      {:ok, format} -> format
+      :error -> raise LiveViewNative.PluginError, format
+    end
   end
 
   @doc"""

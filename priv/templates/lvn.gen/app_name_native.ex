@@ -136,6 +136,7 @@ defmodule <%= inspect context.native_module %> do
     end<% end %>
     <%= if @live_form? do %>
     plugin = LiveViewNative.fetch_plugin!(format)
+
     plugin_component_quoted = try do
       Code.ensure_compiled!(plugin.component)
 

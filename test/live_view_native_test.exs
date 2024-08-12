@@ -20,7 +20,7 @@ defmodule LiveViewNative.Test do
     plugin = LiveViewNative.fetch_plugin!(:switch)
     assert plugin.format == :switch
 
-    assert_raise KeyError, fn ->
+    assert_raise LiveViewNative.PluginError, fn ->
       LiveViewNative.fetch_plugin!(:other)
     end
   end
