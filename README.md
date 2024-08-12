@@ -64,9 +64,11 @@ and follow the instructions on how to complete the setup process.
 
 LiveView Native enables client frameworks such as:
 
-* [SwiftUI Client](https://github.com/liveview-native/liveview-client-swiftui)
-* [Jetpack Client (In Progress)](https://github.com/liveview-native/liveview-client-jetpack)
-* [HTML Client](https://github.com/liveview-native/liveview-client-html)
+| UI Framework     | Devices                                              | LiveView Client |
+|------------------|------------------------------------------------------|-----------------|
+| SwiftUI          | iPhone, iPad, AppleTV, Apple Watch, MacOS, Apple Vision Pro | [LiveView Native SwiftUI](https://github.com/liveview-native/liveview-client-swiftui) |
+| JetPack Compose  | Android family                                       | [LiveView Native Jetpack](https://github.com/liveview-native/liveview-client-jetpack) |
+| HTML             |                                                    | [LiveView Native HTML](https://github.com/liveview-native/liveview-client-html) |
 
 ## Questions?
 
