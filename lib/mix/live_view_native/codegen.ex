@@ -106,15 +106,30 @@ defmodule Mix.LiveViewNative.CodeGen do
   defp get_matched_range(quoted, {:last, matcher}) do
     quoted
     |> Zipper.zip()
-    |> Zipper.find_all(matcher)
+    |> find_last(matcher)
     |> case do
-      [] -> :error
-      found -> {:ok, List.last(found) |> Zipper.node() |> Sourceror.get_range()}
+      :error -> :error
+      {:ok, node} -> {:ok, Sourceror.get_range(node)}
     end
   end
 
   defp get_matched_range(quoted, matcher) when is_function(matcher),
     do: get_matched_range(quoted, {:first, matcher})
+
+  defp find_last(zipper, matcher) do
+    {_zipper, last_match} =
+      Zipper.traverse(zipper, :error, fn(zipper, last_match) ->
+        node = Zipper.node(zipper)
+
+        if matcher.(node) do
+          {zipper, {:ok, node}}
+        else
+          {zipper, last_match}
+        end
+      end)
+
+    last_match
+  end
 
   def build_patch(range, change),
     do: %{
