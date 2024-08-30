@@ -49,8 +49,10 @@ defmodule LiveViewNative.ContentNegotiator do
     |> assign_params(params)
   end
 
-  defp assign_params(%{assigns: %{:_format => _format}} = socket, %{"_interface" => interface} = params) do
+  defp assign_params(%{assigns: %{:_format => format}} = socket, %{"_interface" => interface} = params) do
     params = Map.delete(params, "_interface")
+
+    interface = normalize_interface(interface, format)
 
     socket
     |> assign(:_interface, interface)
@@ -72,4 +74,39 @@ defmodule LiveViewNative.ContentNegotiator do
       layouts -> layouts[format]
     end
   end
+
+  defp normalize_interface(interface, format) do
+    plugin =
+      format
+      |> LiveViewNative.fetch_plugin!()
+      |> Map.get(:__struct__)
+
+    interface
+    |> normalize_os_version(plugin)
+    |> normalize_app_version(plugin)
+  end
+
+  defp normalize_os_version(%{"os_version" => os_version} = interface, plugin) when not is_nil(os_version) do
+    if Module.defines?(plugin, {:normalize_os_version, 1}) do
+      os_version = plugin.normalize_os_version(os_version)
+      Map.put(interface, "os_version", os_version)
+    else
+      interface
+    end
+  end
+
+  defp normalize_os_version(interface, _plugin),
+    do: interface
+
+  defp normalize_app_version(%{"app_version" => app_version} = interface, plugin) when not is_nil(app_version) do
+    if Module.defines?(plugin, {:normalize_app_version, 1}) do
+      app_version = plugin.normalize_app_version(app_version)
+      Map.put(interface, "app_version", app_version)
+    else
+      interface
+    end
+  end
+
+  defp normalize_app_version(interface, _plugin),
+    do: interface
 end
