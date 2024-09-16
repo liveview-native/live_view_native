@@ -87,7 +87,7 @@ defmodule LiveViewNative.ContentNegotiator do
   end
 
   defp normalize_os_version(%{"os_version" => os_version} = interface, plugin) when not is_nil(os_version) do
-    if Module.defines?(plugin, {:normalize_os_version, 1}) do
+    if function_exported?(plugin, :normalize_os_version, 1) do
       os_version = plugin.normalize_os_version(os_version)
       Map.put(interface, "os_version", os_version)
     else
@@ -99,7 +99,7 @@ defmodule LiveViewNative.ContentNegotiator do
     do: interface
 
   defp normalize_app_version(%{"app_version" => app_version} = interface, plugin) when not is_nil(app_version) do
-    if Module.defines?(plugin, {:normalize_app_version, 1}) do
+    if function_exported?(plugin, :normalize_app_version, 1) do
       app_version = plugin.normalize_app_version(app_version)
       Map.put(interface, "app_version", app_version)
     else
