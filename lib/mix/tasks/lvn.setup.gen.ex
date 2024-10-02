@@ -10,7 +10,7 @@ defmodule Mix.Tasks.Lvn.Setup.Gen do
 
   This setup will
 
-      $ mix lvn.setup.config
+      $ mix lvn.setup.gen
 
     ## Options
 
