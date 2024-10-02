@@ -79,7 +79,7 @@ defmodule LiveViewNative do
 
       live "/", HomeLive
 
-  You'll need to add the `user MyAppNative, :live_view` to that module:
+  You'll need to add `use MyAppNative, :live_view` to that module:
 
       defmodule MyAppWeb.HomeLive do
         use MyAppWeb, :live_view
