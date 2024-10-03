@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Fixed
+
+## [0.3.1] 2024-10-02
+
+### Added
+
 * interface normalizer [#200] allow for interface data to be normalized by the client libs
 
 ### Changed
