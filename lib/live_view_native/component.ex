@@ -138,7 +138,9 @@ defmodule LiveViewNative.Component do
         live_component: 1,
         live_file_input: 1,
         live_img_preview: 1,
-        live_title: 1
+        live_title: 1,
+        to_form: 1,
+        to_form: 2
       ]
 
       import Phoenix.Component.Declarative

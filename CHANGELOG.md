@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* `LiveViewNative.Component` no longer imports `Phoenix.Component.to_form/2`
+
 ### Fixed
 
 ## [0.3.1] 2024-10-02
