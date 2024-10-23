@@ -49,6 +49,24 @@ defmodule LiveViewNative.Template.ParserTest do
     ]
   end
 
+  test "will parse attributes as a map" do
+    {:ok, nodes} = """
+    <FooBar a="123" b="321"   c =   "789"></FooBar>
+    <FooBar a-b="456" a-b="789"></FooBar>
+    <FooBar
+      a = "987"
+      b-c="654"
+      ></FooBar>
+    """
+    |> parse_document(attributes_as_maps: true)
+
+    assert nodes == [
+      {"FooBar", %{"a" => "123", "b" => "321", "c" => "789"}, []},
+      {"FooBar", %{"a-b" => "456"}, []},
+      {"FooBar", %{"a" => "987", "b-c" => "654"}, []}
+    ]
+  end
+
   test "will parse children" do
     {:ok, nodes} = """
     <Foo>  <Bar><Baz></Baz></Bar><Qux/></Foo>
