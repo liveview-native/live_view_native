@@ -51,8 +51,8 @@ defmodule LiveViewNative.Template.ParserTest do
 
   test "will parse children" do
     {:ok, nodes} = """
-    <Foo><Bar><Baz></Baz></Bar></Foo>
-    <Foo><Bar/></Foo>
+    <Foo>  <Bar><Baz></Baz></Bar><Qux/></Foo>
+    <Foo> a b <Bar/> c</Foo>
     """
     |> parse_document()
 
@@ -60,13 +60,15 @@ defmodule LiveViewNative.Template.ParserTest do
       {"Foo", [], [
         {"Bar", [], [
           {"Baz", [], []}
-        ]}
+        ]},
+        {"Qux", [], []}
       ]},
       {"Foo", [], [
-        {"Bar", [], []}
+        " a b ",
+        {"Bar", [], []},
+        " c"
       ]}
     ]
-
   end
 
   test "can parse comments" do
@@ -190,7 +192,7 @@ defmodule LiveViewNative.Template.ParserTest do
        |> parse_document()
 
        assert start_pos == end_pos
-       assert start_pos == [line: 1, column: 16]
+       assert start_pos == [line: 2, column: 1]
      end
   end
 end

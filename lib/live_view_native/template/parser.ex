@@ -6,7 +6,7 @@ defmodule LiveViewNative.Template.Parser do
   def parse_document(document) do
     parse(document, [line: 1, column: 1], [])
     |> case do
-      {:ok, {nodes, _cursor}} -> {:ok, nodes}
+      {:ok, {_document, nodes, _cursor}} -> {:ok, nodes}
       error -> error
     end
   end
@@ -19,17 +19,16 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   defp parse(<<>>, cursor, nodes),
-    do: {:ok, {Enum.reverse(nodes), cursor}}
+    do: {:ok, {"", Enum.reverse(nodes), cursor}}
 
-  # this next two functions are special escape function that are only used to detect
+  # these next two functions are special escape function that are only used to detect
   # the start of an end tag and eject from parsing children
-  # they does not conform to the same return type as other functions of this name
   defp parse(<<"</", _document::binary>> = document, cursor, nodes) do
-    {:ok, {document, nodes, cursor}}
+    {:ok, {document, Enum.reverse(nodes), cursor}}
   end
 
   defp parse(<<"/>", _document::binary>> = document, cursor, nodes) do
-    {:ok, {document, nodes, cursor}}
+    {:ok, {document, Enum.reverse(nodes), cursor}}
   end
 
   defp parse(<<"<!--", document::binary>>, cursor, nodes) do
@@ -52,9 +51,38 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp parse(<<char, document::binary>>, cursor, nodes) when char in @whitespace do
-    {document, cursor} = drain_whitespace(document, cursor)
-    parse(document, cursor, nodes)
+  defp parse(document, cursor, nodes) do
+    parse_text_node(document, cursor, [])
+    |> case do
+      {:ok, {document, text_node, cursor}} ->
+        if String.trim(text_node) == "" do
+          parse(document, cursor, nodes)
+        else
+          parse(document, cursor, [text_node | nodes])
+        end
+      error -> error
+    end
+  end
+
+  defp parse_text_node(<<"<", _document::binary>> = document, cursor, buffer) do
+    return_text_node(document, cursor, buffer)
+  end
+
+  defp parse_text_node(<<>>, cursor, buffer) do
+    return_text_node("", cursor, buffer)
+  end
+
+  defp parse_text_node(<<char, document::binary>>, cursor, buffer) do
+    parse_text_node(document, move_cursor(cursor, char), [char | buffer])
+  end
+
+  defp return_text_node(document, cursor, buffer) do
+    text_node =
+      buffer
+      |> Enum.reverse()
+      |> List.to_string()
+
+    {:ok, {document, text_node, cursor}}
   end
 
   defp parse_comment_node(<<>>, cursor, _buffer) do
@@ -223,7 +251,7 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   defp parse_tag_close(<<">", document::binary>>, cursor, _start_cursor) do
-    {:ok, drain_whitespace(document, incr_column(cursor))}
+    {:ok, {document, incr_column(cursor)}}
   end
 
   defp parse_tag_close(<<"/>", _document::binary>> = document, cursor, _start_cursor) do
