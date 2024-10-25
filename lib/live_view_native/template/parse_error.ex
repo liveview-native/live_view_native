@@ -1,9 +1,4 @@
 defmodule LiveViewNative.Template.ParseError do
-  @moduledoc """
-
-
-  """
-
   defexception [:message]
 
   @impl true
