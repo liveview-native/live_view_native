@@ -2,6 +2,10 @@ defmodule LiveViewNative.Template.ParserTest do
   use ExUnit.Case, async: false
   import LiveViewNative.Template.Parser
 
+  alias LiveViewNative.Template.ParseError
+
+  doctest LiveViewNative.Template.Parser
+
   test "will parse a tag" do
     {:ok, nodes} = """
     <FooBar></FooBar>
@@ -119,98 +123,126 @@ defmodule LiveViewNative.Template.ParserTest do
 
   describe "parsing errors" do
     test "eof within a comment" do
-      {:error, _message, [start: start_pos, end: end_pos]} = "<!--"
-      |> parse_document()
+      doc = "<!--"
+      {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
       assert start_pos == end_pos
       assert start_pos == [line: 1, column: 5]
+
+      assert_raise ParseError, fn ->
+        parse_document!(doc)
+      end
     end
 
     test "invalid tag name character" do
-      {:error, _message, [start: start_pos, end: end_pos]} = """
-      <FooBar!></FooBar!>
-      """
-      |> parse_document()
+      doc = "<FooBar!></FooBar!>"
+      {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
       assert start_pos == end_pos
       assert start_pos == [line: 1, column: 8]
+
+      assert_raise ParseError, fn ->
+        parse_document!(doc)
+      end
     end
 
     test "eof during tag name parsing" do
-      {:error, _message, [start: start_pos, end: end_pos]} = "<FooBar"
-      |> parse_document()
+      doc = "<FooBar"
+      {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
       assert start_pos == end_pos
       assert start_pos == [line: 1, column: 8]
+
+      assert_raise ParseError, fn ->
+        parse_document!(doc)
+      end
     end
 
     test "invalid attribute key name" do
-      {:error, _message, [start: start_pos, end: end_pos]} = """
-      <FooBar
-        a-*b="123"></FooBar>
-      """
-      |> parse_document()
+      doc = """
+        <FooBar
+          a-*b="123"></FooBar>
+        """
+      {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
       assert start_pos == end_pos
       assert start_pos == [line: 2, column: 5]
+
+      assert_raise ParseError, fn ->
+        parse_document!(doc)
+      end
     end
 
     test "eof during attribute key parsing" do
-      {:error, _message, [start: start_pos, end: end_pos]} = """
-      <FooBar a
-      """
-      |> parse_document()
+      doc = "<FooBar a"
+      {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
       assert start_pos == end_pos
-      assert start_pos == [line: 2, column: 1]
+      assert start_pos == [line: 1, column: 10]
+
+      assert_raise ParseError, fn ->
+        parse_document!(doc)
+      end
     end
 
      test "eof during attribute value parsing" do
-       {:error, _message, [start: start_pos, end: end_pos]} = """
-       <FooBar a="
-       """
-       |> parse_document()
+       doc = "<FooBar a="
+       {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
        assert start_pos == end_pos
-       assert start_pos == [line: 2, column: 1]
+       assert start_pos == [line: 1, column: 11]
+
+       assert_raise ParseError, fn ->
+         parse_document!(doc)
+       end
      end
 
      test "catches parsing errors with invalid value format for attribute" do
-       {:error, _message, [start: start_pos, end: end_pos]} = """
-       <FooBar a=
-       """
-       |> parse_document()
+       doc = "<FooBar a=></FooBar>"
+       {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
        assert start_pos == end_pos
-       assert start_pos == [line: 2, column: 1]
+       assert start_pos == [line: 1, column: 11]
+
+       assert_raise ParseError, fn ->
+         parse_document!(doc)
+       end
      end
 
      test "catches errors with not closing tag entity propery" do
-       {:error, _message, [start: start_pos, end: end_pos]} = """
-       <FooBar <Baz/>
-       """
-       |> parse_document()
+       doc = "<FooBar <Baz/>"
+       {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
        assert start_pos == end_pos
        assert start_pos == [line: 1, column: 9]
+
+       assert_raise ParseError, fn ->
+         parse_document!(doc)
+       end
      end
 
      test "eof while parsing tag entity" do
-       {:error, _message, [start: start_pos, end: end_pos]} = "<FooBar a=\"123\""
-       |> parse_document()
+       doc = ~s(<FooBar a="123")
+       {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
        assert start_pos == end_pos
        assert start_pos == [line: 1, column: 16]
+
+       assert_raise ParseError, fn ->
+         parse_document!(doc)
+       end
      end
 
      test "eof while parsing children" do
-       {:error, _message, [start: start_pos, end: end_pos]} = """
-       <FooBar>
-       """
-       |> parse_document()
+       doc = "<FooBar>"
+       {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
        assert start_pos == end_pos
-       assert start_pos == [line: 2, column: 1]
+       assert start_pos == [line: 1, column: 9]
+
+       assert_raise ParseError, fn ->
+         parse_document!(doc)
+       end
      end
   end
 end

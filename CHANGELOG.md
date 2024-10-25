@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* LiveViewNative.Template.Parser - a new Elixir parser for the LVN template syntax
+
 ### Changed
 
 * `LiveViewNative.Component` no longer imports `Phoenix.Component.to_form/2`

@@ -1,8 +1,76 @@
 defmodule LiveViewNative.Template.Parser do
+  @moduledoc ~S'''
+  Floki-compliant parser for LiveView Native template syntax
+
+      iex> """
+      ...> <Group>
+      ...>   <Text class="bold">Hello</Text>
+      ...>   <Text>world!</Text>
+      ...> </Group>
+      ...> """
+      ...> |> LiveViewNative.Template.Parser.parse_document()
+      {:ok, [{"Group", [], [{"Text", [{"class", "bold"}], ["Hello"]}, {"Text", [], ["world!"]}]}]}
+
+  You can pass this AST into Floki for querying:
+
+      iex> """
+      ...> <Group>
+      ...>   <Text class="bold">Hello</Text>"
+      ...>   <Text>world!</Text>
+      ...> </Group>
+      ...> """
+      ...> |> LiveViewNative.Template.Parser.parse_document!()
+      ...> |> Floki.find("Text.bold")
+      [{"Text", [{"class", "bold"}], ["Hello"]}]
+
+  ## Floki Integration
+
+  Floki support passing parser in by option, this parser is compliant with that API:
+
+      iex> """
+      ...> <Group>
+      ...>   <Text class="bold">Hello</Text>"
+      ...>   <Text>world!</Text>
+      ...> </Group>
+      ...> """
+      ...> |> Floki.parse_document!(html_parser: LiveViewNative.Template.Parser)
+      ...> |> Floki.find("Text.bold")
+      [{"Text", [{"class", "bold"}], ["Hello"]}]
+
+  Or you can configure as the default:
+
+  ```elixir
+  config :floki, :html_parser, LiveViewNative.Tempalte.Parser
+  ```
+  '''
+
+  alias LiveViewNative.Template.ParseError
+
   @first_chars ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
   @chars ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
   @whitespace ~c"\s\t\n\r"
 
+  @doc """
+  Parses an LVN document from a string.
+
+  This is the main function to get a tree from a LVN string.
+
+  ## Options
+
+    * `:attributes_as_maps` - Change the behaviour of the parser to return the attributes
+      as maps, instead of a list of `{"key", "value"}`. Default to `false`.
+
+  ## Examples
+
+      iex> LiveViewNative.Template.Parser.parse_document("<Group><Text></Text><Text>hello</Text></Group>")
+      {:ok, [{"Group", [], [{"Text", [], []}, {"Text", [], ["hello"]}]}]}
+
+      iex> LiveViewNative.Template.Parser.parse_document(
+      ...>   ~S(<Group><Text></Text><Text class="main">hello</Text></Group>),
+      ...>   attributes_as_maps: true
+      ...>)
+      {:ok, [{"Group", %{}, [{"Text", %{}, []}, {"Text", %{"class" => "main"}, ["hello"]}]}]}
+  """
   def parse_document(document, args \\ []) do
     parse(document, [line: 1, column: 1], [], args)
     |> case do
@@ -11,10 +79,22 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
+  @doc """
+  Parses a LVN Document from a string.
+
+  Similar to `parse_document/1`, but raises `LiveViewNative.Template.ParseError` if there was an
+  error parsing the document.
+
+  ## Example
+
+      iex> LiveViewNative.Template.Parser.parse_document!("<Group><Text></Text><Text>hello</Text></Group>")
+      [{"Group", [], [{"Text", [], []}, {"Text", [], ["hello"]}]}]
+
+  """
   def parse_document!(document, args \\ []) do
     case parse_document(document, args) do
-      {:ok, {nodes, _cursor}} -> nodes
-      {:error, message, _range} -> raise message
+      {:ok, nodes} -> nodes
+      {:error, message, range} -> raise ParseError, {document, message, range}
     end
   end
 
