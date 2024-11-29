@@ -31,8 +31,7 @@ defmodule LiveViewNative.MixProject do
     [
       {:phoenix, "~> 1.7.0"},
       {:phoenix_view, "~> 2.0"},
-      # {:phoenix_live_view, "~> 0.20.10"},
-      {:phoenix_live_view, path: "../phoenix_live_view", override: true},
+      {:phoenix_live_view, "~> 0.20.10"},
       {:phoenix_live_reload, "~> 1.4", only: :test},
       {:phoenix_template, "~> 1.0.4"},
       {:phoenix_html, "~> 3.3 or ~> 4.0 or ~> 4.1"},
@@ -45,8 +44,7 @@ defmodule LiveViewNative.MixProject do
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
       {:sourceror, "~> 1.5"},
       {:text_diff, "~> 0.1"},
-      # {:live_view_native_test_endpoint, github: "liveview-native/live_view_native_test_endpoint", branch: "main", only: :test}
-      {:live_view_native_test_endpoint, path: "../live_view_native_test_endpoint", only: :test}
+      {:live_view_native_test_endpoint, github: "liveview-native/live_view_native_test_endpoint", branch: "main", only: :test}
     ]
   end
 
