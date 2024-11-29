@@ -3,5 +3,6 @@ defmodule LiveViewNativeTest.GameBoy do
     format: :gameboy,
     component: LiveViewNativeTest.GameBoy.Component,
     module_suffix: :GameBoy,
-    template_engine: LiveViewNative.Engine
+    template_engine: LiveViewNative.Engine,
+    client: LiveViewNative.GameBoy.Client
 end

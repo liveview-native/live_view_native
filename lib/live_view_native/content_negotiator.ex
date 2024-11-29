@@ -14,6 +14,17 @@ defmodule LiveViewNative.ContentNegotiator do
 
   @doc false
 
+  # TODO: This is necessary to force assignment of the inherited _format and _interface values for child LiveViews
+  # It would be ideal to have a more reliable public API for this in the future in LiveView
+  def on_mount(:call, :not_mounted_at_router, session, %Socket{private: %{assign_new: {parent_assigns, _assign_new}}} = socket) do
+    params =
+      parent_assigns
+      |> Map.take([:_format, :_interface])
+      |> Enum.into(%{}, fn({key, value}) -> {Atom.to_string(key), value} end)
+
+    on_mount(:call, params, session, socket)
+  end
+
   def on_mount(:call, params, _session, %Socket{view: view} = socket) do
     socket = if connected?(socket) do
       params = get_connect_params(socket)

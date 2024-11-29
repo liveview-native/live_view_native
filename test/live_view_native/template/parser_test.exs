@@ -53,6 +53,17 @@ defmodule LiveViewNative.Template.ParserTest do
     ]
   end
 
+  test "will parse boolean attribute" do
+    {:ok, nodes} = """
+    <FooBar a="1" b c="true"/>
+    """
+    |> parse_document()
+
+    assert nodes == [
+      {"FooBar", [{"a", "1"}, {"b", "b"}, {"c", "true"}], []}
+    ]
+  end
+
   test "will parse attributes as a map" do
     {:ok, nodes} = """
     <FooBar a="123" b="321"   c =   "789"></FooBar>

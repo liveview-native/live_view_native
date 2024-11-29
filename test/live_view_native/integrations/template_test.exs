@@ -2,7 +2,7 @@ defmodule LiveViewNative.TemplateRenderTest do
   use ExUnit.Case, async: false
 
   import Phoenix.ConnTest
-  import Phoenix.LiveViewTest
+  require Phoenix.LiveViewTest
   import LiveViewNativeTest
 
   @endpoint LiveViewNativeTest.Endpoint
@@ -12,32 +12,32 @@ defmodule LiveViewNative.TemplateRenderTest do
   end
 
   test "can render the fallback html template render", %{conn: conn} do
-    {:ok, lv, _html} = live(conn, "/template")
+    {:ok, lv, _html} = Phoenix.LiveViewTest.live(conn, "/template")
 
-    assert lv |> element("#template") |> render() =~ "original template HTML works"
+    assert lv |> Phoenix.LiveViewTest.element("#template") |> Phoenix.LiveViewTest.render() =~ "original template HTML works"
   end
 
   test "can render the gameboy format", %{conn: conn} do
-    {:ok, lv, _html} = native(conn, "/template", :gameboy)
+    {:ok, lv, _markup} = live(conn, "/template", :gameboy)
 
-    assert lv |> element("gameboy") |> render() =~ "Template GameBoy Render 200"
+    assert lv |> element("GameBoy") |> render() =~ "Template GameBoy Render 200"
   end
 
   test "can render the gameboy format with tv target", %{conn: conn} do
-    {:ok, lv, _html} = native(conn, "/template", :gameboy, %{"target" => "tv"})
+    {:ok, lv, _markup} = live(conn, "/template", :gameboy, %{"target" => "tv"})
 
-    assert lv |> element("gameboytv") |> render() =~ "TV Target Template GameBoy Render 200"
+    assert lv |> element("GameBoyTV") |> render() =~ "TV Target Template GameBoy Render 200"
   end
 
   test "can render the switch format", %{conn: conn} do
-    {:ok, lv, _html} = native(conn, "/template", :switch)
+    {:ok, lv, _markup} = live(conn, "/template", :switch)
 
-    assert lv |> element("switch") |> render() =~ "Template Switch Render 200"
+    assert lv |> element("Switch") |> render() =~ "Template Switch Render 200"
   end
 
   test "can render the switch format with tv target", %{conn: conn} do
-    {:ok, lv, _html} = native(conn, "/template", :switch, %{"target" => "tv"})
+    {:ok, lv, _markup} = live(conn, "/template", :switch, %{"target" => "tv"})
 
-    assert lv |> element("switchtv") |> render() =~ "TV Target Template Switch Render 200"
+    assert lv |> element("SwitchTV") |> render() =~ "TV Target Template Switch Render 200"
   end
 end

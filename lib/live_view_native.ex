@@ -127,7 +127,8 @@ defmodule LiveViewNative do
           format: :gameboy,
           component: GameBoy.Component,
           module_suffix: GameBoy,
-          template_engine: LiveViewNative.Engine
+          template_engine: LiveViewNative.Engine,
+          proxy_client: GameBoy.Client
       end
 
   ## Options
@@ -147,7 +148,8 @@ defmodule LiveViewNative do
         component: config[:component],
         module_suffix: config[:module_suffix],
         template_engine: config[:template_engine],
-        stylesheet_rules_parser: config[:stylesheet_rules_parser]
+        stylesheet_rules_parser: config[:stylesheet_rules_parser],
+        client: config[:client]
 
       def __lvn_client__, do: true
     end

@@ -111,6 +111,9 @@ defmodule LiveViewNative.Component do
   '''
   defmacro __using__(opts) do
     %{module: module} = __CALLER__
+
+    {opts, _} = Code.eval_quoted(opts)
+
     format = opts[:format]
 
     Module.put_attribute(module, :native_opts, %{
@@ -135,7 +138,6 @@ defmodule LiveViewNative.Component do
         inputs_for: 1,
         intersperse: 1,
         link: 1,
-        live_component: 1,
         live_file_input: 1,
         live_img_preview: 1,
         live_title: 1,

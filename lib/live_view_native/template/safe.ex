@@ -9,6 +9,10 @@ defprotocol LiveViewNative.Template.Safe do
   def to_iodata(data)
 end
 
+defimpl LiveViewNative.Template.Safe, for: Phoenix.LiveComponent.CID do
+  def to_iodata(%{cid: cid}), do: Integer.to_string(cid)
+end
+
 defimpl LiveViewNative.Template.Safe, for: [List, Map] do
   def to_iodata(data) do
     data
