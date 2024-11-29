@@ -128,7 +128,7 @@ defmodule LiveViewNative do
           component: GameBoy.Component,
           module_suffix: GameBoy,
           template_engine: LiveViewNative.Engine,
-          proxy_client: GameBoy.Client
+          client: GameBoy.Client
       end
 
   ## Options
