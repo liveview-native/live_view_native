@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * LiveViewNative.Template.Parser - a new Elixir parser for the LVN template syntax
+* Parser supports boolean attributes
+* Server-Side support for LiveComponent
+* Server-Side support for rendering child LiveView
+* LiveViewNativeTest
 
 ### Changed
 

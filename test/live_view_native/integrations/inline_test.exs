@@ -2,7 +2,7 @@ defmodule LiveViewNative.InlineRenderTest do
   use ExUnit.Case, async: false
 
   import Phoenix.ConnTest
-  import Phoenix.LiveViewTest
+  require Phoenix.LiveViewTest
   import LiveViewNativeTest
 
   @endpoint LiveViewNativeTest.Endpoint
@@ -12,32 +12,32 @@ defmodule LiveViewNative.InlineRenderTest do
   end
 
   test "can render the fallback html inline render", %{conn: conn} do
-    {:ok, lv, _body} = live(conn, "/inline")
+    {:ok, lv, _html} = Phoenix.LiveViewTest.live(conn, "/inline")
 
-    assert lv |> element("#inline") |> render() =~ "original inline HTML works"
+    assert lv |> Phoenix.LiveViewTest.element("#inline") |> Phoenix.LiveViewTest.render() =~ "original inline HTML works"
   end
 
   test "can render the gameboy format", %{conn: conn} do
-    {:ok, lv, _body} = native(conn, "/inline", :gameboy)
+    {:ok, lv, _markup} = live(conn, "/inline", :gameboy)
 
-    assert lv |> element("gameboy") |> render() =~ "Inline GameBoy Render 100"
+    assert lv |> element("GameBoy") |> render() =~ "Inline GameBoy Render 100"
   end
 
   test "can render the gameboy format with tv target", %{conn: conn} do
-    {:ok, lv, _body} = native(conn, "/inline", :gameboy, %{"target" => "tv"})
+    {:ok, lv, _markup} = live(conn, "/inline", :gameboy, %{"target" => "tv"})
 
-    assert lv |> element("gameboytv") |> render() =~ "TV Target Inline GameBoy Render 100"
+    assert lv |> element("GameBoyTV") |> render() =~ "TV Target Inline GameBoy Render 100"
   end
 
   test "can render the switch format", %{conn: conn} do
-    {:ok, lv, _body} = native(conn, "/inline", :switch)
+    {:ok, lv, _markup} = live(conn, "/inline", :switch)
 
-    assert lv |> element("switch") |> render() =~ "Inline Switch Render 100"
+    assert lv |> element("Switch") |> render() =~ "Inline Switch Render 100"
   end
 
   test "can render the switch format with tv target", %{conn: conn} do
-    {:ok, lv, _body} = native(conn, "/inline", :switch, %{"target" => "tv"})
+    {:ok, lv, _markup} = live(conn, "/inline", :switch, %{"target" => "tv"})
 
-    assert lv |> element("switchtv") |> render() =~ "TV Target Inline Switch Render 100"
+    assert lv |> element("SwitchTV") |> render() =~ "TV Target Inline Switch Render 100"
   end
 end
