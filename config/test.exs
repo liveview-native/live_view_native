@@ -29,7 +29,9 @@ config :live_view_native_test_endpoint,
     %{path: "/component_in_live", module: LiveViewNativeTest.ComponentInLive.Root},
     %{path: "/component_and_nested_in_live", module: LiveViewNativeTest.ComponentAndNestedInLive},
     %{path: "/cids_destroyed", module: LiveViewNativeTest.CidsDestroyedLive},
-    %{path: "/multi-targets", module: LiveViewNativeTest.WithMultipleTargets}
+    %{path: "/multi-targets", module: LiveViewNativeTest.WithMultipleTargets},
+    %{path: "/thermo", module: LiveViewNativeTest.ThermostatLive},
+
   ]
 
 config :phoenix, :plug_init_mode, :runtime

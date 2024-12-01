@@ -18,25 +18,25 @@ defmodule LiveViewNative.InlineRenderTest do
   end
 
   test "can render the gameboy format", %{conn: conn} do
-    {:ok, lv, _markup} = live(conn, "/inline", :gameboy)
+    {:ok, lv, _markup} = live(conn, "/inline", _format: :gameboy)
 
     assert lv |> element("GameBoy") |> render() =~ "Inline GameBoy Render 100"
   end
 
   test "can render the gameboy format with tv target", %{conn: conn} do
-    {:ok, lv, _markup} = live(conn, "/inline", :gameboy, %{"target" => "tv"})
+    {:ok, lv, _markup} = live(conn, "/inline", _format: :gameboy, _interface: %{"target" => "tv"})
 
     assert lv |> element("GameBoyTV") |> render() =~ "TV Target Inline GameBoy Render 100"
   end
 
   test "can render the switch format", %{conn: conn} do
-    {:ok, lv, _markup} = live(conn, "/inline", :switch)
+    {:ok, lv, _markup} = live(conn, "/inline", _format: :switch)
 
     assert lv |> element("Switch") |> render() =~ "Inline Switch Render 100"
   end
 
   test "can render the switch format with tv target", %{conn: conn} do
-    {:ok, lv, _markup} = live(conn, "/inline", :switch, %{"target" => "tv"})
+    {:ok, lv, _markup} = live(conn, "/inline", _format: :switch, _interface: %{"target" => "tv"})
 
     assert lv |> element("SwitchTV") |> render() =~ "TV Target Inline Switch Render 100"
   end

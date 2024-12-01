@@ -873,7 +873,7 @@ defmodule LiveViewNativeTest.ClientProxy do
 
   defp encode_payload(type, event, value) when type in [:change, :submit],
     do: %{
-      "type" => "LiveForm",
+      "type" => "form",
       "event" => event,
       "value" => Plug.Conn.Query.encode(value)
     }

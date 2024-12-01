@@ -19,14 +19,17 @@ defmodule LiveViewNative.LiveComponentsTest do
     assert LiveViewNative.Template.Safe.to_iodata(cid) == "123"
   end
 
-  test "renders successfully when disconnected", %{conn: conn} do
-    conn = get(conn, "/components?_format=gameboy")
+  test "renders successfully disconnected then connected responses", %{conn: conn} do
+    conn = get(conn, "/components", _format: "gameboy")
+    assert lvn_response(conn, 200, :gameboy) =~ "<Group phx-click=\"transform\" id=\"chris\" phx-target=\"#chris\">"
 
-    assert response(conn, 200) =~ "<Group phx-click=\"transform\" id=\"chris\" phx-target=\"#chris\">"
+    {:ok, _view, markup} = live(conn, _format: "gameboy")
+
+    assert markup =~ "<Group data-phx-component=\"1\" phx-click=\"transform\" id=\"chris\" phx-target=\"#chris\">"
   end
 
   test "renders successfully when connected", %{conn: conn} do
-    {:ok, view, _markup} = live(conn, "/components", :gameboy)
+    {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
     assert [
              {"div", _,
@@ -43,7 +46,7 @@ defmodule LiveViewNative.LiveComponentsTest do
   end
 
   test "tracks additions and updates", %{conn: conn} do
-    {:ok, view, _} = live(conn, "/components", :gameboy)
+    {:ok, view, _} = live(conn, "/components", _format: :gameboy)
     markup = render_click(view, "dup-and-disable", %{})
 
     assert [
@@ -68,7 +71,7 @@ defmodule LiveViewNative.LiveComponentsTest do
   end
 
   test "tracks removals", %{conn: conn} do
-    {:ok, view, markup} = live(conn, "/components", :gameboy)
+    {:ok, view, markup} = live(conn, "/components", _format: :gameboy)
 
     assert [
              {"Group",
@@ -91,14 +94,14 @@ defmodule LiveViewNative.LiveComponentsTest do
   end
 
   test "tracks removals when whole root changes", %{conn: conn} do
-    {:ok, view, _markup} = live(conn, "/components", :gameboy)
+    {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
     assert render_click(view, "disable-all", %{}) =~ "Disabled\n"
     # Sync to make sure it is still alive
     assert render(view) =~ "Disabled\n"
   end
 
   test "tracks removals from a nested LiveView", %{conn: conn} do
-    {:ok, view, _markup} = live(conn, "/component_in_live", :gameboy)
+    {:ok, view, _markup} = live(conn, "/component_in_live", _format: :gameboy)
     assert render(view) =~ "Hello World"
     view |> find_live_child("nested_live") |> render_click("disable", %{})
     refute render(view) =~ "Hello World"
@@ -107,7 +110,7 @@ defmodule LiveViewNative.LiveComponentsTest do
   test "tracks removals of a nested LiveView alongside with a LiveComponent in the root view", %{
     conn: conn
   } do
-    {:ok, view, _} = live(conn, "/component_and_nested_in_live", :gameboy)
+    {:ok, view, _} = live(conn, "/component_and_nested_in_live", _format: :gameboy)
     markup = render(view)
     assert markup =~ "hello"
     assert markup =~ "world"
@@ -119,7 +122,7 @@ defmodule LiveViewNative.LiveComponentsTest do
   end
 
   test "tracks removals when there is a race between server and client", %{conn: conn} do
-    {:ok, view, _} = live(conn, "/cids_destroyed", :gameboy)
+    {:ok, view, _} = live(conn, "/cids_destroyed", _format: :gameboy)
 
     # The button is on the page
     assert render(view) =~ "Hello World</Button>"
@@ -139,7 +142,7 @@ defmodule LiveViewNative.LiveComponentsTest do
 
   describe "handle_event" do
     test "delegates event to component", %{conn: conn} do
-      {:ok, view, _markup} = live(conn, "/components", :gameboy)
+      {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
       markup = view |> element("#chris") |> render_click(%{"op" => "upcase"})
 
@@ -210,7 +213,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     end
 
     test "works with_target to component", %{conn: conn} do
-      {:ok, view, _markup} = live(conn, "/components", :gameboy)
+      {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
       markup = view |> with_target("#chris") |> render_click("transform", %{"op" => "upcase"})
 
@@ -226,7 +229,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     end
 
     test "works with multiple phx-targets", %{conn: conn} do
-      {:ok, view, _markup} = live(conn, "/multi-targets", :gameboy)
+      {:ok, view, _markup} = live(conn, "/multi-targets", _format: :gameboy)
 
       view |> element("#chris") |> render_click(%{"op" => "upcase"})
 
@@ -259,7 +262,7 @@ defmodule LiveViewNative.LiveComponentsTest do
       {:ok, view, _markup} =
         conn
         |> Plug.Conn.put_session(:parent_selector, ".parent")
-        |> live("/multi-targets", :gameboy)
+        |> live("/multi-targets", _format: :gameboy)
 
       view |> element("#chris") |> render_click(%{"op" => "upcase"})
 
@@ -291,7 +294,7 @@ defmodule LiveViewNative.LiveComponentsTest do
 
   describe "send_update" do
     test "updates child from parent", %{conn: conn} do
-      {:ok, view, _markup} = live(conn, "/components", :gameboy)
+      {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
       send(
         view.pid,
@@ -320,7 +323,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     end
 
     test "updates child from independent pid", %{conn: conn} do
-      {:ok, view, _markup} = live(conn, "/components", :gameboy)
+      {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
       Phoenix.LiveView.send_update(view.pid, StatefulComponent,
         id: "chris",
@@ -341,7 +344,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     end
 
     test "updates with cid", %{conn: conn} do
-      {:ok, view, _markup} = live(conn, "/components", :gameboy)
+      {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
       Phoenix.LiveView.send_update_after(
         view.pid,
@@ -367,7 +370,7 @@ defmodule LiveViewNative.LiveComponentsTest do
 
     test "updates without :id raise", %{conn: conn} do
       Process.flag(:trap_exit, true)
-      {:ok, view, _markup} = live(conn, "/components", :gameboy)
+      {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
       assert ExUnit.CaptureLog.capture_log(fn ->
                send(view.pid, {:send_update, [{StatefulComponent, name: "NEW-chris"}]})
@@ -377,7 +380,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     end
 
     test "warns if component doesn't exist", %{conn: conn} do
-      {:ok, view, _markup} = live(conn, "/components", :gameboy)
+      {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
       # with module and id
       assert ExUnit.CaptureLog.capture_log(fn ->
@@ -402,7 +405,7 @@ defmodule LiveViewNative.LiveComponentsTest do
 
     test "raises if component module is not available", %{conn: conn} do
       Process.flag(:trap_exit, true)
-      {:ok, view, _markup} = live(conn, "/components", :gameboy)
+      {:ok, view, _markup} = live(conn, "/components", _format: :gameboy)
 
       assert ExUnit.CaptureLog.capture_log(fn ->
                send(
@@ -419,7 +422,7 @@ defmodule LiveViewNative.LiveComponentsTest do
 
   describe "redirects" do
     test "push_navigate", %{conn: conn} do
-      {:ok, view, markup} = live(conn, "/components", :gameboy)
+      {:ok, view, markup} = live(conn, "/components", _format: :gameboy)
       assert markup =~ "Redirect: none"
 
       assert {:error, {:live_redirect, %{to: "/components?redirect=push"}}} =
@@ -429,7 +432,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     end
 
     test "push_patch", %{conn: conn} do
-      {:ok, view, markup} = live(conn, "/components", :gameboy)
+      {:ok, view, markup} = live(conn, "/components", _format: :gameboy)
       assert markup =~ "Redirect: none"
 
       assert view |> element("#chris") |> render_click(%{"op" => "push_patch"}) =~
@@ -439,7 +442,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     end
 
     test "redirect", %{conn: conn} do
-      {:ok, view, markup} = live(conn, "/components", :gameboy)
+      {:ok, view, markup} = live(conn, "/components", _format: :gameboy)
       assert markup =~ "Redirect: none"
 
       assert view |> element("#chris") |> render_click(%{"op" => "redirect"}) ==

@@ -34,8 +34,6 @@ defmodule LiveViewNativeTest.ComponentInLive.Live do
     formats: [:gameboy]
 
   def render(assigns) do
-    require IEx
-    IEx.pry()
     ~H"In HTML 2"
   end
 

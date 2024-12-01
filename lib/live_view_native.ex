@@ -116,7 +116,7 @@ defmodule LiveViewNative do
   '''
 
   import LiveViewNative.Utils, only: [
-    stringify_format: 1
+    stringify: 1
   ]
 
   @doc """
@@ -161,7 +161,7 @@ defmodule LiveViewNative do
   Follows the same return types as `Map.fetch/2`
   """
   def fetch_plugin(format) do
-    Map.fetch(plugins(), stringify_format(format))
+    Map.fetch(plugins(), stringify(format))
   end
 
   @doc"""

@@ -126,10 +126,32 @@ defmodule LiveViewNative.Template.ParserTest do
     ]
   end
 
+  test "will encode attriubte values" do
+    {:ok, nodes} = """
+    <FooBar baz="&lt;&gt;&amp;&quot;&#39;">&lt;&gt;&amp;&quot;&#39;</FooBar>
+    """
+    |> parse_document()
+
+    assert nodes == [
+      {"FooBar", [{"baz", "<>&\"'"}], ["<>&\"'"]}
+    ]
+  end
+
   test "empty" do
     {:ok, nodes} = parse_document("")
 
     assert nodes == []
+  end
+
+  test "will parse utf8 characters from text nodes and attribute nodes" do
+    {:ok, nodes} = """
+    <FooBar baz="a–b">a–b</FooBar>
+    """
+    |> parse_document()
+
+    assert nodes == [
+      {"FooBar", [{"baz", "a–b"}], ["a–b"]}
+    ]
   end
 
   describe "parsing errors" do
