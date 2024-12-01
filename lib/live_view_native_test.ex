@@ -132,7 +132,7 @@ defmodule LiveViewNativeTest do
 
   For example:
 
-      {:ok, view, _markup} = live(conn, "/thermo", :gameboy)
+      {:ok, view, _markup} = live(conn, "/thermo", _format: :gameboy)
 
       assert view
              |> element("button#inc")
@@ -590,7 +590,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
 
       assert view
              |> element("button", "Increment")
@@ -608,7 +608,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temperature is: 30℉"
       assert render_click(view, :inc) =~ "The temperature is: 31℉"
 
@@ -663,7 +663,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
 
       assert view
              |> element("form")
@@ -695,7 +695,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert render_submit(view, :refresh, %{deg: 32}) =~ "The temp is: 32℉"
   """
@@ -720,14 +720,14 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
 
       assert view
              |> element("form")
              |> render_change(%{deg: 123}) =~ "123 exceeds limits"
 
       # Passing metadata
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
 
       assert view
              |> element("form")
@@ -752,7 +752,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert render_change(view, :validate, %{deg: 123}) =~ "123 exceeds limits"
   """
@@ -775,7 +775,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert view |> element("#inc") |> render_keydown() =~ "The temp is: 31℉"
 
@@ -795,7 +795,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert render_keydown(view, :inc) =~ "The temp is: 31℉"
 
@@ -819,7 +819,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert view |> element("#inc") |> render_keyup() =~ "The temp is: 31℉"
 
@@ -836,7 +836,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert render_keyup(view, :inc) =~ "The temp is: 31℉"
 
@@ -860,7 +860,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
 
       assert view
              |> element("#inactive")
@@ -878,7 +878,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert render_blur(view, :inactive) =~ "Tap to wake"
 
@@ -902,7 +902,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
 
       assert view
              |> element("#inactive")
@@ -920,7 +920,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert render_focus(view, :inactive) =~ "Tap to wake"
 
@@ -937,7 +937,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, body} = live(conn, "/thermo", _format: :gameboy)
       assert body =~ "The temp is: 30℉"
       assert render_hook(view, :refresh, %{deg: 32}) =~ "The temp is: 32℉"
 
@@ -945,7 +945,7 @@ defmodule LiveViewNativeTest do
   an `element`, created with `element/3`, as first argument and it must point
   to a single element on the page with a `phx-target` attribute in it:
 
-      {:ok, view, _body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, _body} = live(conn, "/thermo", _format, :gameboy)
       assert view
              |> element("#thermo-component")
              |> render_hook(:refresh, %{deg: 32}) =~ "The temp is: 32℉"
@@ -978,7 +978,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, lv, body} = live(conn, "/path", :gameboy)
+      {:ok, lv, body} = live(conn, "/path", _format: :gameboy)
       assert body =~ "loading data..."
       assert render_async(lv) =~ "data loaded!"
   """
@@ -1032,7 +1032,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, _body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, _body} = live(conn, "/thermo", _format: :gameboy)
       assert [clock_view] = live_children(view)
       assert render_click(clock_view, :snooze) =~ "snoozing"
   """
@@ -1045,7 +1045,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, _body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, _body} = live(conn, "/thermo", _format: :gameboy)
       assert clock_view = find_live_child(view, "clock")
       assert render_click(clock_view, :snooze) =~ "snoozing"
   """
@@ -1094,7 +1094,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, _body} = live(conn, "/thermo", :gameboy)
+      {:ok, view, _body} = live(conn, "/thermo", _format: :gameboy)
       assert render(view) =~ ~s|<button id="alarm">Snooze</div>|
 
       assert view
@@ -1703,8 +1703,8 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      assert {:ok, page_live, _body} = live(conn, "/page/1", :gameboy)
-      assert {:ok, page2_live, _body} = live(conn, "/page/2", :gameboy)
+      assert {:ok, page_live, _body} = live(conn, "/page/1", _format: :gameboy)
+      assert {:ok, page2_live, _body} = live(conn, "/page/2", _format: :gameboy)
 
       assert {:error, {:redirect, _}} = live_redirect(page2_live, to: "/admin")
   """
