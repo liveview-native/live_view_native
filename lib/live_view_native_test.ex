@@ -9,90 +9,99 @@ defmodule LiveViewNativeTest do
   following component:
 
       def greet(assigns) do
-        ~H"""
-        <div>Hello, <%= @name %>!</div>
+        ~LVN"""
+        <Text>Hello, <%= @name %>!</Text>
         """
       end
 
   You can test it by using `render_component/3`, passing the function
   reference to the component as first argument:
 
-      import Phoenix.LiveViewTest
+      import LiveViewNativeTest
 
       test "greets" do
         assert render_component(&MyComponents.greet/1, name: "Mary") ==
-                 "<div>Hello, Mary!</div>"
+                 "<Text>Hello, Mary!</Text>"
       end
 
   However, for complex components, often the simplest way to test them
-  is by using the `~H` sigil itself:
+  is by using the `~LVN` sigil itself:
 
-      import Phoenix.Component
-      import Phoenix.LiveViewTest
+      import LiveViewNative.Component
+      import LiveViewNativeTest
 
       test "greets" do
         assigns = %{}
         assert rendered_to_string(~H"""
                <MyComponents.greet name="Mary" />
                """) ==
-                 "<div>Hello, Mary!</div>"
+                 "<Text>Hello, Mary!</Text>"
       end
 
   The difference is that we use `rendered_to_string/1` to convert the rendered
   template to a string for testing.
 
-  ## Testing LiveViews and LiveComponents
+  ## LiveView Native paths and params
 
-  In LiveComponents and LiveView tests, we interact with views
-  via process communication in substitution of a browser.
-  Like a browser, our test process receives messages about the
+  When calling LiveView Native paths for either dead renders or live renders, the path
+  that you call in a regular `Phoenix.LiveViewTest` is identical to the path you call in a
+  `LiveViewNativeTest`. The `_format` and `_interface` params are used to delegate to the proper
+  render components and render functions. The examples throughout this documentation will regularly
+  show the use of those two params when calling either `Phoenix.ConnTest.get/3` or `live/3`
+
+  ## Testing LiveViewNative.LiveViews and LiveViewNative.LiveComponents
+
+  In LiveViewNative.LiveComponents and LiveViewNative.LiveView tests, we interact with views
+  via process communication in substitution of a client.
+  Like a client, our test process receives messages about the
   rendered updates from the view which can be asserted against
-  to test the life-cycle and behavior of LiveViews and their
+  to test the life-cycle and behavior of LiveViewNative.LiveViews and their
   children.
 
-  ### Testing LiveViews
+  ### Testing LiveViewNative.LiveViews
 
-  The life-cycle of a LiveView as outlined in the `Phoenix.LiveView`
-  docs details how a view starts as a stateless HTML render in a disconnected
-  socket state. Once the browser receives the HTML, it connects to the
+  The life-cycle of a LiveViewNative.LiveView as outlined in the `Phoenix.LiveView`
+  docs details how a view starts as a stateless markup render in a disconnected
+  socket state. Once the browser receives the markup, it connects to the
   server and a new LiveView process is started, remounted in a connected
   socket state, and the view continues statefully. The LiveView test functions
   support testing both disconnected and connected mounts separately, for example:
 
       import Plug.Conn
       import Phoenix.ConnTest
-      import Phoenix.LiveViewTest
+      import LiveViewNativeTest
       @endpoint MyEndpoint
 
       test "disconnected and connected mount", %{conn: conn} do
-        conn = get(conn, "/my-path")
-        assert html_response(conn, 200) =~ "<h1>My Disconnected View</h1>"
+        conn = get(conn, "/my-path", _format: "gameboy")
+        assert lvn_response(conn, 200, _format: :gameboy) =~ "<Title>My Disconnected View</Title>"
 
-        {:ok, view, html} = live(conn)
+        {:ok, _view, markup} = live(conn, _format: :gameboy)
+        assert markup =~ "<Title>My Connected View</Title>"
       end
 
       test "redirected mount", %{conn: conn} do
         assert {:error, {:redirect, %{to: "/somewhere"}}} = live(conn, "my-path")
       end
 
-  Here, we start by using the familiar `Phoenix.ConnTest` function, `get/2` to
+  Here, we start by using the familiar `Phoenix.ConnTest` function, `get/3` to
   test the regular HTTP GET request which invokes mount with a disconnected socket.
-  Next, `live/1` is called with our sent connection to mount the view in a connected
+  Next, `live/2` is called with our sent connection to mount the view in a connected
   state, which starts our stateful LiveView process.
 
   In general, it's often more convenient to test the mounting of a view
   in a single step, provided you don't need the result of the stateless HTTP
-  render. This is done with a single call to `live/2`, which performs the
+  render. This is done with a single call to `live/3`, which performs the
   `get` step for us:
 
       test "connected mount", %{conn: conn} do
-        {:ok, _view, html} = live(conn, "/my-path")
-        assert html =~ "<h1>My Connected View</h1>"
+        {:ok, _view, markup} = live(conn, "/my-path", _format: :gameboy)
+        assert markup =~ "<Title>My Connected View</Title>"
       end
 
   ### Testing Events
 
-  The browser can send a variety of events to a LiveView via `phx-` bindings,
+  The client can send a variety of events to a LiveView via `phx-` bindings,
   which are sent to the `handle_event/3` callback. To test events sent by the
   browser and assert on the rendered side effect of the event, use the
   `render_*` functions:
@@ -123,7 +132,7 @@ defmodule LiveViewNativeTest do
 
   For example:
 
-      {:ok, view, _html} = live(conn, "/thermo")
+      {:ok, view, _markup} = live(conn, "/thermo", :gameboy)
 
       assert view
              |> element("button#inc")
@@ -139,7 +148,7 @@ defmodule LiveViewNativeTest do
       assert render_click(view, :inc, %{}) =~ "The temperature is: 31℉"
 
   The `element` style is preferred as much as possible, as it helps LiveView
-  perform validations and ensure the events in the HTML actually matches the
+  perform validations and ensure the events in the markup actually matches the
   event names on the server.
 
   ### Testing regular messages
@@ -152,9 +161,9 @@ defmodule LiveViewNativeTest do
       send(view.pid, {:set_temp, 50})
       assert render(view) =~ "The temperature is: 50℉"
 
-  ### Testing LiveComponents
+  ### Testing LiveViewNative.LiveComponents
 
-  LiveComponents can be tested in two ways. One way is to use the same
+  LiveViewNative.LiveComponents can be tested in two ways. One way is to use the same
   `render_component/2` function as function components. This will mount
   the LiveComponent and render it once, without testing any of its events:
 
@@ -162,13 +171,13 @@ defmodule LiveViewNativeTest do
                "some markup in component"
 
   However, if you want to test how components are mounted by a LiveView
-  and interact with ViewTree events, you must use the regular `live/2` macro
+  and interact with ViewTree events, you must use the regular `live/3` macro
   to build the LiveView with the component and then scope events by
   passing the view and a **ViewTree selector** in a list:
 
-      {:ok, view, html} = live(conn, "/users")
-      html = view |> element("#user-13 a", "Delete") |> render_click()
-      refute html =~ "user-13"
+      {:ok, view, _markup} = live(conn, "/users", _format: :gameboy)
+      markup = view |> element("#user-13 a", "Delete") |> render_click()
+      refute markup =~ "user-13"
       refute view |> element("#user-13") |> has_element?()
 
   In the example above, LiveView will lookup for an element with
@@ -197,7 +206,7 @@ defmodule LiveViewNativeTest do
   @doc """
   Spawns a connected LiveView process.
 
-  If a `path` is given, then a regular `get(conn, path)`
+  If a `path` is given, then a regular `get(conn, path, params)`
   is done and the page is upgraded to a LiveView. If
   no path is given, it assumes a previously rendered
   `%Plug.Conn{}` is given, which will be converted to
@@ -205,63 +214,43 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, body} = live(conn, "/path")
+      {:ok, view, markup} = live(conn, "/path", _fromat: :gameboy)
       assert view.module == MyLive
-      assert body =~ "the count is 3"
+      assert markup =~ "the count is 3"
 
-      assert {:error, {:redirect, %{to: "/somewhere"}}} = live(conn, "/path")
+      assert {:error, {:redirect, %{to: "/somewhere"}}} = live(conn, "/path", _format: :gameboy)
 
   """
-  # defmacro live(conn, path \\ nil, format, interface \\ {:%{}, [], []}) do
-  #   quote do
-  #     require Phoenix.LiveViewTest
-
-  #     unquote(conn)
-  #     |> Phoenix.LiveViewTest.put_connect_params(LiveViewNativeTest.build_connect_params(unquote(format), unquote(interface)))
-  #     |> Phoenix.LiveViewTest.live(LiveViewNativeTest.build_uri(unquote(path), unquote(format), unquote(interface)))
-  #   end
-  # end
-
-  # def build_connect_params(format, interface) do
-  #   %{
-  #     "_format" => Atom.to_string(format),
-  #     "_interface" => interface
-  #   }
-  # end
-
-  # def build_uri(path, format, interface) do
-  #   params = build_connect_params(format, interface)
-
-  #   query = Plug.Conn.Query.encode(params)
-
-  #   %URI{
-  #     path: path,
-  #     query: query
-  #   }
-  #   |> URI.to_string()
-  # end
-
-  defmacro live(conn, path \\ nil, format, interface \\ {:%{}, [], []}) do
+  defmacro live(conn, path \\ nil, params \\ []) do
     quote bind_quoted: binding(), generated: true do
-      params = %{
-        "_format" => Atom.to_string(format),
-        "_interface" => interface
-      }
+      {path, params} = if (is_list(path) && params == []) do
+        {nil, path}
+      else
+        {path, params}
+      end
+
+      params =
+        params
+        |> Keyword.take([:_format, :_interface])
+        |> Enum.into(%{}, fn
+          {:_format, value} -> {"_format", LiveViewNative.Utils.stringify(value)}
+          {:_interface, value} -> {"_interface", value}
+        end)
 
       conn = Phoenix.LiveViewTest.put_connect_params(conn, params)
 
-      path = %URI{
-        path: path,
-        query: Plug.Conn.Query.encode(params)
-      }
-      |> URI.to_string()
-
       cond do
         is_binary(path) ->
+          path = %URI{
+            path: path,
+            query: Plug.Conn.Query.encode(params)
+          }
+          |> URI.to_string()
+
           LiveViewNativeTest.__live__(get(conn, path), path)
 
         is_nil(path) ->
-          LiveViewNativeTest.__live__(conn, format)
+          LiveViewNativeTest.__live__(conn)
 
         true ->
           raise RuntimeError, "path must be nil or a binary, got: #{inspect(path)}"
@@ -287,7 +276,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, html} =
+      {:ok, view, markup} =
         live_isolated(conn, MyAppWeb.ClockLive, session: %{"tz" => "EST"})
 
   Use `put_connect_params/2` to put connect params for a call to
@@ -303,8 +292,17 @@ defmodule LiveViewNativeTest do
   defmacro live_isolated(conn, live_view, opts \\ []) do
     endpoint = Module.get_attribute(__CALLER__.module, :endpoint)
 
+    params =
+      opts
+      |> Keyword.take([:_format, :_interface])
+      |> Enum.into(%{}, fn
+        {:_format, value} -> {"_format", LiveViewNative.Utils.stringify(value)}
+        {:_interface, value} -> {"_interface", value}
+      end)
+      |> Macro.escape()
+
     quote bind_quoted: binding(), unquote: true do
-      unquote(__MODULE__).__isolated__(conn, endpoint, live_view, opts)
+      unquote(__MODULE__).__isolated__(put_connect_params(conn, params), endpoint, live_view, opts)
     end
   end
 
@@ -1840,6 +1838,22 @@ defmodule LiveViewNativeTest do
   defp proxy_pid(%{proxy: {_ref, _topic, pid}}), do: pid
 
   defp proxy_topic(%{proxy: {_ref, topic, _pid}}), do: topic
+
+  @doc"""
+  Asserts the given status code, that we have a LiveCiewNative client response and
+  returns the response body if one was set or sent.
+
+  The 3rd argument should correspond with the client's format name.
+
+  ## Examples
+
+      assert lvn_response(conn, 200, :gameboy) =~ "<GameBoyLayout>"
+  """
+  def lvn_response(conn, status, format) do
+    body = Phoenix.ConnTest.response(conn, status)
+    _    = Phoenix.ConnTest.response_content_type(conn, format)
+    body
+  end
 
   @doc """
   Performs an upload of a file input and renders the result.

@@ -11,7 +11,7 @@ defmodule LiveViewNative.LiveView do
   """
   import LiveViewNative.Utils, only: [
     normalize_layouts: 1,
-    stringify_format: 1
+    stringify: 1
   ]
 
   @doc """
@@ -69,7 +69,7 @@ defmodule LiveViewNative.LiveView do
                   |> Keyword.get(format)
                   |> normalize_layout_opts(fallback_layout, env)
 
-                format = stringify_format(format)
+                format = stringify(format)
                 {Map.put(layouts, format, layout), Map.put(render_withs, format, render_with)}
 
               :error ->

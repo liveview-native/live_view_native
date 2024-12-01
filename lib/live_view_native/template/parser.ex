@@ -49,6 +49,13 @@ defmodule LiveViewNative.Template.Parser do
   @first_chars ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
   @chars ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
   @whitespace ~c"\s\t\n\r"
+  @entities [
+    {?<, "&lt;"},
+    {?>, "&gt;"},
+    {?&, "&amp;"},
+    {?", "&quot;"},
+    {?', "&#39;"}
+  ]
 
   @doc """
   Parses an LVN document from a string.
@@ -152,15 +159,18 @@ defmodule LiveViewNative.Template.Parser do
     return_text_node("", cursor, buffer, args)
   end
 
-  defp parse_text_node(<<char, document::binary>>, cursor, buffer, args) do
-    parse_text_node(document, move_cursor(cursor, char), [char | buffer], args)
+  for {char, entity} <- @entities do
+    defp parse_text_node(<<unquote(entity), document::binary>>, cursor, buffer, args) do
+      parse_text_node(document, move_cursor(cursor, unquote(entity)), [buffer, unquote(char)], args)
+    end
+  end
+
+  defp parse_text_node(<<char::utf8, document::binary>>, cursor, buffer, args) do
+    parse_text_node(document, move_cursor(cursor, char), [buffer, char], args)
   end
 
   defp return_text_node(document, cursor, buffer, _args) do
-    text_node =
-      buffer
-      |> Enum.reverse()
-      |> List.to_string()
+    text_node = List.to_string(buffer)
 
     {:ok, {document, text_node, cursor}}
   end
@@ -172,16 +182,13 @@ defmodule LiveViewNative.Template.Parser do
   defp parse_comment_node(<<"-->", document::binary>>, cursor, buffer, _args) do
     cursor = move_cursor(cursor, ~c"-->")
 
-    comment =
-      buffer
-      |> Enum.reverse()
-      |> List.to_string()
+    comment = List.to_string(buffer)
 
     {:ok, {document, [comment: comment], cursor}}
   end
 
   defp parse_comment_node(<<char, document::binary>>, cursor, buffer, args) do
-    parse_comment_node(document, cursor, [char | buffer], args)
+    parse_comment_node(document, cursor, [buffer, char], args)
   end
 
   defp parse_node(document, cursor = start_cursor, args) do
@@ -200,14 +207,14 @@ defmodule LiveViewNative.Template.Parser do
     {:error, "unexpected end of file while parsing attribute key", [start: cursor, end: cursor]}
   end
 
-  defp parse_tag_name(<<char, document::binary>>, cursor, [], args) when char in @first_chars do
+  defp parse_tag_name(<<char::utf8, document::binary>>, cursor, [], args) when char in @first_chars do
     cursor = move_cursor(cursor, char)
     parse_tag_name(document, cursor, [char], args)
   end
 
-  defp parse_tag_name(<<char, document::binary>>, cursor, buffer, args) when char in @chars do
+  defp parse_tag_name(<<char::utf8, document::binary>>, cursor, buffer, args) when char in @chars do
     cursor = move_cursor(cursor, char)
-    parse_tag_name(document, cursor, [char | buffer], args)
+    parse_tag_name(document, cursor, [buffer, char], args)
   end
 
   defp parse_tag_name(<<"/>", _document::binary>> = document, cursor, buffer, args),
@@ -223,10 +230,7 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   defp return_tag_name(document, buffer, cursor, _args) do
-    tag_name =
-      buffer
-      |> Enum.reverse()
-      |> List.to_string()
+    tag_name = List.to_string(buffer)
 
     {:ok, {document, tag_name, cursor}}
   end
@@ -254,7 +258,7 @@ defmodule LiveViewNative.Template.Parser do
   defp parse_attribute(document, cursor, args) do
     with {:ok, {document, key, cursor}} <- parse_attribute_key(document, cursor, [], args),
       {:ok, {document, cursor}} <- parse_attribute_assignment(document, cursor, key, args),
-      {:ok, {document, value, cursor}} <- parse_attribute_value(document, cursor, [], args) do
+      {:ok, {document, value, cursor}} <- parse_attribute_value(document, cursor, nil, args) do
         {:ok, {document, {key, value}, cursor}}
     else
       {:boolean, {document, key, cursor}} -> {:ok, {document, {key, key}, cursor}}
@@ -279,19 +283,14 @@ defmodule LiveViewNative.Template.Parser do
     parse_attribute_key(document, move_cursor(cursor, char), [char], args)
   end
 
-  defp parse_attribute_key(<<char, _document::binary>> = document, cursor, key_buffer, _args)
-    when char not in @chars do
+  defp parse_attribute_key(<<char, _document::binary>> = document, cursor, key_buffer, _args) when char not in @chars do
+    key = List.to_string(key_buffer)
 
-    key =
-      key_buffer
-      |> Enum.reverse()
-      |> List.to_string()
-
-      {:ok, {document, key, cursor}}
+    {:ok, {document, key, cursor}}
   end
 
   defp parse_attribute_key(<<char, document::binary>>, cursor, key_buffer, args) when char in @chars do
-    parse_attribute_key(document, move_cursor(cursor, char), [char | key_buffer], args)
+    parse_attribute_key(document, move_cursor(cursor, char), [key_buffer, char], args)
   end
 
   defp parse_attribute_key(<<>>, cursor, _buffer, _args) do
@@ -322,37 +321,40 @@ defmodule LiveViewNative.Template.Parser do
     {:error, "unexpected end of file while parsing attribute value", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_value(<<"\"\"", document::binary>>, cursor, [], _args) do
+  defp parse_attribute_value(<<"\"\"", document::binary>>, cursor, nil,_args) do
     {:ok, {document, "", move_cursor(cursor, ~c'""')}}
   end
 
-  defp parse_attribute_value(<<"\"", char, document::binary>>, cursor, [], args) do
-    parse_attribute_value(document, move_cursor(cursor, [?", char]), [char], args)
+  defp parse_attribute_value(<<"\"", char, document::binary>>, cursor, nil, args) do
+    parse_attribute_value(to_string([char]) <> document, move_cursor(cursor, ?"), [], args)
   end
 
-  defp parse_attribute_value(<<char, document::binary>>, cursor, [], args) when char in @whitespace do
-    parse_attribute_value(document, move_cursor(cursor, char), [], args)
+  defp parse_attribute_value(<<char, document::binary>>, cursor, nil, args) when char in @whitespace do
+    parse_attribute_value(document, move_cursor(cursor, char), nil, args)
   end
 
-  defp parse_attribute_value(<<_char, _document::binary>>, cursor, [], _args) do
+  defp parse_attribute_value(<<_char, _document::binary>>, cursor, nil, _args) do
     {:error, "value must be wrapped by \" quotes", [start: cursor, end: cursor]}
   end
 
   defp parse_attribute_value(<<"\"", document::binary>>, cursor, buffer, _args) do
-    value =
-      buffer
-      |> Enum.reverse()
-      |> List.to_string()
+    value = List.to_string(buffer)
 
     {:ok, {document, value, move_cursor(cursor, ?")}}
   end
 
-  defp parse_attribute_value(_document, cursor, [], _args) do
+  defp parse_attribute_value(_document, cursor, nil, _args) do
     {:error, "invalid value format for attribute", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_value(<<char, document::binary>>, cursor, buffer, args) do
-    parse_attribute_value(document, move_cursor(cursor, char), [char | buffer], args)
+  for {char, entity} <- @entities do
+    defp parse_attribute_value(<<unquote(entity), document::binary>>, cursor, buffer, args) do
+      parse_attribute_value(document, move_cursor(cursor, unquote(entity)), [buffer, unquote(char)], args)
+    end
+  end
+
+  defp parse_attribute_value(<<char::utf8, document::binary>>, cursor, buffer, args) do
+    parse_attribute_value(document, move_cursor(cursor, char), [buffer, char], args)
   end
 
   defp parse_tag_close(<<">", document::binary>>, cursor, _start_cursor, _args) do
@@ -385,7 +387,7 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   defp parse_end_tag(<<char, document::binary>>, cursor, buffer, tag_name, start_cursor, args) when char in @chars do
-    parse_end_tag(document, move_cursor(cursor, char), [char | buffer], tag_name, start_cursor, args)
+    parse_end_tag(document, move_cursor(cursor, char), [buffer, char], tag_name, start_cursor, args)
   end
 
   defp parse_end_tag(document, cursor, [], _tag_name, _start_cursor, _args) do
@@ -399,10 +401,7 @@ defmodule LiveViewNative.Template.Parser do
   defp parse_end_tag(document, end_cursor, buffer, tag_name, start_cursor, args) do
     {document, cursor} = drain_whitespace(document, end_cursor)
 
-    closing_tag_name =
-      buffer
-      |> Enum.reverse()
-      |> List.to_string()
+    closing_tag_name = List.to_string(buffer)
 
     if tag_name != closing_tag_name do
       {:error, "starting tagname does not match closing tagname", [start: start_cursor, end: end_cursor]}

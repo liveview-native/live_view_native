@@ -18,25 +18,25 @@ defmodule LiveViewNative.TemplateRenderTest do
   end
 
   test "can render the gameboy format", %{conn: conn} do
-    {:ok, lv, _markup} = live(conn, "/template", :gameboy)
+    {:ok, lv, _markup} = live(conn, "/template", _format: :gameboy)
 
     assert lv |> element("GameBoy") |> render() =~ "Template GameBoy Render 200"
   end
 
   test "can render the gameboy format with tv target", %{conn: conn} do
-    {:ok, lv, _markup} = live(conn, "/template", :gameboy, %{"target" => "tv"})
+    {:ok, lv, _markup} = live(conn, "/template", _format: :gameboy, _interface: %{"target" => "tv"})
 
     assert lv |> element("GameBoyTV") |> render() =~ "TV Target Template GameBoy Render 200"
   end
 
   test "can render the switch format", %{conn: conn} do
-    {:ok, lv, _markup} = live(conn, "/template", :switch)
+    {:ok, lv, _markup} = live(conn, "/template", _format: :switch)
 
     assert lv |> element("Switch") |> render() =~ "Template Switch Render 200"
   end
 
   test "can render the switch format with tv target", %{conn: conn} do
-    {:ok, lv, _markup} = live(conn, "/template", :switch, %{"target" => "tv"})
+    {:ok, lv, _markup} = live(conn, "/template", _format: :switch, _interface: %{"target" => "tv"})
 
     assert lv |> element("SwitchTV") |> render() =~ "TV Target Template Switch Render 200"
   end

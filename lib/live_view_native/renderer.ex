@@ -5,7 +5,7 @@ defmodule LiveViewNative.Renderer do
 
   import LiveViewNative.Utils, only: [
     get_interface: 1,
-    stringify_format: 1
+    stringify: 1
   ]
 
   @doc false
@@ -270,7 +270,7 @@ defmodule LiveViewNative.Renderer do
   end
 
   defp build_pattern(module, format) do
-    path = stringify_format(format)
+    path = stringify(format)
 
     name =
       module
