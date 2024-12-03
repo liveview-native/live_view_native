@@ -269,6 +269,8 @@ defmodule LiveViewNativeTest do
   ## Options
 
     * `:session` - the session to be given to the LiveView
+    * `:_format` - the format of the client connecting
+    * `:_interface` - a map of interface state values from the client
 
   All other options are forwarded to the LiveView for rendering. Refer to
   `Phoenix.Component.live_render/3` for a list of supported render
@@ -285,7 +287,7 @@ defmodule LiveViewNativeTest do
       {:ok, view, html} =
         conn
         |> put_connect_params(%{"param" => "value"})
-        |> live_isolated(AppWeb.ClockLive, session: %{"tz" => "EST"})
+        |> live_isolated(AppWeb.ClockLive, session: %{"tz" => "EST"}, _format: :gameboy)
 
 
   """
@@ -334,18 +336,18 @@ defmodule LiveViewNativeTest do
         raise ArgumentError, """
         a request has not yet been sent.
 
-        live/1 must use a connection with a sent response. Either call get/2
-        prior to live/1, or use live/2 while providing a path to have a get
+        live/1 must use a connection with a sent response. Either call get/3
+        prior to live/2, or use live/3 while providing a path to have a get
         request issued for you. For example issuing a get yourself:
 
             {:ok, view, _body} =
               conn
               |> get("#{path}")
-              |> live()
+              |> live(_format: :gameboy)
 
         or performing the GET and live connect in a single step:
 
-            {:ok, view, _body} = live(conn, "#{path}")
+            {:ok, view, _body} = live(conn, "#{path}", _format: :gameboy)
         """
     end
   end
@@ -546,15 +548,15 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      import Phoenix.Component
-      import Phoenix.LiveViewTest
+      import LiveViewNative.Component
+      import LiveViewNativeTest
 
       test "greets" do
         assigns = %{}
-        assert rendered_to_string(~H"""
+        assert rendered_to_string(~LVN"""
                <MyComponents.greet name="Mary" />
                """) ==
-                 "<div>Hello, Mary!</div>"
+                 "<Text>Hello, Mary!</Text>"
       end
 
   '''
