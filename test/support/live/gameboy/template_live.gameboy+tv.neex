@@ -1,1 +1,1 @@
-<GameBoyTV>TV Target Template GameBoy Render <%= @count %></GameBoyTV>
+<GameBoyTV>TV Target Template GameBoy Render {@count}</GameBoyTV>

@@ -5,13 +5,13 @@ defmodule LiveViewNativeTest.InlineLive.GameBoy do
 
   def render(assigns, %{"target" => "tv"}) do
     ~LVN"""
-    <GameBoyTV>TV Target Inline GameBoy Render <%= @count %></GameBoyTV>
+    <GameBoyTV>TV Target Inline GameBoy Render {@count}</GameBoyTV>
     """
   end
 
   def render(assigns, _interface) do
     ~LVN"""
-    <GameBoy>Inline GameBoy Render <%= @count %></GameBoy>
+    <GameBoy>Inline GameBoy Render {@count}</GameBoy>
     """
   end
 end
@@ -23,13 +23,13 @@ defmodule LiveViewNativeTest.InlineLive.Switch do
 
   def render(assigns, %{"target" => "tv"}) do
     ~LVN"""
-    <SwitchTV>TV Target Inline Switch Render <%= @count %></SwitchTV>
+    <SwitchTV>TV Target Inline Switch Render {@count}</SwitchTV>
     """
   end
 
   def render(assigns, _interface) do
     ~LVN"""
-    <Switch>Inline Switch Render <%= @count %></Switch>
+    <Switch>Inline Switch Render {@count}</Switch>
     """
   end
 end

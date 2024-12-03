@@ -3,13 +3,13 @@ defmodule LiveViewNativeTest.FunctionComponent do
 
   def render(assigns, _interface) do
     ~LVN"""
-    COMPONENT:<%= @value %>
+    COMPONENT:{@value}
     """
   end
 
   def render_with_inner_content(assigns) do
     ~LVN"""
-    COMPONENT:<%= @value %>, Content: <%= render_slot(@inner_block) %>
+    COMPONENT:{@value}, Content: {render_slot(@inner_block)}
     """
   end
 end
@@ -212,7 +212,7 @@ defmodule LiveViewNativeTest.StatefulComponent do
   def render(%{socket: _} = assigns, _interface) do
     ~LVN"""
     <Group phx-click="transform" id={@id} phx-target={"#" <> @id <> include_parent_id(@parent_id)}>
-      <%= @name %> says hi
+      {@name} says hi
       <.live_component :if={@dup_name} module={__MODULE__} id={@dup_name} name={@dup_name} />
     </Group>
     """
@@ -268,7 +268,7 @@ defmodule LiveViewNativeTest.WithComponentLive do
 
     def render(assigns) do
       ~LVN"""
-      Redirect: <%= @redirect %>
+      Redirect: {@redirect}
       <%= for name <- @names do %>
         <.live_component
           module={LiveViewNativeTest.StatefulComponent}
@@ -327,7 +327,7 @@ defmodule LiveViewNativeTest.WithMultipleTargets do
     def render(assigns) do
       ~LVN"""
       <Group id="parent_id" class="parent">
-        <%= @message %>
+        {@message}
         <%= for name <- @names do %>
           <.live_component
             module={LiveViewNativeTest.StatefulComponent}

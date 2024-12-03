@@ -1,1 +1,1 @@
-<GameBoy>Template GameBoy Render <%= @count %></GameBoy>
+<GameBoy>Template GameBoy Render {@count}</GameBoy>

@@ -11,9 +11,9 @@ defmodule LiveViewNativeTest.ParamCounterLive do
 
     def render(assigns, _interface) do
       ~LVN"""
-      <Text>The value is: <%= @val %></Text>
-      <Text>mount: <%= inspect(@mount_params) %></Text>
-      <Text>params: <%= inspect(@params) %></Text>
+      <Text>The value is: {@val}</Text>
+      <Text>mount: {inspect(@mount_params)}</Text>
+      <Text>params: {inspect(@params)}</Text>
       """
     end
   end

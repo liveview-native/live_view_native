@@ -21,7 +21,7 @@ defmodule LiveViewNativeTest.ComponentAndNestedInLive do
           as: :render
 
         def render(assigns, _interface) do
-          ~LVN"<Text><%= @hello %></Text>"
+          ~LVN"<Text>{@hello}</Text>"
         end
       end
 
@@ -30,7 +30,7 @@ defmodule LiveViewNativeTest.ComponentAndNestedInLive do
       end
 
       def render(assigns) do
-        ~H"<div><%= @hello %></div>"
+        ~H"<div>{@hello}</div>"
       end
 
       def handle_event("disable", _params, socket) do
@@ -49,14 +49,14 @@ defmodule LiveViewNativeTest.ComponentAndNestedInLive do
       end
 
       def render(assigns) do
-        ~LVN"<Text><%= @world %></Text>"
+        ~LVN"<Text>{@world}</Text>"
       end
     end
 
     def render(assigns, _interface) do
       ~LVN"""
       <%= if @enabled do %>
-        <%= live_render(@socket, NestedLive, id: :nested_live) %>
+        {live_render(@socket, NestedLive, id: :nested_live)}
         <.live_component module={NestedComponent} id={:_component} />
       <% end %>
       """

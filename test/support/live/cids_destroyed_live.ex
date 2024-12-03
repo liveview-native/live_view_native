@@ -21,8 +21,8 @@ defmodule LiveViewNativeTest.CidsDestroyedLive do
       def render(assigns) do
         ~LVN"""
         <Group>
-          <Button type="submit"><%= @text %></Button>
-          <Text id="bumper" phx-click="bump" phx-target={@myself}>Bump: <%= @counter %></Text>
+          <Button type="submit">{@text}</Button>
+          <Text id="bumper" phx-click="bump" phx-target={@myself}>Bump: {@counter}</Text>
         </Group>
         """
       end
