@@ -473,7 +473,7 @@ defmodule LiveViewNative.LiveComponentsTest do
 
       ~LVN"""
       <Text>
-        FROM <%= @from %> <%= @hello %>
+        FROM {@from} {@hello}
       </Text>
       """
     end
@@ -487,7 +487,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     def render(assigns) do
       ~LVN"""
       <Text>
-        RENDER ONLY <%= @from %>
+        RENDER ONLY {@from}
       </Text>
       """
     end
@@ -512,8 +512,8 @@ defmodule LiveViewNative.LiveComponentsTest do
 
     def render(assigns) do
       ~LVN"""
-      <foo><%= @id %></foo>
-      <bar><%= @id %></bar>
+      <foo>{@id}</foo>
+      <bar>{@id}</bar>
       """
     end
   end

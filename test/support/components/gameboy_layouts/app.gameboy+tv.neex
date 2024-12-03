@@ -1,1 +1,1 @@
-<GameBoyLayout><%= @inner_content %></GameBoyLayout>
+<GameBoyLayout>{@inner_content}</GameBoyLayout>

@@ -17,8 +17,7 @@ defmodule LiveViewNativeTest.ComponentInLive.Root do
       as: :render
 
     def render(assigns, _interface) do
-      ~LVN"<%= @enabled &&
-    live_render(@socket, LiveViewNativeTest.ComponentInLive.Live, id: :nested_live) %>"
+      ~LVN"{@enabled && live_render(@socket, LiveViewNativeTest.ComponentInLive.Live, id: :nested_live)}"
     end
   end
 
@@ -75,6 +74,6 @@ defmodule LiveViewNativeTest.ComponentInLive.Component do
   end
 
   def render(assigns, _interface) do
-    ~LVN"<Text><%= @hello %> <%= @world %></Text>"
+    ~LVN"<Text>{@hello} {@world}</Text>"
   end
 end

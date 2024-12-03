@@ -7,7 +7,16 @@ defmodule LiveViewNative.TemplateTest do
       assigns = %{foo: "bar"}
 
       assert ~LVN"""
-      <Foo><%= @foo %></Foo>
+      <Foo>{@foo}</Foo>
+      """
+      |> render() =~ ~S(<Foo>bar</Foo>)
+    end
+
+    test "can embed values with curly braces" do
+      assigns = %{foo: "bar"}
+
+      assert ~LVN"""
+      <Foo>{@foo}</Foo>
       """
       |> render() =~ ~S(<Foo>bar</Foo>)
     end
@@ -17,7 +26,7 @@ defmodule LiveViewNative.TemplateTest do
       assigns = %{data: data}
 
       assert ~LVN"""
-      <Foo><%= @data["foo"] %></Foo>
+      <Foo>{@data["foo"]}</Foo>
       """
       |> render() =~ ~S(<Foo>bar</Foo>)
     end

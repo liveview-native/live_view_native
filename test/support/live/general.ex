@@ -13,14 +13,14 @@ defmodule LiveViewNativeTest.ThermostatLive do
 
     def render(assigns, _interface) do
       ~LVN"""
-      <Text>Redirect: <%= @redirect %></Text>
-      <Text>The temp is: <%= @val %><%= @greeting %></Text>
+      <Text>Redirect: {@redirect}</Text>
+      <Text>The temp is: {@val}{@greeting}</Text>
       <Button phx-click="dec">-</Button>
       <Button phx-click="inc">+</Button>
       <%= if @nest do %>
-        <%= live_render(@socket, ClockLive, [id: :clock] ++ @nest) %>
+        {live_render(@socket, ClockLive, [id: :clock] ++ @nest)}
         <%= for user <- @users do %>
-          <Text><%= user.name %> <%= user.email %></Text>
+          <Text>{user.name} {user.email}</Text>
         <% end %>
       <% end %>
       """
@@ -111,11 +111,11 @@ defmodule LiveViewNativeTest.ClockLive do
 
     def render(assigns, _interface) do
       ~LVN"""
-      time: <%= @time %> <%= @name %>
-      <%= live_render(@socket, ClockControlsLive,
+      time: {@time} {@name}
+      {live_render(@socket, ClockControlsLive,
         id: :"#{String.replace(@name, " ", "-")}-controls",
         sticky: @sticky
-      ) %>
+      ) }
       """
     end
   end
@@ -186,7 +186,7 @@ defmodule LiveViewNativeTest.DashboardLive do
 
       def render(assigns, _interface) do
         ~LVN"""
-        session: <%= Phoenix.HTML.raw(inspect(@session)) %>
+        session: {Phoenix.HTML.raw(inspect(@session))}
         """
       end
     end
