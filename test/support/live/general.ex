@@ -1,10 +1,10 @@
-alias LiveViewNativeTest.{ClockLive, ClockControlsLive}
-
 defmodule LiveViewNativeTest.ThermostatLive do
   use Phoenix.LiveView, container: {:article, class: "thermo"}, namespace: Phoenix.LiveViewTest
 
   use LiveViewNative.LiveView,
     formats: [:gameboy]
+
+  alias LiveViewNativeTest.ClockLive
 
   defmodule GameBoy do
     use LiveViewNative.Component,
@@ -103,6 +103,8 @@ defmodule LiveViewNativeTest.ClockLive do
 
   use LiveViewNative.LiveView,
     formats: [:gameboy]
+
+  alias LiveViewNativeTest.ClockControlsLive
 
   defmodule GameBoy do
     use LiveViewNative.Component,
