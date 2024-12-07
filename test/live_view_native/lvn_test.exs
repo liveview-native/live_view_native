@@ -78,6 +78,15 @@ defmodule LiveViewNative.LVNTest do
                ]
              }
 
+      assert LVN.add_class("show", to: {:closest, "a"}) == %LVN{
+               ops: [
+                 [
+                   "add_class",
+                   %{names: ["show"], to: %{closest: "a"}}
+                 ]
+               ]
+             }
+
       assert LVN.add_class("show", to: "#modal") == %LVN{
                ops: [
                  [
@@ -113,6 +122,15 @@ defmodule LiveViewNative.LVNTest do
                  [
                    "add_class",
                    %{names: ["show"], transition: [["fade"], [], []]}
+                 ]
+               ]
+             }
+
+      assert LVN.add_class("show", transition: "fade", blocking: false) == %LVN{
+               ops: [
+                 [
+                   "add_class",
+                   %{names: ["show"], transition: [["fade"], [], []], blocking: false}
                  ]
                ]
              }
@@ -157,6 +175,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for add_class/, fn ->
         LVN.add_class("show", bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in add_class/, fn ->
+        LVN.add_class("show", to: {:sibling, "foo"})
+      end
     end
 
     test "encoding" do
@@ -181,6 +203,15 @@ defmodule LiveViewNative.LVNTest do
                  [
                    "remove_class",
                    %{names: ["show"], to: "#modal"}
+                 ]
+               ]
+             }
+
+      assert LVN.remove_class("show", to: {:inner, "a"}) == %LVN{
+               ops: [
+                 [
+                   "remove_class",
+                   %{names: ["show"], to: %{inner: "a"}}
                  ]
                ]
              }
@@ -214,6 +245,15 @@ defmodule LiveViewNative.LVNTest do
                  [
                    "remove_class",
                    %{names: ["show"], transition: [["fade"], [], []]}
+                 ]
+               ]
+             }
+
+      assert LVN.remove_class("show", transition: "fade", blocking: false) == %LVN{
+               ops: [
+                 [
+                   "remove_class",
+                   %{names: ["show"], transition: [["fade"], [], []], blocking: false}
                  ]
                ]
              }
@@ -285,6 +325,15 @@ defmodule LiveViewNative.LVNTest do
                  ]
                ]
              }
+
+      assert LVN.toggle_class("show", to: {:document, "#modal"}) == %LVN{
+               ops: [
+                 [
+                   "toggle_class",
+                   %{names: ["show"], to: "#modal"}
+                 ]
+               ]
+             }
     end
 
     test "multiple classes" do
@@ -315,6 +364,15 @@ defmodule LiveViewNative.LVNTest do
                  [
                    "toggle_class",
                    %{names: ["show"], transition: [["fade"], [], []]}
+                 ]
+               ]
+             }
+
+      assert LVN.toggle_class("show", transition: "fade", blocking: false) == %LVN{
+               ops: [
+                 [
+                   "toggle_class",
+                   %{names: ["show"], transition: [["fade"], [], []], blocking: false}
                  ]
                ]
              }
@@ -388,6 +446,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for dispatch/, fn ->
         LVN.dispatch("click", to: ".foo", bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in dispatch/, fn ->
+        LVN.dispatch("click", to: {:winner, ".foo"})
+      end
     end
 
     test "raises with click details" do
@@ -424,6 +486,15 @@ defmodule LiveViewNative.LVNTest do
                  [
                    "toggle",
                    %{to: "#modal"}
+                 ]
+               ]
+             }
+
+      assert LVN.toggle(to: {:closest, ".modal"}) == %LVN{
+               ops: [
+                 [
+                   "toggle",
+                   %{to: %{closest: ".modal"}}
                  ]
                ]
              }
@@ -492,6 +563,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for toggle/, fn ->
         LVN.toggle(to: "#modal", bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in toggle/, fn ->
+        LVN.toggle(to: "#modal", to: {:bad, "123"})
+      end
     end
 
     test "composability" do
@@ -515,6 +590,10 @@ defmodule LiveViewNative.LVNTest do
     test "with defaults" do
       assert LVN.show(to: "#modal") == %LVN{
                ops: [["show", %{to: "#modal"}]]
+             }
+
+      assert LVN.show(to: {:inner, ".modal"}) == %LVN{
+               ops: [["show", %{to: %{inner: ".modal"}}]]
              }
     end
 
@@ -572,6 +651,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for show/, fn ->
         LVN.show(to: "#modal", bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in show/, fn ->
+        LVN.show(to: {:bad, "#modal"})
+      end
     end
 
     test "composability" do
@@ -595,6 +678,10 @@ defmodule LiveViewNative.LVNTest do
     test "with defaults" do
       assert LVN.hide(to: "#modal") == %LVN{
                ops: [["hide", %{to: "#modal"}]]
+             }
+
+      assert LVN.hide(to: {:closest, "a"}) == %LVN{
+               ops: [["hide", %{to: %{closest: "a"}}]]
              }
     end
 
@@ -644,6 +731,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for hide/, fn ->
         LVN.hide(to: "#modal", bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in hide/, fn ->
+        LVN.hide(to: {:bad, "#modal"})
+      end
     end
 
     test "composability" do
@@ -671,6 +762,10 @@ defmodule LiveViewNative.LVNTest do
 
       assert LVN.transition("shake", to: "#modal") == %LVN{
                ops: [["transition", %{transition: [["shake"], [], []], to: "#modal"}]]
+             }
+
+      assert LVN.transition("shake", to: {:inner, "a"}) == %LVN{
+               ops: [["transition", %{transition: [["shake"], [], []], to: %{inner: "a"}}]]
              }
 
       assert LVN.transition("shake swirl", to: "#modal") == %LVN{
@@ -705,6 +800,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for transition/, fn ->
         LVN.transition("shake", to: "#modal", bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in transition/, fn ->
+        LVN.transition("shake", to: {:bad, "#modal"})
+      end
     end
 
     test "composability" do
@@ -737,6 +836,12 @@ defmodule LiveViewNative.LVNTest do
                  ["set_attr", %{attr: ["aria-expanded", "true"], to: "#dropdown"}]
                ]
              }
+
+      assert LVN.set_attribute({"aria-expanded", "true"}, to: {:inner, ".dropdown"}) == %LVN{
+               ops: [
+                 ["set_attr", %{attr: ["aria-expanded", "true"], to: %{inner: ".dropdown"}}]
+               ]
+             }
     end
 
     test "composability" do
@@ -757,6 +862,10 @@ defmodule LiveViewNative.LVNTest do
     test "raises with unknown options" do
       assert_raise ArgumentError, ~r/invalid option for set_attribute/, fn ->
         LVN.set_attribute({"disabled", ""}, bad: :opt)
+      end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in set_attribute/, fn ->
+        LVN.set_attribute({"disabled", ""}, to: {:bad, "#modal"})
       end
     end
 
@@ -827,6 +936,16 @@ defmodule LiveViewNative.LVNTest do
                  ["toggle_attr", %{attr: ["aria-expanded", "true", "false"], to: "#dropdown"}]
                ]
              }
+
+      assert LVN.toggle_attribute({"aria-expanded", "true", "false"}, to: {:inner, ".dropdown"}) ==
+               %LVN{
+                 ops: [
+                   [
+                     "toggle_attr",
+                     %{attr: ["aria-expanded", "true", "false"], to: %{inner: ".dropdown"}}
+                   ]
+                 ]
+               }
     end
 
     test "composability" do
@@ -849,6 +968,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for toggle_attribute/, fn ->
         LVN.toggle_attribute({"disabled", "true"}, bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in toggle_attribute/, fn ->
+        LVN.toggle_attribute({"disabled", "true"}, to: {:bad, "123"})
+      end
     end
 
     test "encoding" do
@@ -863,7 +986,8 @@ defmodule LiveViewNative.LVNTest do
   describe "focus" do
     test "with defaults" do
       assert LVN.focus() == %LVN{ops: [["focus", %{}]]}
-      assert LVN.focus(to: "Input") == %LVN{ops: [["focus", %{to: "Input"}]]}
+      assert LVN.focus(to: "input") == %LVN{ops: [["focus", %{to: "input"}]]}
+      assert LVN.focus(to: {:inner, "input"}) == %LVN{ops: [["focus", %{to: %{inner: "input"}}]]}
     end
 
     test "composability" do
@@ -880,6 +1004,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for focus/, fn ->
         LVN.focus(bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in focus/, fn ->
+        LVN.focus(to: {:bad, "a"})
+      end
     end
 
     test "encoding" do
@@ -890,7 +1018,11 @@ defmodule LiveViewNative.LVNTest do
   describe "focus_first" do
     test "with defaults" do
       assert LVN.focus_first() == %LVN{ops: [["focus_first", %{}]]}
-      assert LVN.focus_first(to: "Input") == %LVN{ops: [["focus_first", %{to: "Input"}]]}
+      assert LVN.focus_first(to: "input") == %LVN{ops: [["focus_first", %{to: "input"}]]}
+
+      assert LVN.focus_first(to: {:inner, "input"}) == %LVN{
+               ops: [["focus_first", %{to: %{inner: "input"}}]]
+             }
     end
 
     test "composability" do
@@ -910,6 +1042,10 @@ defmodule LiveViewNative.LVNTest do
       assert_raise ArgumentError, ~r/invalid option for focus_first/, fn ->
         LVN.focus_first(bad: :opt)
       end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in focus_first/, fn ->
+        LVN.focus_first(to: {:bad, "a"})
+      end
     end
 
     test "encoding" do
@@ -920,7 +1056,11 @@ defmodule LiveViewNative.LVNTest do
   describe "push_focus" do
     test "with defaults" do
       assert LVN.push_focus() == %LVN{ops: [["push_focus", %{}]]}
-      assert LVN.push_focus(to: "Input") == %LVN{ops: [["push_focus", %{to: "Input"}]]}
+      assert LVN.push_focus(to: "input") == %LVN{ops: [["push_focus", %{to: "input"}]]}
+
+      assert LVN.push_focus(to: {:inner, "input"}) == %LVN{
+               ops: [["push_focus", %{to: %{inner: "input"}}]]
+             }
     end
 
     test "composability" do
@@ -939,6 +1079,10 @@ defmodule LiveViewNative.LVNTest do
     test "raises with unknown options" do
       assert_raise ArgumentError, ~r/invalid option for push_focus/, fn ->
         LVN.push_focus(bad: :opt)
+      end
+
+      assert_raise ArgumentError, ~r/invalid scope for :to option in push_focus/, fn ->
+        LVN.push_focus(to: {:bad, "a"})
       end
     end
 
@@ -964,6 +1108,22 @@ defmodule LiveViewNative.LVNTest do
 
     test "encoding" do
       assert lvn_to_string(LVN.pop_focus()) == "[[&quot;pop_focus&quot;,{}]]"
+    end
+  end
+
+  describe "concat" do
+    test "combines multiple LVN structs" do
+      lvn1 = LVN.push("inc", value: %{one: 1, two: 2})
+      lvn2 = LVN.add_class("show", to: "#modal", time: 100)
+      lvn3 = LVN.remove_class("show")
+
+      assert LVN.concat(lvn1, lvn2) |> LVN.concat(lvn3) == %LVN{
+               ops: [
+                 ["push", %{event: "inc", value: %{one: 1, two: 2}}],
+                 ["add_class", %{names: ["show"], time: 100, to: "#modal"}],
+                 ["remove_class", %{names: ["show"]}]
+               ]
+             }
     end
   end
 

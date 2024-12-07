@@ -54,7 +54,7 @@ defmodule LiveViewNative.LVN do
             phx-key="escape"
           >
             <Button class="phx-modal-close" phx-click={hide_modal()}>✖</Button>
-            <Text><%= @text %></Text>
+            <Text>{@text}</Text>
           </Text>
         </Text>
         """
@@ -68,33 +68,41 @@ defmodule LiveViewNative.LVN do
   with the event, apply loading states to external elements, etc. For example,
   given this basic `phx-click` event:
 
-      <Button phx-click="inc">+</Button>
+  ```heex
+  <Button phx-click="inc">+</Button>
+  ```
 
   Imagine you need to target your current component, and apply a loading state
   to the parent container while the client awaits the server acknowledgement:
 
       alias LiveViewNative.LVN
 
+      ~LVN"""
       <Button phx-click={LVN.push("inc", loading: ".thermo", target: @myself)}>+</Button>
+      """
 
   Push commands also compose with all other utilities. For example,
   to add a class when pushing:
 
-      <Button phx-click={
-        LVN.push("inc", loading: ".thermo", target: @myself)
-        |> LVN.add_class("warmer", to: ".thermo")
-      }>+</Button>
+  ```heex
+  <Button phx-click={
+    LVN.push("inc", loading: ".thermo", target: @myself)
+    |> LVN.add_class("warmer", to: ".thermo")
+  }>+</Button>
+  ```
 
   Any `phx-value-*` attributes will also be included in the payload, their
   values will be overwritten by values given directly to `push/1`. Any
   `phx-target` attribute will also be used, and overwritten.
 
-      <Button
-        phx-click={LVN.push("inc", value: %{limit: 40})}
-        phx-value-room="bedroom"
-        phx-value-limit="this value will be 40"
-        phx-target={@myself}
-      >+</Button>
+  ```heex
+  <Button
+    phx-click={LVN.push("inc", value: %{limit: 40})}
+    phx-value-room="bedroom"
+    phx-value-limit="this value will be 40"
+    phx-target={@myself}
+  >+</Button>
+  ```
 
   ## Custom LVN events with `LVN.dispatch/1` and `window.addEventListener`
 
@@ -108,6 +116,7 @@ defmodule LiveViewNative.LVN do
   a copy-to-clipboard functionality in your application. You can
   add a custom event for it:
 
+  # TODO replace with native version
       window.addEventListener("my_app:clipcopy", (event) => {
         if ("clipboard" in navigator) {
           const text = event.target.textContent;
@@ -119,9 +128,11 @@ defmodule LiveViewNative.LVN do
 
   Now you can have a Button like this:
 
-      <Button phx-click={LVN.dispatch("my_app:clipcopy", to: "#element-with-text-to-copy")}>
-        Copy content
-      </Button>
+  ```heex
+  <Button phx-click={LVN.dispatch("my_app:clipcopy", to: "#element-with-text-to-copy")}>
+    Copy content
+  </Button>
+  ```
 
   The combination of `dispatch/1` with `window.addEventListener` is
   a powerful mechanism to increase the amount of actions you can trigger
@@ -162,9 +173,11 @@ defmodule LiveViewNative.LVN do
 
   ## Examples
 
-      <Button phx-click={LVN.push("clicked")}>click me!</Button>
-      <Button phx-click={LVN.push("clicked", value: %{id: @id})}>click me!</Button>
-      <Button phx-click={LVN.push("clicked", page_loading: true)}>click me!</Button>
+  ```heex
+  <Button phx-click={LVN.push("clicked")}>click me!</Button>
+  <Button phx-click={LVN.push("clicked", value: %{id: @id})}>click me!</Button>
+  <Button phx-click={LVN.push("clicked", page_loading: true)}>click me!</Button>
+  ```
   """
   def push(event) when is_binary(event) do
     push(%LVN{}, event, [])
@@ -795,6 +808,14 @@ defmodule LiveViewNative.LVN do
   @doc "See `exec/1`."
   def exec(%LVN{} = lvn, attr, opts) when is_binary(attr) and is_list(opts) do
     js = JS.exec(%JS{ops: lvn.ops}, attr, opts)
+    %LVN{ops: js.ops}
+  end
+
+  @doc """
+  Combines two JS commands, appending the second to the first.
+  """
+  def concat(%LVN{ops: first}, %LVN{ops: second}) do
+    js = JS.concat(%JS{ops: first}, %JS{ops: second})
     %LVN{ops: js.ops}
   end
 end
