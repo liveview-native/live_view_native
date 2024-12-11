@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LiveViewNativeTest
 - ensure duplicate IDs raise in tests
 - LVN.concat/2
+- :interface- special attribute support in tags
 
 ### Changed
 

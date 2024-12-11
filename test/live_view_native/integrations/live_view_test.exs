@@ -5,12 +5,7 @@ defmodule LiveViewNative.LiveViewTest do
   import LiveViewNativeTest
 
   alias LiveViewNativeTest.{Endpoint, ViewTree}
-  # alias LiveViewNative.LiveView
-
   alias Phoenix.HTML
-  # alias Phoenix.LiveView
-  # alias Phoenix.LiveViewTest.ViewTree
-  # alias LiveViewNativeTest.Endpoint
 
   @endpoint Endpoint
 

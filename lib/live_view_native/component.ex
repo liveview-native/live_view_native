@@ -216,7 +216,32 @@ defmodule LiveViewNative.Component do
   UI frameworks should be represented. Think of LiveView Native templates as a composable markup whose specification
   is currently under development. As we continue to expand the LiveView Native ecosystem this list will likely grow:
 
-  * casing - `~LVN` does not enforce downcasing of tag names so `<Text>` is a valid tag name
+    * casing - `~LVN` does not enforce downcasing of tag names so `<Text>` is a valid tag name
+
+  ### Special attributes
+
+  LVN tempalates support all of the [HEEx special attributes](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#sigil_H/2-special-attributes)
+  in addition to additional LVN-specific special attributes:
+
+  #### :interface-
+
+  The `:interface-` atrribute allows you to match against a given `interface` value. Similar to `data-` in HTML the name that is appended
+  is the deeply nested value to match against. For example `:interface-target`:
+
+  ```heex
+  <Text :interface-target="mobile">This is a phone</Text>
+  <Text :interface-target="watch">This is a watch</Text>
+  ```
+
+  The elements will conditionally render based upon a matching `interface["target"]` value. Internally this is converted to `:if`:
+
+  ```heex
+  <Text :if={get_in(assigns, [:_interface, "mobile"])}>This is a phone</Text>
+  <Text :if={get_in(assigns, [:_interface, "watch"])}>This is a watch</Text>
+  ```
+
+  This convenience is intended for UI where one-off changes are necessary for specific cases where it would be wasteful to define
+  and entirely new template.
   """
   @doc type: :macro
   defmacro sigil_LVN({:<<>>, meta, [expr]}, _modifiers) do
@@ -225,7 +250,7 @@ defmodule LiveViewNative.Component do
     end
 
     options = [
-      engine: Phoenix.LiveView.TagEngine,
+      engine: LiveViewNative.TagEngine, # Phoenix.LiveView.TagEngine,
       file: __CALLER__.file,
       line: __CALLER__.line + 1,
       caller: __CALLER__,
