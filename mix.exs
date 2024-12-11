@@ -9,6 +9,7 @@ defmodule LiveViewNative.MixProject do
       app: :live_view_native,
       version: @version,
       elixir: "~> 1.15",
+      xref: [exclude: [Floki]],
       description: description(),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
