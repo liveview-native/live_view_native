@@ -221,12 +221,12 @@ defmodule LiveViewNative.Component do
   ### Special attributes
 
   LVN tempalates support all of the [HEEx special attributes](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#sigil_H/2-special-attributes)
-  in addition to additional LVN-specific special attributes:
+  in addition to LVN-specific special attributes:
 
   #### :interface-
 
-  The `:interface-` atrribute allows you to match against a given `interface` value. Similar to `data-` in HTML the name that is appended
-  is the deeply nested value to match against. For example `:interface-target`:
+  The `:interface-` atrribute allows you to match against a given `interface` value from the client. Similar to `data-` in HTML the name that is appended
+  is the key within the deeply nested value to match against. For example `:interface-target`:
 
   ```heex
   <Text :interface-target="mobile">This is a phone</Text>
@@ -240,8 +240,7 @@ defmodule LiveViewNative.Component do
   <Text :if={get_in(assigns, [:_interface, "watch"])}>This is a watch</Text>
   ```
 
-  This convenience is intended for UI where one-off changes are necessary for specific cases where it would be wasteful to define
-  and entirely new template.
+  This convenience is intended for UI where one-off changes are necessary for specific cases to avoid having to define an entirely new template.
   """
   @doc type: :macro
   defmacro sigil_LVN({:<<>>, meta, [expr]}, _modifiers) do
