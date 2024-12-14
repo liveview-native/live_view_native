@@ -241,6 +241,13 @@ defmodule LiveViewNativeTest do
 
       cond do
         is_binary(path) ->
+          uri = URI.parse(path)
+
+          params = Map.merge(
+            (Map.get(uri, :query) || "") |> URI.decode_query(),
+            params
+          )
+
           path = %URI{
             path: path,
             query: Plug.Conn.Query.encode(params)
