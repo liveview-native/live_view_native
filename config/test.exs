@@ -31,7 +31,7 @@ config :live_view_native_test_endpoint,
     %{path: "/cids_destroyed", module: LiveViewNativeTest.CidsDestroyedLive},
     %{path: "/multi-targets", module: LiveViewNativeTest.WithMultipleTargets},
     %{path: "/thermo", module: LiveViewNativeTest.ThermostatLive},
-
+    %{path: "/assign_async", module: LiveViewNativeTest.AssignAsyncLive}
   ]
 
 config :phoenix, :plug_init_mode, :runtime

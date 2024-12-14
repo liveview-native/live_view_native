@@ -156,9 +156,42 @@ defmodule LiveViewNative.Component do
       def __native_opts__, do: @native_opts
     end
 
+    components_ast = quote location: :keep do
+      @doc """
+      Please see the documentation for Phoenix.Component.async_result/1
+      """
+      @doc type: :component
+      attr(:assign, Phoenix.LiveView.AsyncResult, required: true)
+      slot(:loading, doc: "rendered while the assign is loading for the first time")
+
+      slot(:failed,
+        doc:
+          "rendered when an error or exit is caught or assign_async returns `{:error, reason}` for the first time. Receives the error as a `:let`"
+      )
+
+      slot(:inner_block,
+        doc:
+          "rendered when the assign is loaded successfully via `AsyncResult.ok/2`. Receives the result as a `:let`"
+      )
+
+      def async_result(assigns)
+      def async_result(%{assign: async_assign} = var!(assigns)) do
+        cond do
+          async_assign.ok? ->
+            ~LVN|{render_slot(@inner_block, @assign.result)}|
+
+          async_assign.loading ->
+            ~LVN|{render_slot(@loading, @assign.loading)}|
+
+          async_assign.failed ->
+            ~LVN|{render_slot(@failed, @assign.failed)}|
+        end
+      end
+    end
+
     plugin_component_ast = plugin_component_ast(format, opts)
 
-    [component_ast, plugin_component_ast]
+    [component_ast, plugin_component_ast, components_ast]
   end
 
   defp plugin_component_ast(nil, _opts) do
