@@ -1733,7 +1733,7 @@ defmodule LiveViewNativeTest do
       end
 
     live_module =
-      case Phoenix.LiveView.Route.live_link_info(root.endpoint, root.router, url) do
+      case Phoenix.LiveView.Route.live_link_info_without_checks(root.endpoint, root.router, url) do
         {:internal, route} ->
           route.view
 

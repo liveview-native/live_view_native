@@ -127,23 +127,29 @@ defmodule LiveViewNative.Component do
     component_ast = quote do
       import Phoenix.LiveView.Helpers
       import Kernel, except: [def: 2, defp: 2]
-      import Phoenix.Component, except: [
-        embed_templates: 1, embed_templates: 2,
-        sigil_H: 2,
+      unquote(if format == :html do
+        quote do: import Phoenix.Component
+      else
+        quote do
+          import Phoenix.Component, except: [
+            embed_templates: 1, embed_templates: 2,
+            sigil_H: 2,
 
-        async_result: 1,
-        dynamic_tag: 1,
-        focus_wrap: 1,
-        form: 1,
-        inputs_for: 1,
-        intersperse: 1,
-        link: 1,
-        live_file_input: 1,
-        live_img_preview: 1,
-        live_title: 1,
-        to_form: 1,
-        to_form: 2
-      ]
+            async_result: 1,
+            dynamic_tag: 1,
+            focus_wrap: 1,
+            form: 1,
+            inputs_for: 1,
+            intersperse: 1,
+            link: 1,
+            live_file_input: 1,
+            live_img_preview: 1,
+            live_title: 1,
+            to_form: 1,
+            to_form: 2
+          ]
+        end
+      end)
 
       import Phoenix.Component.Declarative
       require Phoenix.Template
@@ -157,36 +163,40 @@ defmodule LiveViewNative.Component do
     end
 
     components_ast = quote location: :keep do
-      @doc """
-      Please see the documentation for Phoenix.Component.async_result/1
-      """
-      @doc type: :component
-      attr(:assign, Phoenix.LiveView.AsyncResult, required: true)
-      slot(:loading, doc: "rendered while the assign is loading for the first time")
+      unquote(if format != :html do
+        quote do
+          @doc """
+          Please see the documentation for Phoenix.Component.async_result/1
+          """
+          @doc type: :component
+          attr(:assign, Phoenix.LiveView.AsyncResult, required: true)
+          slot(:loading, doc: "rendered while the assign is loading for the first time")
 
-      slot(:failed,
-        doc:
-          "rendered when an error or exit is caught or assign_async returns `{:error, reason}` for the first time. Receives the error as a `:let`"
-      )
+          slot(:failed,
+            doc:
+              "rendered when an error or exit is caught or assign_async returns `{:error, reason}` for the first time. Receives the error as a `:let`"
+          )
 
-      slot(:inner_block,
-        doc:
-          "rendered when the assign is loaded successfully via `AsyncResult.ok/2`. Receives the result as a `:let`"
-      )
+          slot(:inner_block,
+            doc:
+              "rendered when the assign is loaded successfully via `AsyncResult.ok/2`. Receives the result as a `:let`"
+          )
 
-      def async_result(assigns)
-      def async_result(%{assign: async_assign} = var!(assigns)) do
-        cond do
-          async_assign.ok? ->
-            ~LVN|{render_slot(@inner_block, @assign.result)}|
+          def async_result(assigns)
+          def async_result(%{assign: async_assign} = var!(assigns)) do
+            cond do
+              async_assign.ok? ->
+                ~LVN|{render_slot(@inner_block, @assign.result)}|
 
-          async_assign.loading ->
-            ~LVN|{render_slot(@loading, @assign.loading)}|
+              async_assign.loading ->
+                ~LVN|{render_slot(@loading, @assign.loading)}|
 
-          async_assign.failed ->
-            ~LVN|{render_slot(@failed, @assign.failed)}|
+              async_assign.failed ->
+                ~LVN|{render_slot(@failed, @assign.failed)}|
+            end
+          end
         end
-      end
+      end)
     end
 
     plugin_component_ast = plugin_component_ast(format, opts)
