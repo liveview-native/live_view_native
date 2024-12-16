@@ -231,6 +231,7 @@ defmodule LiveViewNativeTest do
 
       params =
         params
+        |> Keyword.put_new(:_format, :html)
         |> Keyword.take([:_format, :_interface])
         |> Enum.into(%{}, fn
           {:_format, value} -> {"_format", LiveViewNative.Utils.stringify(value)}
