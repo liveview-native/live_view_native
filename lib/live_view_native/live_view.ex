@@ -61,7 +61,8 @@ defmodule LiveViewNative.LiveView do
   defmacro __before_compile__(%{module: module} = env) do
     opts = Module.get_attribute(module, :native_opts)
     formats = opts[:formats]
-    dispatch_fn = opts[:dispatch_to]
+    # TODO: remove this default when live_view_native_phoenix is ready
+    dispatch_fn = Keyword.get(opts, :dispatch_to, &Module.concat/2)
     if (!can_dispatch?(dispatch_fn)) do
       raise """
       A function with arity 2 must be passed to `dispatch_to` for `use LiveViewNative.LiveView` on module #{inspect(module)}.
