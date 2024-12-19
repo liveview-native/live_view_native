@@ -50,7 +50,8 @@ defmodule <%= inspect context.native_module %> do
         layouts: [<%= if plugins? do %><%= for plugin <- plugins do %>
           <%= plugin.format %>: {<%= inspect(Module.concat([context.web_module, Layouts, plugin.module_suffix])) %>, :app}<%= unless last?.(plugins, plugin) do %>,<% end %><% end %><% else %>
           # swiftui: {<%= inspect(Module.concat([context.web_module, Layouts, SwiftUI])) %>, :app}<% end %>
-        ]
+        ],
+        dispatch_to: &Module.concat/2
 
       unquote(verified_routes())
     end

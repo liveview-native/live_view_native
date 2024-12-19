@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `LiveViewNative.Component` no longer imports `Phoenix.Component.to_form/2`
+- `LiveViewNative.LiveView` now requires the `dispatch_to` function to determine which module will be used for rendering
 
 ### Fixed
 

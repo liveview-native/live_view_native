@@ -2,7 +2,8 @@ defmodule LiveViewNativeTest.ComponentAndNestedInLive do
   use Phoenix.LiveView
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   defmodule GameBoy do
     use LiveViewNative.Component,
@@ -13,7 +14,8 @@ defmodule LiveViewNativeTest.ComponentAndNestedInLive do
       use Phoenix.LiveView
 
       use LiveViewNative.LiveView,
-        formats: [:gameboy]
+        formats: [:gameboy],
+        dispatch_to: &Module.concat/2
 
       defmodule GameBoy do
         use LiveViewNative.Component,
