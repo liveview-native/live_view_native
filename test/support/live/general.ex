@@ -2,7 +2,8 @@ defmodule LiveViewNativeTest.ThermostatLive do
   use Phoenix.LiveView, container: {:article, class: "thermo"}, namespace: Phoenix.LiveViewTest
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   alias LiveViewNativeTest.ClockLive
 
@@ -102,7 +103,8 @@ defmodule LiveViewNativeTest.ClockLive do
   use Phoenix.LiveView, container: {:section, class: "clock"}
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   alias LiveViewNativeTest.ClockControlsLive
 
@@ -151,7 +153,8 @@ defmodule LiveViewNativeTest.ClockControlsLive do
   use Phoenix.LiveView
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   defmodule GameBoy do
     use LiveViewNative.Component,
@@ -179,7 +182,8 @@ end
 defmodule LiveViewNativeTest.DashboardLive do
   use Phoenix.LiveView, container: {:div, class: inspect(__MODULE__)}
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
     defmodule GameBoy do
       use LiveViewNative.Component,
@@ -204,7 +208,8 @@ end
 defmodule LiveViewNativeTest.AssignAsyncLive do
   use Phoenix.LiveView
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   on_mount({__MODULE__, :defaults})
 

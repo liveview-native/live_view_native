@@ -19,16 +19,17 @@ defmodule LiveViewNative.LiveView do
 
       defmodule MyAppWeb.HomeLive do
         use MyAppWeb, :live_view
-        use LiveViewNative,
+        use LiveViewNative.LiveView,
           formats: [:swiftui, :jetpack],
           layouts: [
             swiftui: {MyAppWeb.Layouts.SwiftUI, :app},
             jetpack: {MyAppWeb.Layouts.Jetpack, :app}
-          ]
+          ],
+          dispatch_to: &Module.concat/2
       end
 
   ## Options
-      * `:formats` - the formats this LiveView will delegate to
+    * `:formats` - the formats this LiveView will delegate to
       a render component. For example, specifying `formats: [:swiftui, jetpack]`
       for a LiveView named `MyAppWeb.HomeLive` will
       invoke `MyAppWeb.HomeLive.SwiftUI` and `MyAppWeb.HomeLivew.Jetpack` when
@@ -38,19 +39,37 @@ defmodule LiveViewNative.LiveView do
 
     * `:layouts` - which layouts to render for each format,
       for example: `[swiftui: {MyAppWeb.Layouts.SwiftUI, :app}]`
+
+    * `:dispatch_to` - a function that takes the parent LiveView module
+      and the format's `plugin.module_suffix` and will determine
+      which module the `render/1` function will be called on
   """
   defmacro __using__(opts) do
     quote do
       on_mount {LiveViewNative.ContentNegotiator, :call}
-      @native_opts unquote(opts)
+      @native_opts unquote(Keyword.take(opts, [:formats, :layouts, :dispatch_to]))
       @before_compile LiveViewNative.LiveView
     end
   end
+
+  defp can_dispatch?(nil), do: false
+  defp can_dispatch?(dispatch_fn) when is_function(dispatch_fn),
+    do: Function.info(dispatch_fn)[:arity] == 2
+  defp can_dispatch?(_dispatch_fn), do: false
 
   @doc false
   defmacro __before_compile__(%{module: module} = env) do
     opts = Module.get_attribute(module, :native_opts)
     formats = opts[:formats]
+    dispatch_fn = opts[:dispatch_to]
+    if (!can_dispatch?(dispatch_fn)) do
+      raise """
+      A function with arity 2 must be passed to `dispatch_to` for `use LiveViewNative.LiveView` on module #{inspect(module)}.
+      You passed #{inspect(dispatch_fn)}
+
+      See docmentation for `LiveViewNative.LiveView.__using__/1`
+      """
+    end
     fallback_layouts = normalize_layouts(opts[:layouts])
 
     cond do
@@ -59,7 +78,7 @@ defmodule LiveViewNative.LiveView do
           Enum.reduce(formats, {%{}, %{}}, fn(format, {layouts, render_withs}) ->
             case LiveViewNative.fetch_plugin(format) do
               {:ok, plugin} ->
-                render_module = Module.concat(module, plugin.module_suffix)
+                render_module = dispatch_fn.(module, plugin.module_suffix)
                 fallback_layout = fallback_layouts[format]
                 render_with = Function.capture(render_module, :render, 1)
 

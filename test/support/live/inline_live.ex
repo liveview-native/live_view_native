@@ -42,7 +42,8 @@ defmodule LiveViewNativeTest.InlineLive do
     formats: [:gameboy, :switch],
     layouts: [
       gameboy: {LiveViewNativeTest.GameBoyLayouts, :app}
-    ]
+    ],
+    dispatch_to: &Module.concat/2
 
   def mount(_params, _session, socket) do
     {:ok, assign(socket, :count, 100)}

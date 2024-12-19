@@ -251,7 +251,8 @@ defmodule LiveViewNativeTest.WithComponentLive do
   use Phoenix.LiveView
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   def render(assigns), do: ~H"In HTML"
 
@@ -315,7 +316,8 @@ defmodule LiveViewNativeTest.WithMultipleTargets do
   use Phoenix.LiveView
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   def render(assigns), do: ~H"In HTML"
 
@@ -369,7 +371,8 @@ defmodule LiveViewNativeTest.WithLogOverride do
   use Phoenix.LiveView, log: :warning
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   def render(assigns), do: ~H"In HTML"
 
@@ -391,7 +394,8 @@ defmodule LiveViewNativeTest.WithLogDisabled do
   use Phoenix.LiveView, log: false
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   def render(assigns), do: ~H"In HTML"
 

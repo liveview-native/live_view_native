@@ -2,7 +2,8 @@ defmodule LiveViewNativeTest.ComponentInLive.Root do
   use Phoenix.LiveView
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   def mount(_params, _session, socket) do
     {:ok, assign(socket, :enabled, true)}
@@ -30,7 +31,8 @@ defmodule LiveViewNativeTest.ComponentInLive.Live do
   use Phoenix.LiveView
 
   use LiveViewNative.LiveView,
-    formats: [:gameboy]
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
 
   def render(assigns) do
     ~H"In HTML 2"
