@@ -4,5 +4,5 @@ defmodule LiveViewNativeTest.GameBoy do
     component: LiveViewNativeTest.GameBoy.Component,
     module_suffix: :GameBoy,
     template_engine: LiveViewNative.Engine,
-    client: LiveViewNative.GameBoy.Client
+    test_client: %LiveViewNativeTest.GameBoy.TestClient{}
 end

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LVN.concat/2
 - :interface- special attribute support in tags
 - async_result/1
+- render_upload support in LiveViewNativeTest
 
 ### Changed
 

@@ -150,7 +150,7 @@ defmodule LiveViewNative do
         template_engine: config[:template_engine],
         stylesheet: config[:stylesheet],
         stylesheet_rules_parser: config[:stylesheet_rules_parser],
-        client: config[:client]
+        test_client: config[:test_client]
 
       def __lvn_client__, do: true
     end

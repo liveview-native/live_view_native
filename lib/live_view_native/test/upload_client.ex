@@ -4,7 +4,7 @@ defmodule LiveViewNativeTest.UploadClient do
   require Logger
   require Phoenix.ChannelTest
 
-  alias Phoenix.LiveViewTest.{Upload, ClientProxy}
+  alias LiveViewNativeTest.{Upload, ClientProxy}
 
   def child_spec(opts) do
     %{

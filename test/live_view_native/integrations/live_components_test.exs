@@ -131,7 +131,7 @@ defmodule LiveViewNative.LiveComponentsTest do
     assert view |> element("#bumper") |> render_click() =~ "Bump: 1"
 
     # Now click the form
-    assert view |> element("Form") |> render_submit() =~ "loading..."
+    assert view |> element("LiveForm") |> render_submit() =~ "loading..."
 
     # Which will be reset almost immediately
     assert render(view) =~ "Hello World</Button>"

@@ -4,5 +4,5 @@ defmodule LiveViewNativeTest.Switch do
     component: LiveViewNativeTest.Switch.Component,
     module_suffix: :Switch,
     template_engine: LiveViewNative.Engine,
-    client: LiveViewNative.Switch.Client
+    test_client: %LiveViewNativeTest.Switch.TestClient{}
 end
