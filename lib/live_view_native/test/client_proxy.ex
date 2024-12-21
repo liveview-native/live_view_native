@@ -180,8 +180,8 @@ defmodule LiveViewNativeTest.ClientProxy do
   defp maybe_put_container(state, %{} = _resp), do: state
 
   defp build_client_view(%ClientProxy{} = proxy) do
-    %{id: id, ref: ref, topic: topic, module: module, endpoint: endpoint, pid: pid} = proxy
-    %View{id: id, pid: pid, proxy: {ref, topic, self()}, module: module, endpoint: endpoint}
+    %{id: id, ref: ref, topic: topic, module: module, endpoint: endpoint, pid: pid, client: client} = proxy
+    %View{id: id, pid: pid, proxy: {ref, topic, self()}, module: module, endpoint: endpoint, client: client}
   end
 
   defp mount_view(state, view, url, redirect_url) do
@@ -856,13 +856,14 @@ defmodule LiveViewNativeTest.ClientProxy do
     |> put_reply(ref, view.pid, from, callback)
   end
 
-  defp build_child(%ClientProxy{ref: ref, proxy: proxy, endpoint: endpoint, connect_params: connect_params}, attrs) do
+  defp build_child(%ClientProxy{ref: ref, proxy: proxy, endpoint: endpoint, connect_params: connect_params, client: client}, attrs) do
     attrs_with_defaults =
       Keyword.merge(attrs,
         ref: ref,
         proxy: proxy,
         endpoint: endpoint,
         connect_params: Map.take(connect_params, ["_format", "_interface"]),
+        client: client,
         topic: "lv:#{Keyword.fetch!(attrs, :id)}"
       )
 
@@ -1145,7 +1146,7 @@ defmodule LiveViewNativeTest.ClientProxy do
           {:error, _, _} = error -> error
         end
 
-      type == :change and tag in ~w(input select textarea) ->
+      type == :change and tag in tags.changeables ->
         {:ok, form_defaults(node, Query.decode_init()) |> Query.decode_done()}
 
       true ->

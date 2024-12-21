@@ -19,7 +19,8 @@ defmodule LiveViewNativeTest.View do
             pid: nil,
             proxy: nil,
             endpoint: nil,
-            target: nil
+            target: nil,
+            client: nil
 end
 
   defmodule LiveViewNativeTest.Element do
@@ -68,9 +69,9 @@ defmodule LiveViewNativeTest.Upload do
             cid: nil
 
   @doc false
-  def new(pid, %Phoenix.LiveViewTest.View{} = view, form_selector, name, entries, cid) do
+  def new(pid, %LiveViewNativeTest.View{} = view, form_selector, name, entries, cid) do
     populated_entries = Enum.map(entries, fn entry -> populate_entry(entry) end)
-    selector = "#{form_selector} input[type=\"file\"][name=\"#{name}\"]"
+    selector = "#{form_selector} #{view.client.tags.upload_input}[type=\"file\"][name=\"#{name}\"]"
 
     %Upload{
       pid: pid,

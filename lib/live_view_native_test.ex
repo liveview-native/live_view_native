@@ -424,7 +424,7 @@ defmodule LiveViewNativeTest do
 
     %{"_format" => format} = opts.connect_params
 
-    %{client: client} = LiveViewNative.fetch_plugin!(format)
+    %{test_client: client} = LiveViewNative.fetch_plugin!(format)
 
     opts =
       Map.merge(opts, %{
@@ -1266,7 +1266,7 @@ defmodule LiveViewNativeTest do
     quote bind_quoted: [view: view, selector: form_selector, name: name, entries: entries] do
       require Phoenix.ChannelTest
       builder = fn -> Phoenix.ChannelTest.connect(Phoenix.LiveView.Socket, %{}) end
-      Phoenix.LiveViewTest.__file_input__(view, selector, name, entries, builder)
+      LiveViewNativeTest.__file_input__(view, selector, name, entries, builder)
     end
   end
 

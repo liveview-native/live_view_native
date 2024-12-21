@@ -36,9 +36,9 @@ defmodule LiveViewNativeTest.CidsDestroyedLive do
     def render(assigns) do
       ~LVN"""
       <%= if @form do %>
-        <Form phx-submit="event_1">
+        <LiveForm phx-submit="event_1">
           <.live_component module={Button} id="button" text="Hello World" />
-        </Form>
+        </LiveForm>
       <% else %>
         <Text class="loader">loading...</Text>
       <% end %>
