@@ -4,23 +4,32 @@ defmodule LiveViewNative.Renderer do
   """
 
   import LiveViewNative.Utils, only: [
-    get_interface: 1,
-    stringify: 1
+    get_interface: 1
   ]
 
   @doc false
-  defmacro __before_compile__(%{module: module}) do
+  defmacro __before_compile__(%{module: module, file: file}) do
     opts = Module.get_attribute(module, :native_opts)
-    pattern = build_pattern(module, opts[:format])
+    pattern = template_filename(module, opts[:format])
+    file_path = Path.dirname(file)
 
-    quote do
-      embed_templates(unquote(pattern), root: unquote(opts[:root]), name: unquote(opts[:as]))
+    # TODO: change to have co-location by default for 0.5.0
+    # {:ok, nil} -> file_path
+    # :error -> file_path
+    root = case Map.fetch(opts, :root) do
+      {:ok, nil} -> Path.join(file_path, Atom.to_string(opts[:format]))
+      {:ok, root} -> Path.join(file_path, root)
+      :error -> Path.join(file_path, Atom.to_string(opts[:format]))
+    end
+
+    quote location: :keep do
+      embed_templates(unquote(pattern), root: unquote(root), name: unquote(opts[:as]))
     end
   end
 
   @doc false
   defmacro __inject_mix_recompile__(_env) do
-    quote do
+    quote location: :keep do
       @template_file_hash @template_files |> Enum.sort() |> :erlang.md5()
 
       @doc false
@@ -61,7 +70,7 @@ defmodule LiveViewNative.Renderer do
 
       []
     else
-      quote do
+      quote location: :keep do
         @doc false
         def unquote(name)(var!(assigns)) do
           interface = get_interface(var!(assigns))
@@ -98,14 +107,13 @@ defmodule LiveViewNative.Renderer do
   """
   @doc type: :macro
   defmacro embed_templates(pattern, opts \\ []) do
-    %{module: module} = env = __CALLER__
+    %{module: module, file: file} = env = __CALLER__
     native_opts = Module.get_attribute(module, :native_opts)
     format = native_opts[:format]
-    root = build_root(env.file, opts[:root])
+    root = Keyword.get(opts, :root, Path.dirname(file))
     name = opts[:name]
 
-
-    attr_ast = quote do
+    attr_ast = quote location: :keep do
       Module.put_attribute(__MODULE__, :embeded_templates_opts, {
         unquote(root),
         unquote(pattern),
@@ -113,15 +121,16 @@ defmodule LiveViewNative.Renderer do
       })
     end
 
-    templates_ast = root
-    |> find_templates(pattern, module, name)
-    |> Enum.map(&(__embed_templates__(&1,
-      format: format,
-      name: opts[:name],
-      env: env,
-      root: root,
-      pattern: pattern
-    )))
+    templates_ast =
+      root
+      |> find_templates(pattern, module, name)
+      |> Enum.map(&(__embed_templates__(&1,
+        format: format,
+        name: opts[:name],
+        env: env,
+        root: root,
+        pattern: pattern
+      )))
 
     [attr_ast | templates_ast]
   end
@@ -205,7 +214,7 @@ defmodule LiveViewNative.Renderer do
     %{module: module} = opts[:env]
     format = opts[:format]
     name = build_name(templates, opts[:name])
-    filename = build_filename(module, format)
+    filename = template_filename(module, format)
 
     templates
     |> Enum.sort(&(String.length(&1) >= String.length(&2)))
@@ -216,7 +225,7 @@ defmodule LiveViewNative.Renderer do
 
       case extract_target(template, format) do
         nil ->
-          quote do
+          quote location: :keep do
             @file unquote(template)
             @external_resource unquote(template)
             @template_files unquote(template)
@@ -227,7 +236,7 @@ defmodule LiveViewNative.Renderer do
           end
 
         target ->
-          quote do
+          quote location: :keep do
             @file unquote(template)
             @external_resource unquote(template)
             @template_files unquote(template)
@@ -238,7 +247,7 @@ defmodule LiveViewNative.Renderer do
           end
       end
     end)
-    |> List.insert_at(-1, quote do
+    |> List.insert_at(-1, quote location: :keep do
       delegate_to_target unquote(name)
     end)
   end
@@ -260,24 +269,10 @@ defmodule LiveViewNative.Renderer do
 
   defp build_name(_templates, name), do: name
 
-  defp build_root(filename, nil), do: Path.dirname(filename)
-  defp build_root(_filename, root), do: root
-
-  defp build_filename(module, format) do
+  defp template_filename(module, format) do
     module
     |> parent_module(format)
     |> Kernel.<>(".#{format}*")
-  end
-
-  defp build_pattern(module, format) do
-    path = stringify(format)
-
-    name =
-      module
-      |> parent_module(format)
-      |> Kernel.<>("*")
-
-    Path.join(path, name)
   end
 
   defp parent_module(module, format) do
