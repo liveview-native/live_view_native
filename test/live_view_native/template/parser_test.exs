@@ -37,8 +37,8 @@ defmodule LiveViewNative.Template.ParserTest do
 
   test "will parse attributes" do
     {:ok, nodes} = """
-    <FooBar a="123" b="321"   c =   "789"></FooBar>
-    <FooBar a-b="456"></FooBar>
+    <FooBar a="123" b='32"1'   c =   "789"></FooBar>
+    <FooBar a-b="45'6"></FooBar>
     <FooBar
       a = "987"
       b-c="654"
@@ -47,8 +47,8 @@ defmodule LiveViewNative.Template.ParserTest do
     |> parse_document()
 
     assert nodes == [
-      {"FooBar", [{"a", "123"}, {"b", "321"}, {"c", "789"}], []},
-      {"FooBar", [{"a-b", "456"}], []},
+      {"FooBar", [{"a", "123"}, {"b", "32\"1"}, {"c", "789"}], []},
+      {"FooBar", [{"a-b", "45'6"}], []},
       {"FooBar", [{"a", "987"}, {"b-c", "654"}], []}
     ]
   end
