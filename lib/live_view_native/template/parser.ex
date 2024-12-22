@@ -258,7 +258,7 @@ defmodule LiveViewNative.Template.Parser do
   defp parse_attribute(document, cursor, args) do
     with {:ok, {document, key, cursor}} <- parse_attribute_key(document, cursor, [], args),
       {:ok, {document, cursor}} <- parse_attribute_assignment(document, cursor, key, args),
-      {:ok, {document, value, cursor}} <- parse_attribute_value(document, cursor, nil, args) do
+      {:ok, {document, value, cursor}} <- parse_attribute_value(document, cursor, nil, nil, args) do
         {:ok, {document, {key, value}, cursor}}
     else
       {:boolean, {document, key, cursor}} -> {:ok, {document, {key, key}, cursor}}
@@ -317,44 +317,58 @@ defmodule LiveViewNative.Template.Parser do
     {:error, "invalid character: #{[char]} in attribute key: #{key}", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_value(<<>>, cursor, _buffer, _args) do
+  defp parse_attribute_value(<<>>, cursor, _buffer, _closing_char, _args) do
     {:error, "unexpected end of file while parsing attribute value", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_value(<<"\"\"", document::binary>>, cursor, nil,_args) do
+  defp parse_attribute_value(<<"\"\"", document::binary>>, cursor, nil, nil, _args) do
     {:ok, {document, "", move_cursor(cursor, ~c'""')}}
   end
 
-  defp parse_attribute_value(<<"\"", char, document::binary>>, cursor, nil, args) do
-    parse_attribute_value(to_string([char]) <> document, move_cursor(cursor, ?"), [], args)
+  defp parse_attribute_value(<<"''", document::binary>>, cursor, nil, nil, _args) do
+    {:ok, {document, "", move_cursor(cursor, ~c'""')}}
   end
 
-  defp parse_attribute_value(<<char, document::binary>>, cursor, nil, args) when char in @whitespace do
-    parse_attribute_value(document, move_cursor(cursor, char), nil, args)
+  defp parse_attribute_value(<<"\"", char, document::binary>>, cursor, nil, nil, args) do
+    parse_attribute_value(to_string([char]) <> document, move_cursor(cursor, ?"), [], ?", args)
   end
 
-  defp parse_attribute_value(<<_char, _document::binary>>, cursor, nil, _args) do
+  defp parse_attribute_value(<<"'", char, document::binary>>, cursor, nil, nil, args) do
+    parse_attribute_value(to_string([char]) <> document, move_cursor(cursor, ?"), [], ?', args)
+  end
+
+  defp parse_attribute_value(<<char, document::binary>>, cursor, nil, nil, args) when char in @whitespace do
+    parse_attribute_value(document, move_cursor(cursor, char), nil, nil, args)
+  end
+
+  defp parse_attribute_value(<<_char, _document::binary>>, cursor, nil, nil, _args) do
     {:error, "value must be wrapped by \" quotes", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_value(<<"\"", document::binary>>, cursor, buffer, _args) do
+  defp parse_attribute_value(<<"\"", document::binary>>, cursor, buffer, ?", _args) do
     value = List.to_string(buffer)
 
     {:ok, {document, value, move_cursor(cursor, ?")}}
   end
 
-  defp parse_attribute_value(_document, cursor, nil, _args) do
+  defp parse_attribute_value(<<"'", document::binary>>, cursor, buffer, ?', _args) do
+    value = List.to_string(buffer)
+
+    {:ok, {document, value, move_cursor(cursor, ?')}}
+  end
+
+  defp parse_attribute_value(_document, cursor, nil, _closing_char, _args) do
     {:error, "invalid value format for attribute", [start: cursor, end: cursor]}
   end
 
   for {char, entity} <- @entities do
-    defp parse_attribute_value(<<unquote(entity), document::binary>>, cursor, buffer, args) do
-      parse_attribute_value(document, move_cursor(cursor, unquote(entity)), [buffer, unquote(char)], args)
+    defp parse_attribute_value(<<unquote(entity), document::binary>>, cursor, buffer, closing_char, args) do
+      parse_attribute_value(document, move_cursor(cursor, unquote(entity)), [buffer, unquote(char)], closing_char, args)
     end
   end
 
-  defp parse_attribute_value(<<char::utf8, document::binary>>, cursor, buffer, args) do
-    parse_attribute_value(document, move_cursor(cursor, char), [buffer, char], args)
+  defp parse_attribute_value(<<char::utf8, document::binary>>, cursor, buffer, closing_char, args) do
+    parse_attribute_value(document, move_cursor(cursor, char), [buffer, char], closing_char, args)
   end
 
   defp parse_tag_close(<<">", document::binary>>, cursor, _start_cursor, _args) do
