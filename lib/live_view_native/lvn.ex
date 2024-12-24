@@ -137,9 +137,6 @@ defmodule LiveViewNative.LVN do
   The combination of `dispatch/1` with `window.addEventListener` is
   a powerful mechanism to increase the amount of actions you can trigger
   client-side from your LiveView code.
-
-  You can also use `window.addEventListener` to listen to events pushed
-  from the server. You can learn more in our [LVN interoperability guide](lvn-interop.md).
   '''
 
   alias LiveViewNative.LVN
