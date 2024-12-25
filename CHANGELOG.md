@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `LiveViewNative.Component` no longer imports `Phoenix.Component.to_form/2`
 - `LiveViewNative.LiveView` now requires the `dispatch_to` function to determine which module will be used for rendering
+- Deprecated `<.csrf_token />` function component
+- Generated Native module's `layout/1` will no longer import `LiveViewNative.Component.csrf_token/1`
+- Generated Native module's `layout/1` will now import `Phoenix.Controller.{get_csrf_token/0, view_module/1, view_template/1}`
 
 ### Fixed
 

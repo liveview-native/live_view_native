@@ -308,6 +308,18 @@ defmodule LiveViewNative.Component do
   Embed the CSRF token for LiveView as a tag
   """
   def csrf_token(assigns) do
+    IO.warn("""
+      <.csrf_token/> has been deprecated and will be removed from 0.5.0
+
+      To update please change your app's Native module's `layout/1` function
+
+      - import LiveViewNative.Component, only: [csrf_token: 1]
+      + import Phoenix.Controller,
+      +   only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+
+      Next in your format's root layout template remove the `<.csrf_token>` component and
+      replace with: <csrf-token value={get_csrf_token()} />
+    """)
     csrf_token = Phoenix.Controller.get_csrf_token()
 
     assigns = Map.put(assigns, :csrf_token, csrf_token)
