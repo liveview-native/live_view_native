@@ -10,7 +10,7 @@ defmodule LiveViewNative.LVNTemplateTest do
           module: __MODULE__,
           caller: __CALLER__,
           source: string,
-          tag_handler: LiveViewNative.TagEngine
+          tag_handler: LiveViewNative.Template.Engine
         )
       )
       |> Phoenix.HTML.Safe.to_iodata()
@@ -27,8 +27,8 @@ defmodule LiveViewNative.LVNTemplateTest do
              """) =~ "<Text id=\"test\">yes</Text>"
 
       refute compile("""
-              <Text :interface-target="watch" id="test">yes</Text>
-            """) =~ "<Text id=\"test\">yes</Text>"
+               <Text :interface-target="watch" id="test">yes</Text>
+             """) =~ "<Text id=\"test\">yes</Text>"
     end
   end
 end

@@ -292,13 +292,13 @@ defmodule LiveViewNative.Component do
     end
 
     options = [
-      engine: LiveViewNative.TagEngine, # Phoenix.LiveView.TagEngine,
+      engine: LiveViewNative.TagEngine,
       file: __CALLER__.file,
       line: __CALLER__.line + 1,
       caller: __CALLER__,
       indentation: meta[:indentation] || 0,
       source: expr,
-      tag_handler: LiveViewNative.TagEngine
+      tag_handler: LiveViewNative.Template.Engine
     ]
 
     EEx.compile_string(expr, options)
