@@ -163,7 +163,7 @@ defmodule Mix.Tasks.Lvn.Setup.Config do
   end
 
   defp patch_template_engines_data(_context) do
-    [{:neex, LiveViewNative.Engine}]
+    [{:neex, LiveViewNative.Template.Engine}]
   end
 
   defp patch_live_reload_patterns_data(context) do

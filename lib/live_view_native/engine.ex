@@ -9,30 +9,19 @@ defmodule LiveViewNative.Engine do
   @behaviour Phoenix.Template.Engine
 
   @impl true
-  def compile(path, _name) do
-    quote do
-      require LiveViewNative.Engine
-      LiveViewNative.Engine.compile(unquote(path))
-    end
+  def compile(path, name) do
+    IO.warn("""
+    LiveViewNative.Engine has been deprecatd in favor of LiveViewNative.Template.Engine.
+    In config/config.exs update config :phoenix, :template_engines
+
+      - neex: LiveViewNative.Engine
+      + neex: LiveViewNative.Template.Engine
+    """)
+
+    LiveViewNative.Template.Engine.compile(path, name)
   end
 
-  @doc false
-  defmacro compile(path) do
-    trim = Application.get_env(:phoenix, :trim_on_html_eex_engine, true)
-    source = File.read!(path)
-
-    EEx.compile_string(source,
-      engine: Phoenix.LiveView.TagEngine,
-      line: 1,
-      file: path,
-      trim: trim,
-      caller: __CALLER__,
-      source: source,
-      tag_handler: LiveViewNative.TagEngine
-    )
-  end
-
-    @doc """
+  @doc """
   Encodes the HTML templates to iodata.
   """
   def encode_to_iodata!({:safe, body}), do: body

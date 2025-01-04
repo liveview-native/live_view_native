@@ -73,7 +73,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
 
           assert file =~ """
             config :phoenix, :template_engines, [
-              neex: LiveViewNative.Engine
+              neex: LiveViewNative.Template.Engine
             ]
             """
         end
@@ -201,7 +201,7 @@ defmodule Mix.Tasks.Lvn.SetupTest do
 
             assert file =~ """
               config :phoenix, :template_engines, [
-                neex: LiveViewNative.Engine
+                neex: LiveViewNative.Template.Engine
               ]
               """
           end

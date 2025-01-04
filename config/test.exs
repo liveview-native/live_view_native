@@ -16,7 +16,7 @@ config :phoenix_template, format_encoders: [
 ]
 
 config :phoenix, template_engines: [
-  neex: LiveViewNative.Engine
+  neex: LiveViewNative.Template.Engine
 ]
 
 config :live_view_native_test_endpoint,
