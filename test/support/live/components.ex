@@ -25,63 +25,63 @@ defmodule LiveViewNativeTest.FunctionComponentWithAttrs do
   def map_identity(%{} = map), do: map
 
   attr :attr, :any
-  def fun_attr_any(assigns), do: ~LVN[]
+  def fun_attr_any(assigns, _interface), do: ~LVN[]
 
   attr :attr, :string
-  def fun_attr_string(assigns), do: ~LVN[]
+  def fun_attr_string(assigns, _interface), do: ~LVN[]
 
   attr :attr, :atom
-  def fun_attr_atom(assigns), do: ~LVN[]
+  def fun_attr_atom(assigns, _interface), do: ~LVN[]
 
   attr :attr, :boolean
-  def fun_attr_boolean(assigns), do: ~LVN[]
+  def fun_attr_boolean(assigns, _interface), do: ~LVN[]
 
   attr :attr, :integer
-  def fun_attr_integer(assigns), do: ~LVN[]
+  def fun_attr_integer(assigns, _interface), do: ~LVN[]
 
   attr :attr, :float
-  def fun_attr_float(assigns), do: ~LVN[]
+  def fun_attr_float(assigns, _interface), do: ~LVN[]
 
   attr :attr, :map
-  def fun_attr_map(assigns), do: ~LVN[]
+  def fun_attr_map(assigns, _interface), do: ~LVN[]
 
   attr :attr, :list
-  def fun_attr_list(assigns), do: ~LVN[]
+  def fun_attr_list(assigns, _interface), do: ~LVN[]
 
   attr :attr, :global
-  def fun_attr_global(assigns), do: ~LVN[]
+  def fun_attr_global(assigns, _interface), do: ~LVN[]
 
   attr :rest, :global, doc: "These are passed to the inner input field"
-  def fun_attr_global_doc(assigns), do: ~LVN[]
+  def fun_attr_global_doc(assigns, _interface), do: ~LVN[]
 
   attr :rest, :global, doc: "These are passed to the inner input field", include: ~w(value)
-  def fun_attr_global_doc_include(assigns), do: ~LVN[]
+  def fun_attr_global_doc_include(assigns, _interface), do: ~LVN[]
 
   attr :rest, :global, include: ~w(value)
-  def fun_attr_global_include(assigns), do: ~LVN[]
+  def fun_attr_global_include(assigns, _interface), do: ~LVN[]
 
   attr :name, :string, doc: "The form input name"
   attr :rest, :global, doc: "These are passed to the inner input field"
-  def fun_attr_global_and_regular(assigns), do: ~LVN[]
+  def fun_attr_global_and_regular(assigns, _interface), do: ~LVN[]
 
   attr :attr, Struct
-  def fun_attr_struct(assigns), do: ~LVN[]
+  def fun_attr_struct(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any, required: true
-  def fun_attr_required(assigns), do: ~LVN[]
+  def fun_attr_required(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any, default: %{}
-  def fun_attr_default(assigns), do: ~LVN[]
+  def fun_attr_default(assigns, _interface), do: ~LVN[]
 
   attr :attr1, :any
   attr :attr2, :any
-  def fun_multiple_attr(assigns), do: ~LVN[]
+  def fun_multiple_attr(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any, doc: "attr docs"
-  def fun_with_attr_doc(assigns), do: ~LVN[]
+  def fun_with_attr_doc(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any, default: "foo", doc: "attr docs."
-  def fun_with_attr_doc_period(assigns), do: ~LVN[]
+  def fun_with_attr_doc_period(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any,
     default: "foo",
@@ -94,15 +94,15 @@ defmodule LiveViewNativeTest.FunctionComponentWithAttrs do
     and that's it.
     """
 
-  def fun_with_attr_doc_multiline(assigns), do: ~LVN[]
+  def fun_with_attr_doc_multiline(assigns, _interface), do: ~LVN[]
 
   attr :attr1, :any
   attr :attr2, :any, doc: false
-  def fun_with_hidden_attr(assigns), do: ~LVN[]
+  def fun_with_hidden_attr(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any
   @doc "fun docs"
-  def fun_with_doc(assigns), do: ~LVN[]
+  def fun_with_doc(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any
 
@@ -111,38 +111,38 @@ defmodule LiveViewNativeTest.FunctionComponentWithAttrs do
   [INSERT LVATTRDOCS]
   fun docs
   """
-  def fun_doc_injection(assigns), do: ~LVN[]
+  def fun_doc_injection(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any
   @doc false
-  def fun_doc_false(assigns), do: ~LVN[]
+  def fun_doc_false(assigns, _interface), do: ~LVN[]
 
   attr :attr, :any
-  defp private_fun(assigns), do: ~LVN[]
-  def exposes_private_fun_to_avoid_warnings(assigns), do: private_fun(assigns)
+  defp private_fun(assigns, _interface), do: ~LVN[]
+  def exposes_private_fun_to_avoid_warnings(assigns, interface), do: private_fun(assigns, interface)
 
   slot(:inner_block)
-  def fun_slot(assigns), do: ~LVN[]
+  def fun_slot(assigns, _interface), do: ~LVN[]
 
   slot(:inner_block, doc: "slot docs")
-  def fun_slot_doc(assigns), do: ~LVN[]
+  def fun_slot_doc(assigns, _interface), do: ~LVN[]
 
   slot(:inner_block, required: true)
-  def fun_slot_required(assigns), do: ~LVN[]
+  def fun_slot_required(assigns, _interface), do: ~LVN[]
 
   slot :named, required: true, doc: "a named slot" do
     attr :attr1, :any, required: true, doc: "a slot attr doc"
     attr :attr2, :any, doc: "a slot attr doc"
   end
 
-  def fun_slot_with_attrs(assigns), do: ~LVN[]
+  def fun_slot_with_attrs(assigns, _interface), do: ~LVN[]
 
   slot :named, required: true do
     attr :attr1, :any, required: true, doc: "a slot attr doc"
     attr :attr2, :any, doc: "a slot attr doc"
   end
 
-  def fun_slot_no_doc_with_attrs(assigns), do: ~LVN[]
+  def fun_slot_no_doc_with_attrs(assigns, _interface), do: ~LVN[]
 
   slot :named,
     required: true,
@@ -156,7 +156,7 @@ defmodule LiveViewNativeTest.FunctionComponentWithAttrs do
     attr :attr2, :any, doc: "a slot attr doc"
   end
 
-  def fun_slot_doc_multiline_with_attrs(assigns), do: ~LVN[]
+  def fun_slot_doc_multiline_with_attrs(assigns, _interface), do: ~LVN[]
 
   slot :named, required: true do
     attr :attr1, :any,
@@ -173,14 +173,14 @@ defmodule LiveViewNativeTest.FunctionComponentWithAttrs do
     attr :attr2, :any, doc: "a slot attr doc"
   end
 
-  def fun_slot_doc_with_attrs_multiline(assigns), do: ~LVN[]
+  def fun_slot_doc_with_attrs_multiline(assigns, _interface), do: ~LVN[]
 
   attr :attr1, :atom, values: [:foo, :bar, :baz]
   attr :attr2, :atom, examples: [:foo, :bar, :baz]
   attr :attr3, :list, values: [[60, 40]]
   attr :attr4, :list, examples: [[60, 40]]
 
-  def fun_attr_values_examples(assigns), do: ~LVN[]
+  def fun_attr_values_examples(assigns, _interface), do: ~LVN[]
 end
 
 defmodule LiveViewNativeTest.StatefulComponent do
@@ -406,6 +406,45 @@ defmodule LiveViewNativeTest.WithLogDisabled do
 
     def render(assigns),
       do: ~LVN[]
+  end
+
+  def mount(_params, _session, socket) do
+    {:ok, socket}
+  end
+end
+
+defmodule LiveViewNativeTest.NestedFunctionComponents do
+  use Phoenix.LiveView, log: false
+
+  use LiveViewNative.LiveView,
+    formats: [:gameboy],
+    dispatch_to: &Module.concat/2
+
+  def render(assigns), do: ~H"<.first/>"
+
+  def first(assigns) do
+    ~H"In HTML"
+  end
+
+  defmodule GameBoy do
+    use LiveViewNative.Component,
+      format: :gameboy,
+      as: :render
+
+    def render(assigns),
+      do: ~LVN"<.first/>"
+
+    def first(assigns, _interface) do
+      ~LVN"<.second/>"
+    end
+
+    def second(assigns, %{"target" => "watch"}) do
+      ~LVN"<Text>In Watch</Text>"
+    end
+
+    def second(assigns, _interface) do
+      ~LVN"<Text>In Default</Text>"
+    end
   end
 
   def mount(_params, _session, socket) do

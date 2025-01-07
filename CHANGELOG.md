@@ -22,12 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - support single quotes to wrap attribute values in template parser
 - LVN Commands
 - LiveViewNative.Template.Engine
+- LiveViewNative.Component.Declarative
 
 ### Changed
 
 - `LiveViewNative.Component` no longer imports `Phoenix.Component.to_form/2`
 - `LiveViewNative.LiveView` now requires the `dispatch_to` function to determine which module will be used for rendering
 - Migrated many functions out of LiveViewNative.TagEngine to LiveViewNative.Template.Engine
+- **breaking backwards incompatible change** function components are now always arity 2 instead of arity # 
+- _interface value is injected into each assigns for function components
 
 ### Fixed
 

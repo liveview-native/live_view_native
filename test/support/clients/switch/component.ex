@@ -15,8 +15,8 @@ defmodule LiveViewNativeTest.Switch.Component do
 
       attr(:rest, :global, include: ~w(webkitdirectory required disabled capture form))
 
-      def live_file_input(assigns)
-      def live_file_input(%{upload: upload} = var!(assigns)) do
+      def live_file_input(assigns, interface)
+      def live_file_input(%{upload: upload} = var!(assigns), _interface) do
         var!(assigns) = assign_new(var!(assigns), :accept, fn -> upload.accept != :any && upload.accept end)
 
         ~LVN"""
