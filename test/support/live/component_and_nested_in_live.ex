@@ -5,41 +5,42 @@ defmodule LiveViewNativeTest.ComponentAndNestedInLive do
     formats: [:gameboy],
     dispatch_to: &Module.concat/2
 
+  defmodule NestedLive do
+    use Phoenix.LiveView
+
+    use LiveViewNative.LiveView,
+      formats: [:gameboy],
+      dispatch_to: &Module.concat/2
+
+    defmodule GameBoy do
+      use LiveViewNative.Component,
+        format: :gameboy,
+        as: :render
+
+      def render(assigns, _interface) do
+        ~LVN"<Text>{@hello}</Text>"
+      end
+    end
+
+    def mount(_params, _session, socket) do
+      {:ok, assign(socket, :hello, "hello")}
+    end
+
+    def render(assigns) do
+      ~H"<div>{@hello}</div>"
+    end
+
+    def handle_event("disable", _params, socket) do
+      send(socket.parent_pid, :disable)
+      {:noreply, socket}
+    end
+  end
+
   defmodule GameBoy do
     use LiveViewNative.Component,
       format: :gameboy,
       as: :render
 
-    defmodule NestedLive do
-      use Phoenix.LiveView
-
-      use LiveViewNative.LiveView,
-        formats: [:gameboy],
-        dispatch_to: &Module.concat/2
-
-      defmodule GameBoy do
-        use LiveViewNative.Component,
-          format: :gameboy,
-          as: :render
-
-        def render(assigns, _interface) do
-          ~LVN"<Text>{@hello}</Text>"
-        end
-      end
-
-      def mount(_params, _session, socket) do
-        {:ok, assign(socket, :hello, "hello")}
-      end
-
-      def render(assigns) do
-        ~H"<div>{@hello}</div>"
-      end
-
-      def handle_event("disable", _params, socket) do
-        send(socket.parent_pid, :disable)
-        {:noreply, socket}
-      end
-    end
 
     defmodule NestedComponent do
       use LiveViewNative.LiveComponent,
@@ -63,7 +64,6 @@ defmodule LiveViewNativeTest.ComponentAndNestedInLive do
       <% end %>
       """
     end
-
   end
 
   def mount(_params, _session, socket) do

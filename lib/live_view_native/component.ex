@@ -151,10 +151,11 @@ defmodule LiveViewNative.Component do
         end
       end)
 
-      import Phoenix.Component.Declarative
+      import Phoenix.Component.Declarative, only: []
+      import LiveViewNative.Component.Declarative
       require Phoenix.Template
 
-      for {prefix_match, value} <- Phoenix.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
+      for {prefix_match, value} <- LiveViewNative.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
         @doc false
         def __global__?(prefix_match), do: value
       end
@@ -182,8 +183,8 @@ defmodule LiveViewNative.Component do
               "rendered when the assign is loaded successfully via `AsyncResult.ok/2`. Receives the result as a `:let`"
           )
 
-          def async_result(assigns)
-          def async_result(%{assign: async_assign} = var!(assigns)) do
+          def async_result(assigns, interface)
+          def async_result(%{assign: async_assign} = var!(assigns), _interface) do
             cond do
               async_assign.ok? ->
                 ~LVN|{render_slot(@inner_block, @assign.result)}|
@@ -195,6 +196,9 @@ defmodule LiveViewNative.Component do
                 ~LVN|{render_slot(@failed, @assign.failed)}|
             end
           end
+
+          def live_component(assigns, _interface),
+            do: Phoenix.Component.live_component(assigns)
         end
       end)
     end
