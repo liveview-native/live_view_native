@@ -6,7 +6,7 @@ defmodule LiveViewNative.Component.Declarative do
   # This list should only contain attributes that are given to components by engines
   # @socket, @myself, etc. should not be listed here, as they shouldn't be given to
   # function components in the first place
-  @reserved_assigns [:__changed__, :__slot__, :__given__, :inner_block]
+  @reserved_assigns [:__changed__, :__slot__, :__given__, :inner_block, :_interface]
 
   @doc false
   def __reserved__, do: @reserved_assigns
@@ -170,7 +170,7 @@ defmodule LiveViewNative.Component.Declarative do
     do: {name, meta, [{:\\, default_meta, [annotate_arg(kind, left), right]}]}
 
   defp annotate_call(kind, {name, meta, [arg1, arg2]}),
-    do: {name, meta, [annotate_arg(kind, arg1), annotate_arg(kind, arg2)]}
+    do: {name, meta, [annotate_arg(kind, arg1), arg2]}
 
   defp annotate_call(_kind, left),
     do: left
@@ -655,7 +655,7 @@ defmodule LiveViewNative.Component.Declarative do
 
         def_body =
           if global_name do
-            quote do
+            quote location: :keep do
               {assigns, caller_globals} = Map.split(assigns, unquote(known_keys))
 
               globals =
