@@ -48,10 +48,9 @@ defmodule LiveViewNativeTest.ComponentInLive.Live do
       as: :render
 
     def render(assigns, _interface) do
-      ~LVN"<.live_component
-    module={LiveViewNativeTest.ComponentInLive.Component}
-    id={:nested_component}
-  />"
+      ~LVN"""
+      <.live_component module={LiveViewNativeTest.ComponentInLive.Component} id={:nested_component} />
+      """
     end
   end
 

@@ -7,7 +7,7 @@ defmodule LiveViewNative.Template.Engine do
   @doc false
   @impl true
   def compile(path, _name) do
-    quote location: :keep do
+    quote do
       require LiveViewNative.Template.Engine
       LiveViewNative.Template.Engine.compile(unquote(path))
     end
@@ -19,7 +19,7 @@ defmodule LiveViewNative.Template.Engine do
     source = File.read!(path)
 
     EEx.compile_string(source,
-      engine: Phoenix.LiveView.TagEngine,
+      engine: LiveViewNative.TagEngine,
       line: 1,
       file: path,
       trim: trim,

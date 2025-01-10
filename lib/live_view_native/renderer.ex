@@ -22,7 +22,7 @@ defmodule LiveViewNative.Renderer do
       :error -> Path.join(file_path, Atom.to_string(opts[:format]))
     end
 
-    quote location: :keep do
+    quote do
       embed_templates(unquote(pattern), root: unquote(root), name: unquote(opts[:as]))
     end
   end
@@ -70,7 +70,7 @@ defmodule LiveViewNative.Renderer do
 
       []
     else
-      quote location: :keep do
+      quote do
         @doc false
         def unquote(name)(var!(assigns)) do
           interface = get_interface(var!(assigns))
@@ -113,7 +113,7 @@ defmodule LiveViewNative.Renderer do
     root = Keyword.get(opts, :root, Path.dirname(file))
     name = opts[:name]
 
-    attr_ast = quote location: :keep do
+    attr_ast = quote do
       Module.put_attribute(__MODULE__, :embeded_templates_opts, {
         unquote(root),
         unquote(pattern),
@@ -225,7 +225,7 @@ defmodule LiveViewNative.Renderer do
 
       case extract_target(template, format) do
         nil ->
-          quote location: :keep do
+          quote do
             @file unquote(template)
             @external_resource unquote(template)
             @template_files unquote(template)
@@ -236,7 +236,7 @@ defmodule LiveViewNative.Renderer do
           end
 
         target ->
-          quote location: :keep do
+          quote do
             @file unquote(template)
             @external_resource unquote(template)
             @template_files unquote(template)
@@ -247,7 +247,7 @@ defmodule LiveViewNative.Renderer do
           end
       end
     end)
-    |> List.insert_at(-1, quote location: :keep do
+    |> List.insert_at(-1, quote do
       delegate_to_target unquote(name)
     end)
   end
