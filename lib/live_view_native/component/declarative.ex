@@ -655,7 +655,7 @@ defmodule LiveViewNative.Component.Declarative do
 
         def_body =
           if global_name do
-            quote location: :keep do
+            quote do
               {assigns, caller_globals} = Map.split(assigns, unquote(known_keys))
 
               globals =

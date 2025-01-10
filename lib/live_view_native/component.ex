@@ -111,137 +111,88 @@ defmodule LiveViewNative.Component do
   '''
   defmacro __using__(opts) do
     %{module: module} = __CALLER__
-
     {opts, _} = Code.eval_quoted(opts)
-
     format = opts[:format]
 
+    plugin = case LiveViewNative.fetch_plugin(format) do
+      {:ok, plugin} -> plugin
+      :error -> %{component: module}
+    end
+
+    declarative_opts = Keyword.drop(opts, [:as, :format, :root])
     Module.put_attribute(module, :native_opts, %{
       as: opts[:as],
       format: format,
       root: opts[:root]
     })
 
-    declarative_opts = Keyword.drop(opts, [:as, :format, :root])
-
-    component_ast = quote do
-      import Phoenix.LiveView.Helpers
+    quote do
       import Kernel, except: [def: 2, defp: 2]
-      unquote(if format == :html do
-        quote do: import Phoenix.Component
-      else
-        quote do
-          import Phoenix.Component, except: [
-            embed_templates: 1, embed_templates: 2,
-            sigil_H: 2,
-
-            async_result: 1,
-            dynamic_tag: 1,
-            focus_wrap: 1,
-            form: 1,
-            inputs_for: 1,
-            intersperse: 1,
-            link: 1,
-            live_file_input: 1,
-            live_img_preview: 1,
-            live_title: 1,
-            to_form: 1,
-            to_form: 2
-          ]
-        end
-      end)
-
       import Phoenix.Component.Declarative, only: []
-      import LiveViewNative.Component.Declarative
       require Phoenix.Template
 
-      for {prefix_match, value} <- LiveViewNative.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
-        @doc false
-        def __global__?(prefix_match), do: value
-      end
-
-      def __native_opts__, do: @native_opts
-    end
-
-    components_ast = quote location: :keep do
-      unquote(if format != :html do
+      unquote(if format == :html do 
         quote do
-          @doc """
-          Please see the documentation for Phoenix.Component.async_result/1
-          """
-          @doc type: :component
-          attr(:assign, Phoenix.LiveView.AsyncResult, required: true)
-          slot(:loading, doc: "rendered while the assign is loading for the first time")
+          import Phoenix.Component
+          import PhoenixLiveView.Component.Declarative
 
-          slot(:failed,
-            doc:
-              "rendered when an error or exit is caught or assign_async returns `{:error, reason}` for the first time. Receives the error as a `:let`"
-          )
-
-          slot(:inner_block,
-            doc:
-              "rendered when the assign is loaded successfully via `AsyncResult.ok/2`. Receives the result as a `:let`"
-          )
-
-          def async_result(assigns, interface)
-          def async_result(%{assign: async_assign} = var!(assigns), _interface) do
-            cond do
-              async_assign.ok? ->
-                ~LVN|{render_slot(@inner_block, @assign.result)}|
-
-              async_assign.loading ->
-                ~LVN|{render_slot(@loading, @assign.loading)}|
-
-              async_assign.failed ->
-                ~LVN|{render_slot(@failed, @assign.failed)}|
-            end
+          for {prefix_match, value} <- Phoenix.LiveView.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
+            @doc false
+            def __global__?(prefix_match), do: value
           end
-
-          def live_component(assigns, _interface),
-            do: Phoenix.Component.live_component(assigns)
         end
-      end)
-    end
-
-    plugin_component_ast = plugin_component_ast(format, opts)
-
-    [component_ast, plugin_component_ast, components_ast]
-  end
-
-  defp plugin_component_ast(nil, _opts) do
-    quote do
-      import LiveViewNative.Component, only: [sigil_LVN: 2]
-    end
-  end
-
-  defp plugin_component_ast(format, opts) do
-    case LiveViewNative.fetch_plugin(format) do
-      {:ok, plugin} ->
+      else
         quote do
-          Module.register_attribute(__MODULE__, :template_files, accumulate: true)
-          Module.register_attribute(__MODULE__, :embeded_templates_opts, accumulate: true)
-
-          import LiveViewNative.Renderer, only: [
-            delegate_to_target: 1,
-            delegate_to_target: 2,
-            embed_templates: 1,
-            embed_templates: 2
+          import LiveViewNative.Component
+          import LiveViewNative.Component.Declarative
+          import Phoenix.Component, only: [
+            assign: 2, assign: 3,
+            assign_new: 3,
+            assigns_to_attributes: 2,
+            attr: 2, attr: 3,
+            changed?: 2,
+            live_flash: 2,
+            live_render: 3,
+            render_slot: 1, render_slot: 2,
+            update: 3,
+            upload_errors: 1,
+            upload_errors: 2,
+            used_input?: 1,
+            slot: 1, slot: 2, slot: 3
           ]
 
-          use unquote(plugin.component)
-
-          if (unquote(opts[:as])) do
-            @before_compile LiveViewNative.Renderer
+          for {prefix_match, value} <- LiveViewNative.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
+            @doc false
+            def __global__?(prefix_match), do: value
           end
-
-          @before_compile LiveViewNative.Component
-          @before_compile {LiveViewNative.Renderer, :__inject_mix_recompile__}
         end
+      end)
 
-      :error ->
-        IO.warn("tried to load LiveViewNative plugin for format #{inspect(format)} but none was found")
+      @doc false
+      def __native_opts__, do: @native_opts
 
-        nil
+      Module.register_attribute(__MODULE__, :template_files, accumulate: true)
+      Module.register_attribute(__MODULE__, :embeded_templates_opts, accumulate: true)
+
+      import LiveViewNative.Renderer, only: [
+        delegate_to_target: 1,
+        delegate_to_target: 2,
+        embed_templates: 1,
+        embed_templates: 2
+      ]
+
+      unquote(if (module == plugin.component) do
+        quote do: (import LiveViewNative.Component, only: [sigil_LVN: 2])
+      else
+        quote do: use unquote(plugin.component)
+      end)
+
+      if (unquote(opts[:as])) do
+        @before_compile LiveViewNative.Renderer
+      end
+
+      @before_compile LiveViewNative.Component
+      @before_compile {LiveViewNative.Renderer, :__inject_mix_recompile__}
     end
   end
 
@@ -308,10 +259,64 @@ defmodule LiveViewNative.Component do
     EEx.compile_string(expr, options)
   end
 
+  import Kernel, except: [def: 2, defp: 2]
+  import LiveViewNative.Component.Declarative
+  alias LiveViewNative.Component.Declarative
+
+  # We need to bootstrap by hand to avoid conflicts.
+  [] = Declarative.__setup__(__MODULE__, [])
+
+  attr = fn name, type, opts ->
+    Declarative.__attr__!(__MODULE__, name, type, opts, __ENV__.line, __ENV__.file)
+  end
+
+  slot = fn name, opts ->
+    Declarative.__slot__!(__MODULE__, name, opts, __ENV__.line, __ENV__.file, fn -> nil end)
+  end
+
+  @doc """
+  Please see the documentation for Phoenix.Component.async_result/1
+  """
+  @doc type: :component
+  attr.(:assign, Phoenix.LiveView.AsyncResult, required: true)
+  slot.(:loading, doc: "rendered while the assign is loading for the first time")
+
+  slot.(:failed,
+    doc:
+      "rendered when an error or exit is caught or assign_async returns `{:error, reason}` for the first time. Receives the error as a `:let`"
+  )
+
+  slot.(:inner_block,
+    doc:
+      "rendered when the assign is loaded successfully via `AsyncResult.ok/2`. Receives the result as a `:let`"
+  )
+
+  import Phoenix.Component, only: [
+    render_slot: 2
+  ]
+
+  def async_result(%{assign: async_assign} = var!(assigns), _interface) do
+    cond do
+      async_assign.ok? ->
+        ~LVN|{render_slot(@inner_block, @assign.result)}|
+
+      async_assign.loading ->
+        ~LVN|{render_slot(@loading, @assign.loading)}|
+
+      async_assign.failed ->
+        ~LVN|{render_slot(@failed, @assign.failed)}|
+    end
+  end
+
+  def live_component(assigns, _interface),
+    do: Phoenix.Component.live_component(assigns)
+
   @doc """
   Embed the CSRF token for LiveView as a tag
   """
-  def csrf_token(assigns) do
+  def csrf_token(assigns, _interface) do
+    IO.warn("csrf_token component has been deprecated. Please chance to raw dog markup: <csrf-token value={Phoenix.Controller.get_csrf_token()}/>")
+
     csrf_token = Phoenix.Controller.get_csrf_token()
 
     assigns = Map.put(assigns, :csrf_token, csrf_token)
