@@ -32,7 +32,7 @@ defmodule LiveViewNative.MixProject do
     [
       {:phoenix, "~> 1.7.0"},
       {:phoenix_view, "~> 2.0"},
-      {:phoenix_live_view, "~> 1.0.1"},
+      {:phoenix_live_view, "~> 1.0.2"},
       {:phoenix_live_reload, "~> 1.4", only: :test},
       {:phoenix_template, "~> 1.0.4"},
       {:phoenix_html, "~> 3.3 or ~> 4.0 or ~> 4.1"},

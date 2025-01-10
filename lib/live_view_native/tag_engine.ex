@@ -125,7 +125,7 @@ defmodule LiveViewNative.TagEngine do
     tag_handler = Keyword.fetch!(opts, :tag_handler)
 
     %{
-      cont: :text,
+      cont: {:text, :enabled},
       tokens: [],
       subengine: subengine,
       substate: subengine.init(opts),
