@@ -114,17 +114,27 @@ defmodule LiveViewNative.Component do
     {opts, _} = Code.eval_quoted(opts)
     format = opts[:format]
 
-    plugin = case LiveViewNative.fetch_plugin(format) do
-      {:ok, plugin} -> plugin
-      :error -> %{component: module}
-    end
-
     declarative_opts = Keyword.drop(opts, [:as, :format, :root])
     Module.put_attribute(module, :native_opts, %{
       as: opts[:as],
       format: format,
       root: opts[:root]
     })
+
+    plugin = case LiveViewNative.fetch_plugin(format) do
+      {:ok, plugin} -> plugin
+      :error -> %{component: module}
+    end
+
+    component = if module == plugin.component do
+      quote do
+        import LiveViewNative.Component, only: [sigil_LVN: 2]
+      end
+    else
+      quote do
+        use unquote(plugin.component)
+      end
+    end
 
     quote do
       import Kernel, except: [def: 2, defp: 2]
@@ -181,11 +191,7 @@ defmodule LiveViewNative.Component do
         embed_templates: 2
       ]
 
-      unquote(if (module == plugin.component) do
-        quote do: (import LiveViewNative.Component, only: [sigil_LVN: 2])
-      else
-        quote do: use unquote(plugin.component)
-      end)
+      unquote(component)
 
       if (unquote(opts[:as])) do
         @before_compile LiveViewNative.Renderer

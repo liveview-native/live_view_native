@@ -161,6 +161,8 @@ defmodule LiveViewNative do
 
   Follows the same return types as `Map.fetch/2`
   """
+  def fetch_plugin(nil),
+    do: :error
   def fetch_plugin(format) do
     Map.fetch(plugins(), stringify(format))
   end

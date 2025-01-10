@@ -3,7 +3,7 @@ defmodule LiveViewNativeTest.GameBoy.Component do
 
   defmacro __using__(_) do
     quote do
-      import LiveViewNativeTest.GameBoy.Component
+      import unquote(__MODULE__)
     end
   end
 
