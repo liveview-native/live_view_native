@@ -125,7 +125,7 @@ defmodule <%= inspect context.native_module %> do
     quote do
       use LiveViewNative.Component, unquote(opts)
 
-      import LiveViewNative.Component, only: [csrf_token: 1]
+      import LiveViewNative.Component, only: [csrf_token: 2]
 
       unquote(helpers(opts[:format]))
     end

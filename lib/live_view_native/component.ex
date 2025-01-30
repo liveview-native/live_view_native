@@ -101,7 +101,7 @@ defmodule LiveViewNative.Component do
         use LiveViewNative.Component,
           format: :swiftui
 
-        import LiveViewNative.Component, only: [csrf_token: 1]
+        import LiveViewNative.Component, only: [csrf_token: 2]
 
         embed_templates "layouts_swiftui/*"
       end
