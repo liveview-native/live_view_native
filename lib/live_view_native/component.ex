@@ -122,6 +122,8 @@ defmodule LiveViewNative.Component do
     })
 
     quote do
+      @declarative LiveViewNative.Component.Declarative
+
       require Phoenix.Template
       import Phoenix.Component.Declarative, only: []
       import LiveViewNative.Component
@@ -141,11 +143,6 @@ defmodule LiveViewNative.Component do
         slot: 1, slot: 2, slot: 3
       ]
 
-      for {prefix_match, value} <- LiveViewNative.Component.Declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
-        @doc false
-        def __global__?(prefix_match), do: value
-      end
-
       @doc false
       def __native_opts__, do: @native_opts
 
@@ -159,13 +156,6 @@ defmodule LiveViewNative.Component do
         embed_templates: 2
       ]
 
-      unquote(
-        case LiveViewNative.fetch_plugin(format) do
-          {:ok, %{component: component}} -> quote do: use (unquote(component))
-          :error -> quote do end
-        end
-      )
-
       if (unquote(opts[:as])) do
         @before_compile LiveViewNative.Renderer
         @before_compile {LiveViewNative.Renderer, :__inject_mix_recompile__}
@@ -175,6 +165,17 @@ defmodule LiveViewNative.Component do
 
       import Kernel, except: [def: 2, defp: 2]
       import LiveViewNative.Component.Declarative
+      unquote(
+        case LiveViewNative.fetch_plugin(format) do
+          {:ok, %{component: component}} -> quote do: use unquote(component)
+          :error -> quote do end
+        end
+      )
+
+      for {prefix_match, value} <- @declarative.__setup__(__MODULE__, unquote(declarative_opts)) do
+        @doc false
+        def __global__?(prefix_match), do: value
+      end
     end
   end
 
