@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Resolved import issues between Phoenix.Component, LiveViewNative.Component, and plugin.component
+
 ## [0.3.1] 2024-10-02
 
 ### Added
