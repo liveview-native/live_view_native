@@ -46,10 +46,10 @@ To get started with LiveView Native, you'll need to have an existing [Phoenix Ap
 Add `live_view_native` to your list of dependencies in the `mix.exs` file. In addition to `live_view_native` you may want to include some additional libraries:
 
 ```elixir
-{:live_view_native, "~> 0.4.0-rc.0"},
-{:live_view_native_stylesheet, "~> 0.3.2"},
-{:live_view_native_swiftui, "~> 0.4.0-rc.0"},
-{:live_view_native_live_form, "~> 0.4.0-rc.0"}
+{:live_view_native, "~> 0.4.0-rc.1"},
+{:live_view_native_stylesheet, "~> 0.4.0-rc.1"},
+{:live_view_native_swiftui, "~> 0.4.0-rc.1"},
+{:live_view_native_live_form, "~> 0.4.0-rc.1"}
 ```
 
 Then run:
