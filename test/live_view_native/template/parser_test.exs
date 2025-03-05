@@ -126,7 +126,7 @@ defmodule LiveViewNative.Template.ParserTest do
     ]
   end
 
-  test "will encode attriubte values" do
+  test "will encode attribute values" do
     {:ok, nodes} = """
     <FooBar baz="&lt;&gt;&amp;&quot;&#39;">&lt;&gt;&amp;&quot;&#39;</FooBar>
     """
@@ -242,7 +242,7 @@ defmodule LiveViewNative.Template.ParserTest do
        end
      end
 
-     test "catches errors with not closing tag entity propery" do
+     test "catches errors with not closing tag entity property" do
        doc = "<FooBar <Baz/>"
        {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
