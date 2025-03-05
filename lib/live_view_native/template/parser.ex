@@ -40,7 +40,7 @@ defmodule LiveViewNative.Template.Parser do
   Or you can configure as the default:
 
   ```elixir
-  config :floki, :html_parser, LiveViewNative.Tempalte.Parser
+  config :floki, :html_parser, LiveViewNative.Template.Parser
   ```
   '''
 

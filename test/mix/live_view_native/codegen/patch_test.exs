@@ -118,7 +118,7 @@ defmodule Mix.LiveViewNative.CodeGen.PatchTest do
     end
   end
 
-  describe "dev codgen scenarios" do
+  describe "dev codegen scenarios" do
     test "when the :live_reload_patterns had additional keywords items" do
       source = """
         config :live_view_native, LiveViewNativeWeb.Endpoint,
@@ -153,7 +153,7 @@ defmodule Mix.LiveViewNative.CodeGen.PatchTest do
     end
   end
 
-  describe "router codgen scenarios" do
+  describe "router codegen scenarios" do
     test "patch_layouts when this old style of router layout option is being used, rewrite as the new keyword list with html" do
       source = """
           pipeline :browser do
