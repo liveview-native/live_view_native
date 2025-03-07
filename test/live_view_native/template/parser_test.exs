@@ -119,9 +119,9 @@ defmodule LiveViewNative.Template.ParserTest do
 
     assert nodes == [
       {"FooBar", [], []},
-      [comment: " <FooBar></FooBar>\n<FooBar/>\n"],
+      {:comment, " <FooBar></FooBar>\n<FooBar/>\n"},
       {"FooBar", [], [
-        [comment: " <FooBar/> "]
+        {:comment, " <FooBar/> "}
       ]}
     ]
   end
