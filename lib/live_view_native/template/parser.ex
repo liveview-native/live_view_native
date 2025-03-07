@@ -184,7 +184,7 @@ defmodule LiveViewNative.Template.Parser do
 
     comment = List.to_string(buffer)
 
-    {:ok, {document, [comment: comment], cursor}}
+    {:ok, {document, {:comment, comment}, cursor}}
   end
 
   defp parse_comment_node(<<char, document::binary>>, cursor, buffer, args) do
