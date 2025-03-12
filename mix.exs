@@ -51,10 +51,22 @@ defmodule LiveViewNative.MixProject do
 
   defp docs do
     [
-      extras: ["README.md"],
+      extras: extras(),
       main: "readme",
+      groups_for_extras: groups_for_extras(),
       source_url: @source_url,
       source_ref: @version
+    ]
+  end
+
+  defp extras do
+    ["README.md"] ++ Path.wildcard("guides/*/*.md")
+  end
+
+  defp groups_for_extras do
+    [
+      Introduction: ~r"guides/introduction/",
+      "Getting Started": ~r"guides/getting-started/"
     ]
   end
 

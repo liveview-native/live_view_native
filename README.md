@@ -13,7 +13,7 @@ defmodule MyAppWeb.HelloLive do
   use MyAppNative, :live_view
 end
 
-# liv/my_app_web/live/hello_live_swiftui.ex
+# lib/my_app_web/live/hello_live_swiftui.ex
 defmodule MyAppWeb.HelloLive.SwiftUI do
   use MyAppNative, [:render_component, format: :swiftui]
 
