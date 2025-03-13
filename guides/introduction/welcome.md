@@ -20,13 +20,13 @@ is recommended. [You can find the documentation for Phoenix LiveView here](https
 ## How does LiveView Native work?
 
 To understand the fundementals of LiveView Native, it is important to analyze LiveView Native
-and its relationship to Phoenix LiveView and LiveView Native's rendering packages.
+and its relationship to Phoenix LiveView and LiveView Native's markup processors.
 
 ### Querying
 
 Unlike Phoenix LiveView, when a client makes a request to a LiveView Native route, the route expects additional query
 parameters to be provided to denote platform-specific information from the client. This information is what allows
-LiveView Native to delegate the request to the appropriate rendering package and codepath, and
+LiveView Native to delegate the request to the appropriate markup processor, and
 maintain support with Phoenix LiveView.
 
 The query parameters are as follows.
@@ -35,25 +35,27 @@ The query parameters are as follows.
 |-----------------|--------------------------|-----------|--------------------------------------------------------|
 | `_format`       | swiftui, jetpack, html   | ✅        | The content type to be processed by LiveView Native    |
 | `_interface`    | mobile, watch, tv        |           | The general device type                                |
-| `os_version`    | `string`                 |           | The version of the client OS                           |
-| `app_version`   | `string`                 |           | The version of the client application                  |
 
-This is formatted as `/?_format=xx&_interface=xx&os_version=xx&app_version=xx`, and when no query parameters are provided,
+This is formatted as `/?_format=xx&_interface=xx`, and when no query parameters are provided,
 will default to the corresponding Phoenix LiveView route (presuming a route is provided).
 
 ### Processing
 
 Once a request is sucessfully delegated by LiveView Native, it will attempt to match on your LiveView route.
 
-By design, LiveView Native does not ship with a default rendering package, and instead seperates
+By design, LiveView Native does not ship with a client, and instead seperates
 itself into a series of distinct packages. Each package ships with its own modifiers to handle its respective client,
 and unlike many framework agnostic development frameworks, intentionally seperates your markup by platform.
 
 This is to maintain instant feature parity with your platform(s) of choice, as LiveView Native is not concerned with
-cross-platform "bridging." This allows LiveView Native to serve native code to the platform target
-with no changes to the underlying client.
+a cross-platform abstraction layer (or an application bridge). This allows LiveView Native and its corresponding markup processor
+to send back a UI representation of your application.
 
-So long as your client supports the underlying components sent back, it will render!
+So long as your client supports the underlying markup sent back, it will render!
+
+> #### Note {: .warning}
+> Similar to Phoenix LiveView, LiveView Native follows secure best practices and will only send back markup.
+> LiveView Native will never send back remote executable code.
 
 Let's see an example.
 
@@ -109,7 +111,7 @@ defmodule MyAppWeb.HelloLive.Jetpack do
 end
 ```
 
-The modules above show a distinct path to each format handled by its respective rendering package.
+The modules above show a distinct path to each format handled by its respective markup processor.
 We start in our Phoenix LiveView, which handles our mount and event handling. From there, LiveView Native
 delegates the request to our markup modules, which handle our rendering. We use the `~LVN` sigil to define a
 NEEx template, which stands for Native+EEx. They are nearly identical to HEEx templates, but used to denote
@@ -129,14 +131,14 @@ Similar to most native development, we need the respective platform's developmen
 your LiveView Native client, but as we continue to build our tooling, we are begining to offer platform-specific applications
 to test your project.
 
-Corresponding documentation for each client is available in our supported rendering packages, and will walk you through
+Corresponding documentation for each client is available in our supported markup processors, and will walk you through
 the setup needed to test in each environment.
 
 ## Supported Clients
 
 LiveView Native enables client frameworks in the following.
 
-| UI Framework     | Devices                                                     | Rendering Package                                                                     | Build Tool     | Testing Client                                              |
+| UI Framework     | Devices                                                     | Markup Processor                                                                      | Build Tool     | Testing Client                                              |
 |------------------|-------------------------------------------------------------|---------------------------------------------------------------------------------------|----------------|-------------------------------------------------------------|
 | SwiftUI          | iPhone, iPad, AppleTV, Apple Watch, MacOS, Apple Vision Pro | [LiveView Native SwiftUI](https://github.com/liveview-native/liveview-client-swiftui) | XCode          | [LVN Go](https://apps.apple.com/us/app/lvn-go/id6614695506) |
 | JetPack Compose  | Android family                                              | [LiveView Native Jetpack](https://github.com/liveview-native/liveview-client-jetpack) | Android Studio |                                                             |
