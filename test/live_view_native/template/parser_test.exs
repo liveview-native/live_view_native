@@ -191,6 +191,18 @@ defmodule LiveViewNative.Template.ParserTest do
       end
     end
 
+    test "supports namespaced attribute name" do
+      {:ok, nodes} = """
+        <FooBar
+          a:b="123"></FooBar>
+        """
+        |> parse_document()
+
+      assert nodes == [
+        {"FooBar", [{"a:b", "123"}], []}
+      ]
+    end
+
     test "invalid attribute key name" do
       doc = """
         <FooBar
