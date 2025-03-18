@@ -48,6 +48,7 @@ defmodule LiveViewNative.Template.Parser do
 
   @first_chars ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
   @chars ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
+  @attribute_key @chars ++ ~c":"
   @whitespace ~c"\s\t\n\r"
   @entities [
     {?<, "&lt;"},
@@ -283,13 +284,13 @@ defmodule LiveViewNative.Template.Parser do
     parse_attribute_key(document, move_cursor(cursor, char), [char], args)
   end
 
-  defp parse_attribute_key(<<char, _document::binary>> = document, cursor, key_buffer, _args) when char not in @chars do
+  defp parse_attribute_key(<<char, _document::binary>> = document, cursor, key_buffer, _args) when char not in @attribute_key do
     key = List.to_string(key_buffer)
 
     {:ok, {document, key, cursor}}
   end
 
-  defp parse_attribute_key(<<char, document::binary>>, cursor, key_buffer, args) when char in @chars do
+  defp parse_attribute_key(<<char, document::binary>>, cursor, key_buffer, args) when char in @attribute_key do
     parse_attribute_key(document, move_cursor(cursor, char), [key_buffer, char], args)
   end
 
