@@ -65,8 +65,7 @@ defmodule LiveViewNative.MixProject do
 
   defp groups_for_extras do
     [
-      Introduction: ~r"guides/introduction/",
-      "Getting Started": ~r"guides/getting-started/"
+      Introduction: ~r"guides/introduction/"
     ]
   end
 
