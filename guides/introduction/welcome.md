@@ -3,7 +3,7 @@
 Welcome to the LiveView Native documentation. LiveView Native is a platform built on
 [Phoenix LiveView](https://github.com/phoenixframework/phoenix_live_view) designed for
 building native applications. A general overview of LiveView Native and its benefits
-[can be seen in our README](https://github.com/live_view_native/live_view_native).
+[can be seen in our README](https://github.com/liveview-native/live_view_native).
 
 ## What is LiveView Native?
 
@@ -19,7 +19,7 @@ is recommended. [You can find the documentation for Phoenix LiveView here](https
 
 ## How does LiveView Native work?
 
-To understand the fundementals of LiveView Native, it is important to analyze LiveView Native
+To understand the fundamentals of LiveView Native, it is important to analyze LiveView Native
 and its relationship to our clients and Phoenix LiveView.
 
 ### Querying the server
@@ -41,11 +41,11 @@ will default to the corresponding Phoenix LiveView route (presuming a route is p
 
 ### Processing the data
 
-Once a request is sucessfully delegated by LiveView Native, it will attempt to match on your LiveView route.
+Once a request is successfully delegated by LiveView Native, it will attempt to match on your LiveView route.
 
-By design, LiveView Native does not ship with a client, and instead seperates
+By design, LiveView Native does not ship with a client, and instead separates
 itself into a series of distinct packages. Each package ships with its own modifiers to handle its respective client,
-and unlike many framework agnostic development frameworks, intentionally seperates your markup by platform.
+and unlike many framework agnostic development frameworks, intentionally separates your markup by platform.
 
 | Platform | Framework                                                                             | Ready? |
 |----------|---------------------------------------------------------------------------------------|--------|
@@ -57,7 +57,7 @@ This is to maintain instant feature parity with your platform(s) of choice, as L
 a cross-platform abstraction layer (or an application bridge). This allows LiveView Native and its corresponding markup processor
 to send back Phoenix events and native UI representations of your application.
 
-This UI represenation is also extendible via addons, which are actively being developed per supported client.
+This UI representation is also extendible via add-ons, which are actively being developed per supported client.
 
 > #### Note {: .warning}
 > Similar to Phoenix LiveView, LiveView Native follows secure best practices and will only send back markup.
@@ -128,9 +128,9 @@ Within our render function, we use the `~LVN` sigil to define a NEEx template, w
 with a few key differences.
 
 > #### NEEx vs HEEx {: .info}
-> - Tag name casing is preserved, so upcased attributes like `<Text>` will not be downcased to `<text>`.
-> - Boolean attributes are not premitted. For example, `<text on>` would mean on is `true` in HTML. In NEEx we cannot make that presumption because
-> some upstream native clients default truthy attributes to `false`. Instead everything must be explicit: `<Text on={true}>`.
+> - Tag name casing is preserved, so up-cased attributes like `<Text>` will not be down-cased to `<text>`.
+> - Boolean attributes are not permitted. For example, `<text on>` would mean on is `true` in HTML. In NEEx we cannot make that presumption because
+> some upstream native clients default truth-y attributes to `false`. Instead everything must be explicit: `<Text on={true}>`.
 > - LiveView Native supports all of the [HEEx special attributes](https://hexdocs.pm/phoenix_live_view/Phoenix.Component.html#sigil_H/2-special-attributes)
 > in addition to LiveView Native specific special attributes. See `LiveViewNative.Component.sigil_LVN/2` for more information.
 
