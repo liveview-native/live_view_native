@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LVN Commands
 - LiveViewNative.Template.Engine
 - LiveViewNative.Component.Declarative
+- Template parser supports namespaced attribute keys
 
 ### Changed
 
