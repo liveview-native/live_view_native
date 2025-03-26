@@ -11,7 +11,7 @@ defmodule LiveViewNative.Component do
   LiveView Native Components differ from Phoenix Components in that they make
   use of a two-argument function instead of a single argument function. For example,
   with a Phoenix Component that has a template named `foo_bar.html.heex` it would define
-  `foo_bar/1` as the rendering function for that template when embeded. LiveView Native Components
+  `foo_bar/1` as the rendering function for that template when embedded. LiveView Native Components
   would definee `foo_bar/2` for `foo_bar.swiftui.neex` with the 1st argument still being `assigns` and
   the 2nd argument being `interface` map with information about the native client that is connecting.
 
@@ -49,7 +49,7 @@ defmodule LiveViewNative.Component do
 
       embed_templates("swiftui/home_live*", root: nil, name: :render)
 
-  Assuming there is a `swiftui/home_live.swiftui.neex` this will be embeded in the render
+  Assuming there is a `swiftui/home_live.swiftui.neex` this will be embedded in the render
   component as `render/2`.
 
   Alternatively if you do not want to use templates but the in-line rendering you can declare your own
@@ -147,7 +147,7 @@ defmodule LiveViewNative.Component do
       def __native_opts__, do: @native_opts
 
       Module.register_attribute(__MODULE__, :template_files, accumulate: true)
-      Module.register_attribute(__MODULE__, :embeded_templates_opts, accumulate: true)
+      Module.register_attribute(__MODULE__, :embedded_templates_opts, accumulate: true)
 
       import LiveViewNative.Renderer, only: [
         delegate_to_target: 1,
@@ -182,7 +182,7 @@ defmodule LiveViewNative.Component do
   @doc false
   defmacro __before_compile__(_env) do
     quote do
-      delegate_to_target :render, supress_warning: true
+      delegate_to_target :render, suppress_warning: true
     end
   end
 

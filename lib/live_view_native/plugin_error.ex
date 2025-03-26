@@ -17,7 +17,7 @@ defmodule LiveViewNative.PluginError do
     message = """
 
       Attempted to fetch plugin <%= inspect format %> <%= if Enum.empty?(formats) do %> but there are no plugins configured for LiveView Native.
-      <%= doc_ref() |> String.trim_trailing() %><% else %>but no matching plugin of that format was availble.
+      <%= doc_ref() |> String.trim_trailing() %><% else %>but no matching plugin of that format was available.
       You may have misspelled the format or don't yet have it installed.
       Here are the formats LiveView Native is configured for:<%= for format <- formats do %>
           * <%= format %><% end %><% end %>
