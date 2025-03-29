@@ -129,6 +129,26 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
+  defp parse(<<"<!doctype ", document::binary>>, cursor, [], args) do
+    cursor = move_cursor(cursor, ~c"<!doctype ")
+
+    ignore_doctype(document, cursor, args)
+    |> case do
+      {:ok, {document, cursor}} -> parse(document, cursor, [], args)
+      error -> error
+    end
+  end
+
+  defp parse(<<"<!DOCTYPE ", document::binary>>, cursor, [], args) do
+    cursor = move_cursor(cursor, ~c"<!DOCTYPE ")
+
+    ignore_doctype(document, cursor, args)
+    |> case do
+      {:ok, {document, cursor}} -> parse(document, cursor, [], args)
+      error -> error
+    end
+  end
+
   defp parse(<<"<", document::binary>>, cursor, nodes, args) do
     cursor = move_cursor(cursor, ?<)
 
@@ -150,6 +170,16 @@ defmodule LiveViewNative.Template.Parser do
         end
       error -> error
     end
+  end
+
+  defp ignore_doctype(<<">", document::binary>>, cursor, _args) do
+    cursor = move_cursor(cursor, ?>)
+    {:ok, {document, cursor}}
+  end
+
+  defp ignore_doctype(<<char::utf8, document::binary>>, cursor, args) when char in @chars do
+    cursor = move_cursor(cursor, char)
+    ignore_doctype(document, cursor, args)
   end
 
   defp parse_text_node(<<"<", _document::binary>> = document, cursor, buffer, args) do
