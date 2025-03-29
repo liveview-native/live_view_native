@@ -203,6 +203,31 @@ defmodule LiveViewNative.Template.ParserTest do
       ]
     end
 
+    test "ignores document declrations" do
+      {:ok, nodes} = """
+        <!doctype gameboy>
+        <Text>Hello!</Text>
+      """
+      |> parse_document()
+
+      assert nodes == [
+        {"Text", [], ["Hello!"]}
+      ]
+    end
+
+    test "leading and trailing whitespace is ignored" do
+      {:ok, nodes} = """
+
+        <Text>Hello!</Text>
+
+      """
+      |> parse_document()
+
+      assert nodes == [
+        {"Text", [], ["Hello!"]}
+      ]
+    end
+
     test "invalid attribute key name" do
       doc = """
         <FooBar
