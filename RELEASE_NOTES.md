@@ -34,5 +34,5 @@ fail if there are any function components intended for LVN templates still using
 ### Known issues
 
 The SwiftUI client *will* fail to compile in Xcode 16.3 beta. The `SDKROOT` environment variable, which has been in Xcode for over 25 years,
-was removed in that beta relase with no explanation as to why or what should be used instead. We are working to resolve this for the upcoming
+was removed in that beta release with no explanation as to why or what should be used instead. We are working to resolve this for the upcoming
 release of Xcode.
