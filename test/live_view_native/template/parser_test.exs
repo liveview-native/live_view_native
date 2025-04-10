@@ -315,4 +315,31 @@ defmodule LiveViewNative.Template.ParserTest do
        end
      end
   end
+       
+  describe "_id injection" do
+    test "will inject the _id attribute that increments for depth" do
+      {:ok, nodes} = """
+      <!doctype gameboy>
+      <Foo>  <Bar><Baz></Baz></Bar><Qux/></Foo>
+      <!-- <FooBar></FooBar> -->
+      <Foo> a b <Bar/> c</Foo>
+      """
+      |> parse_document(inject_identity: true)
+
+      assert nodes == [
+        {"Foo", [{"_id", 1}], [
+          {"Bar", [{"_id", 2}], [
+            {"Baz", [{"_id", 3}], []}
+          ]},
+          {"Qux", [{"_id", 4}], []}
+        ]},
+        {:comment, " <FooBar></FooBar> "},
+        {"Foo", [{"_id", 5}], [
+          " a b ",
+          {"Bar", [{"_id", 6}], []},
+          " c"
+        ]}
+      ]
+    end
+  end
 end

@@ -80,9 +80,10 @@ defmodule LiveViewNative.Template.Parser do
       {:ok, [{"Group", %{}, [{"Text", %{}, []}, {"Text", %{"class" => "main"}, ["Hello"]}]}]}
   """
   def parse_document(document, args \\ []) do
+    args = setup_args(args)
     parse(document, [line: 1, column: 1], [], args)
     |> case do
-      {:ok, {_document, nodes, _cursor}} -> {:ok, nodes}
+      {:ok, {_document, nodes, _cursor, _args}} -> {:ok, nodes}
       error -> error
     end
   end
@@ -106,17 +107,24 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp parse(<<>>, cursor, nodes, _args),
-    do: {:ok, {"", Enum.reverse(nodes), cursor}}
+  defp setup_args(args) do
+    Enum.reduce(args, [], fn
+      {:inject_identity, true}, args -> [{:id, 1} | args]
+      kv, args -> [kv | args]
+    end)
+  end
+
+  defp parse(<<>>, cursor, nodes, args),
+    do: {:ok, {"", Enum.reverse(nodes), cursor, args}}
 
   # these next two functions are special escape function that are only used to detect
   # the start of an end tag and eject from parsing children
-  defp parse(<<"</", _document::binary>> = document, cursor, nodes, _args) do
-    {:ok, {document, Enum.reverse(nodes), cursor}}
+  defp parse(<<"</", _document::binary>> = document, cursor, nodes, args) do
+    {:ok, {document, Enum.reverse(nodes), cursor, args}}
   end
 
-  defp parse(<<"/>", _document::binary>> = document, cursor, nodes, _args) do
-    {:ok, {document, Enum.reverse(nodes), cursor}}
+  defp parse(<<"/>", _document::binary>> = document, cursor, nodes, args) do
+    {:ok, {document, Enum.reverse(nodes), cursor, args}}
   end
 
   defp parse(<<"<!--", document::binary>>, cursor, nodes, args) do
@@ -124,7 +132,7 @@ defmodule LiveViewNative.Template.Parser do
 
     parse_comment_node(document, cursor, [], args)
     |> case do
-      {:ok, {document, node, cursor}} -> parse(document, cursor, [node | nodes], args)
+      {:ok, {document, node, cursor, args}} -> parse(document, cursor, [node | nodes], args)
       error -> error
     end
   end
@@ -134,7 +142,7 @@ defmodule LiveViewNative.Template.Parser do
 
     ignore_doctype(document, cursor, args)
     |> case do
-      {:ok, {document, cursor}} -> parse(document, cursor, [], args)
+      {:ok, {document, cursor, args}} -> parse(document, cursor, [], args)
       error -> error
     end
   end
@@ -144,7 +152,7 @@ defmodule LiveViewNative.Template.Parser do
 
     ignore_doctype(document, cursor, args)
     |> case do
-      {:ok, {document, cursor}} -> parse(document, cursor, [], args)
+      {:ok, {document, cursor, args}} -> parse(document, cursor, [], args)
       error -> error
     end
   end
@@ -154,7 +162,7 @@ defmodule LiveViewNative.Template.Parser do
 
     parse_node(document, cursor, args)
     |> case do
-      {:ok, {document, node, cursor}} -> parse(document, cursor, [node | nodes], args)
+      {:ok, {document, node, cursor, args}} -> parse(document, cursor, [node | nodes], args)
       error -> error
     end
   end
@@ -162,7 +170,7 @@ defmodule LiveViewNative.Template.Parser do
   defp parse(document, cursor, nodes, args) do
     parse_text_node(document, cursor, [], args)
     |> case do
-      {:ok, {document, text_node, cursor}} ->
+      {:ok, {document, text_node, cursor, args}} ->
         if String.trim(text_node) == "" do
           parse(document, cursor, nodes, args)
         else
@@ -172,9 +180,9 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp ignore_doctype(<<">", document::binary>>, cursor, _args) do
+  defp ignore_doctype(<<">", document::binary>>, cursor, args) do
     cursor = move_cursor(cursor, ?>)
-    {:ok, {document, cursor}}
+    {:ok, {document, cursor, args}}
   end
 
   defp ignore_doctype(<<char::utf8, document::binary>>, cursor, args) when char in @chars do
@@ -200,22 +208,22 @@ defmodule LiveViewNative.Template.Parser do
     parse_text_node(document, move_cursor(cursor, char), [buffer, char], args)
   end
 
-  defp return_text_node(document, cursor, buffer, _args) do
+  defp return_text_node(document, cursor, buffer, args) do
     text_node = List.to_string(buffer)
 
-    {:ok, {document, text_node, cursor}}
+    {:ok, {document, text_node, cursor, args}}
   end
 
   defp parse_comment_node(<<>>, cursor, _buffer, _args) do
     {:error, "unexpected end of file within comment", [start: cursor, end: cursor]}
   end
 
-  defp parse_comment_node(<<"-->", document::binary>>, cursor, buffer, _args) do
+  defp parse_comment_node(<<"-->", document::binary>>, cursor, buffer, args) do
     cursor = move_cursor(cursor, ~c"-->")
 
     comment = List.to_string(buffer)
 
-    {:ok, {document, {:comment, comment}, cursor}}
+    {:ok, {document, {:comment, comment}, cursor, args}}
   end
 
   defp parse_comment_node(<<char, document::binary>>, cursor, buffer, args) do
@@ -224,11 +232,11 @@ defmodule LiveViewNative.Template.Parser do
 
   defp parse_node(document, cursor = start_cursor, args) do
     with {:ok, {document, tag_name, cursor}} <- parse_tag_name(document, cursor, [], args),
-      {:ok, {document, attributes, cursor}} <- parse_attributes(document, cursor, [], args),
+      {:ok, {document, attributes, cursor, args}} <- parse_attributes(document, cursor, [], args),
       {:ok, {document, cursor}} <- parse_tag_close(document, cursor, start_cursor, args),
-      {:ok, {document, children, cursor}} <- parse_children(document, cursor, args),
+      {:ok, {document, children, cursor, args}} <- parse_children(document, cursor, args),
       {:ok, {document, cursor}} <- parse_end_tag(document, cursor, [], tag_name, start_cursor, args) do
-        {:ok, {document, {tag_name, attributes, children}, cursor}}
+        {:ok, {document, {tag_name, attributes, children}, cursor, args}}
     else
       {:error, message, range} -> {:error, message, range}
     end
@@ -298,12 +306,23 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   defp return_attributes(document, buffer, cursor, args) do
+    {buffer, args} = inject_identity(buffer, args)
+
     attributes = if Keyword.get(args, :attributes_as_maps, false) do
       Enum.into(buffer, %{})
     else
       Enum.reverse(buffer)
     end
-    {:ok, {document, attributes, cursor}}
+
+    {:ok, {document, attributes, cursor, args}}
+  end
+
+  defp inject_identity(buffer, args) do
+    if id = args[:id] do
+      {[{"_id", id} | buffer], Keyword.put(args, :id, id + 1)}
+    else
+      {buffer, args}
+    end
   end
 
   defp parse_attribute_key(<<char, document::binary>>, cursor, [], args) when char in @whitespace do
@@ -416,7 +435,7 @@ defmodule LiveViewNative.Template.Parser do
 
   defp parse_children(document, cursor, args) do
     case parse(document, cursor, [], args) do
-      {:ok, {"", _nodes, cursor}} -> {:error, "unexpected end of file", [start: cursor, end: cursor]}
+      {:ok, {"", _nodes, cursor}, _args} -> {:error, "unexpected end of file", [start: cursor, end: cursor]}
       result -> result
     end
   end
