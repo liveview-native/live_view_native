@@ -220,7 +220,7 @@ defmodule LiveViewNative.Template.Parser do
             {[], args}
           end
 
-          {:ok, {document, {:text, attributes, text_node}, cursor, args}}
+          {:ok, {document, {:text, attributes, [text_node]}, cursor, args}}
         else
           {:ok, {document, text_node, cursor, args}}
         end

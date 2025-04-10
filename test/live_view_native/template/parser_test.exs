@@ -350,7 +350,7 @@ defmodule LiveViewNative.Template.ParserTest do
 
       assert nodes == [
         {"FooBar", [], [
-          {:text, [], "Baz"}
+          {:text, [], ["Baz"]}
         ]}
       ]
     end
@@ -370,7 +370,7 @@ defmodule LiveViewNative.Template.ParserTest do
           {"Qux", [{"_id", 4}], []}
         ]},
         {"FooBar", [{"_id", 5}], [
-          {:text, [{"_id", 6}], "Baz"}
+          {:text, [{"_id", 6}], ["Baz"]}
         ]}
       ]
     end
