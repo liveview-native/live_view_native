@@ -132,6 +132,7 @@ defmodule LiveViewNative.Template.Parser do
 
     parse_comment_node(document, cursor, [], args)
     |> case do
+      {:skip, {document, cursor, args}} -> parse(document, cursor, nodes, args)
       {:ok, {document, node, cursor, args}} -> parse(document, cursor, [node | nodes], args)
       error -> error
     end
@@ -171,11 +172,9 @@ defmodule LiveViewNative.Template.Parser do
     parse_text_node(document, cursor, [], args)
     |> case do
       {:ok, {document, text_node, cursor, args}} ->
-        if String.trim(text_node) == "" do
-          parse(document, cursor, nodes, args)
-        else
-          parse(document, cursor, [text_node | nodes], args)
-        end
+        parse(document, cursor, [text_node | nodes], args)
+      {:skip, {document, cursor, args}} ->
+        parse(document, cursor, nodes, args)
       error -> error
     end
   end
@@ -211,7 +210,21 @@ defmodule LiveViewNative.Template.Parser do
   defp return_text_node(document, cursor, buffer, args) do
     text_node = List.to_string(buffer)
 
-    {:ok, {document, text_node, cursor, args}}
+    case String.trim(text_node) do
+      "" -> {:skip, {document, cursor, args}}
+      _text ->
+        if args[:text_as_node] do
+          {attributes, args} = if args[:id] do
+            {[{"_id", args[:id]}], Keyword.put(args, :id, args[:id] + 1)}
+          else
+            {[], args}
+          end
+
+          {:ok, {document, {:text, attributes, text_node}, cursor, args}}
+        else
+          {:ok, {document, text_node, cursor, args}}
+        end
+    end
   end
 
   defp parse_comment_node(<<>>, cursor, _buffer, _args) do
@@ -221,9 +234,13 @@ defmodule LiveViewNative.Template.Parser do
   defp parse_comment_node(<<"-->", document::binary>>, cursor, buffer, args) do
     cursor = move_cursor(cursor, ~c"-->")
 
-    comment = List.to_string(buffer)
+    if args[:strip_comments] do
+      {:skip, {document, cursor, args}}
+    else
+      comment = List.to_string(buffer)
+      {:ok, {document, {:comment, comment}, cursor, args}}
+    end
 
-    {:ok, {document, {:comment, comment}, cursor, args}}
   end
 
   defp parse_comment_node(<<char, document::binary>>, cursor, buffer, args) do

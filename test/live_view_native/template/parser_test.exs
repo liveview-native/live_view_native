@@ -316,8 +316,8 @@ defmodule LiveViewNative.Template.ParserTest do
      end
   end
        
-  describe "_id injection" do
-    test "will inject the _id attribute that increments for depth" do
+  describe "parser options" do
+    test "identity: true will inject the _id attribute that increments for depth" do
       {:ok, nodes} = """
       <!doctype gameboy>
       <Foo>  <Bar><Baz></Baz></Bar><Qux/></Foo>
@@ -339,6 +339,38 @@ defmodule LiveViewNative.Template.ParserTest do
           {"Bar", [{"_id", 6}], []},
           " c"
         ]}
+      ]
+    end
+
+    test "text_as_node: true will create a text node tuple instead of text" do
+      {:ok, nodes} = """
+      <FooBar>Baz</FooBar>
+      """
+      |> parse_document(text_as_node: true)
+
+      assert nodes == [
+        {"FooBar", [], [
+          {:text, [], "Baz"}
+        ]}
+      ]
+    end
+
+    test "strip_comments: true will not parse comments" do
+      {:ok, nodes} = """
+      <FooBar></FooBar>
+      <!-- <FooBar></FooBar>
+      <FooBar/>
+      -->
+
+      <FooBar>
+        <!-- <FooBar/> -->
+      </FooBar>
+      """
+      |> parse_document(strip_comments: true)
+
+      assert nodes == [
+        {"FooBar", [], []},
+        {"FooBar", [], []}
       ]
     end
   end
