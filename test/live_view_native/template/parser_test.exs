@@ -355,6 +355,26 @@ defmodule LiveViewNative.Template.ParserTest do
       ]
     end
 
+    test "text_as_node: true and inject_identity: true will create a text node tuple instead of text with the correct identity value" do
+      {:ok, nodes} = """
+      <Foo>  <Bar><Baz></Baz></Bar><Qux/></Foo>
+      <FooBar>Baz</FooBar>
+      """
+      |> parse_document(text_as_node: true, inject_identity: true)
+
+      assert nodes == [
+        {"Foo", [{"_id", 1}], [
+          {"Bar", [{"_id", 2}], [
+            {"Baz", [{"_id", 3}], []}
+          ]},
+          {"Qux", [{"_id", 4}], []}
+        ]},
+        {"FooBar", [{"_id", 5}], [
+          {:text, [{"_id", 6}], "Baz"}
+        ]}
+      ]
+    end
+
     test "strip_comments: true will not parse comments" do
       {:ok, nodes} = """
       <FooBar></FooBar>
