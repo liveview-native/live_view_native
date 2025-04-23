@@ -24,7 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - LiveViewNative.Template.Engine
 - LiveViewNative.Component.Declarative
 - Template parser supports namespaced attribute keys
-- Templare parser ignores doctype tags at top of document
+- Template parser ignores doctype tags at top of document
+- Template parser raw_string converts nodes to string
 
 ### Changed
 

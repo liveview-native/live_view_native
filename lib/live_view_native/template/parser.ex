@@ -506,4 +506,46 @@ defmodule LiveViewNative.Template.Parser do
 
   defp move_cursor(cursor, _char),
     do: [line: cursor[:line], column: cursor[:column] + 1]
+
+  @doc"""
+  Converts node tree to raw string
+
+  ### Options
+    * `:pretty` - defaults to `false`. Pretty prints the document
+  """
+
+  def raw_string(nodes, opts \\ []) do
+    Enum.reduce(nodes, "", &(node_to_string(&1, &2, opts[:pretty], opts[:indent] || 0)))
+  end
+
+  defp node_to_string(text, acc, pretty, indent) when is_binary(text),
+    do: node_to_string({:text, [], [text]}, acc, pretty, indent)
+  defp node_to_string({:text, _attributes, [text]}, acc, true, indent),
+    do: acc <> whitespace(indent) <> String.trim(text) <> "\n"
+  defp node_to_string({:text, _attributes, [text]}, acc, _pretty, indent),
+    do: acc <> whitespace(indent) <> text
+
+  defp node_to_string({:comment, comment}, acc, true, indent),
+    do: node_to_string({:comment, comment}, acc, false, indent) <> "\n"
+  defp node_to_string({:comment, comment}, acc, _pretty, indent),
+    do: acc <> whitespace(indent) <> "<!--#{comment}-->"
+
+  defp node_to_string({tag_name, attributes, children}, acc, pretty, indent) do
+    attributes_fragment = Enum.reduce(attributes, "", fn 
+      {"_id", _id}, acc -> acc  
+      {name, value}, acc -> acc <> ~s( #{name}="#{value}")
+    end)
+
+    {newindent, newline} = if pretty,
+      do: {indent + 2, "\n"},
+      else: {indent, ""}
+
+    acc
+    <> whitespace(indent) <> "<#{tag_name}#{attributes_fragment}>"<> newline
+      <> raw_string(children, pretty: pretty, indent: newindent)
+    <> whitespace(indent) <> "</#{tag_name}>" <> newline
+  end
+
+  defp whitespace(indent),
+    do: String.duplicate(" ", indent)
 end

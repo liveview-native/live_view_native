@@ -1,8 +1,11 @@
 defmodule LiveViewNative.Template.ParserTest do
   use ExUnit.Case, async: false
-  import LiveViewNative.Template.Parser
+  alias LiveViewNative.Template.{
+    Parser,
+    ParseError
+  }
 
-  alias LiveViewNative.Template.ParseError
+  import Parser,
 
   doctest LiveViewNative.Template.Parser
 
@@ -392,6 +395,43 @@ defmodule LiveViewNative.Template.ParserTest do
         {"FooBar", [], []},
         {"FooBar", [], []}
       ]
+    end
+
+    test "will covert parsed document back to string" do
+      
+    end
+  end
+
+  describe "raw_string" do
+    test "will convert parsed document" do
+      {:ok, nodes} = """
+      <FooBar a="b">Baz!</FooBar>
+      <FooBar></FooBar>
+      <!-- <FooBar></FooBar> -->
+      """
+      |> parse_document()
+
+      assert Parser.raw_string(nodes) == ~s(<FooBar a="b">Baz!</FooBar><FooBar></FooBar><!-- <FooBar></FooBar> -->)
+    end
+
+    test "will pretty print parsed document" do
+      {:ok, nodes} = """
+      <FooBar a="b">
+        Baz!
+      </FooBar>
+      <FooBar></FooBar>
+      <!-- <FooBar></FooBar> -->
+      """
+      |> parse_document()
+
+      assert Parser.raw_string(nodes, pretty: true) == """
+        <FooBar a="b">
+          Baz!
+        </FooBar>
+        <FooBar>
+        </FooBar>
+        <!-- <FooBar></FooBar> -->
+        """
     end
   end
 end
