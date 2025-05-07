@@ -46,16 +46,15 @@ defmodule LiveViewNative.Template.Parser do
 
   alias LiveViewNative.Template.ParseError
 
-  @first_chars ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-  @chars ~c"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-"
-  @attribute_key @chars ++ ~c":"
+  import LiveViewNative.Template.Parser.Guards
+
   @whitespace ~c"\s\t\n\r"
   @entities [
-    {?<, "&lt;"},
-    {?>, "&gt;"},
-    {?&, "&amp;"},
-    {?", "&quot;"},
-    {?', "&#39;"}
+    {"<", "&lt;"},
+    {">", "&gt;"},
+    {"&", "&amp;"},
+    {"\"", "&quot;"},
+    {"'", "&#39;"}
   ]
 
   @doc """
@@ -66,7 +65,7 @@ defmodule LiveViewNative.Template.Parser do
   ## Options
 
     * `:attributes_as_maps` - Change the behaviour of the parser to return the attributes
-      as maps, instead of a list of `{"key", "value"}`. Default to `false`.
+      as maps, instead of a list of `{"name", "value"}`. Default to `false`.
 
   ## Examples
 
@@ -119,15 +118,15 @@ defmodule LiveViewNative.Template.Parser do
 
   # these next two functions are special escape function that are only used to detect
   # the start of an end tag and eject from parsing children
-  defp parse(<<"</", _document::binary>> = document, cursor, nodes, args) do
+  defp parse(<<"</"::utf8, _document::binary>> = document, cursor, nodes, args) do
     {:ok, {document, Enum.reverse(nodes), cursor, args}}
   end
 
-  defp parse(<<"/>", _document::binary>> = document, cursor, nodes, args) do
+  defp parse(<<"/>"::utf8, _document::binary>> = document, cursor, nodes, args) do
     {:ok, {document, Enum.reverse(nodes), cursor, args}}
   end
 
-  defp parse(<<"<!--", document::binary>>, cursor, nodes, args) do
+  defp parse(<<"<!--"::utf8, document::binary>>, cursor, nodes, args) do
     cursor = move_cursor(cursor, ~c"<!--")
 
     parse_comment_node(document, cursor, [], args)
@@ -138,7 +137,7 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp parse(<<"<!doctype ", document::binary>>, cursor, [], args) do
+  defp parse(<<"<!doctype "::utf8, document::binary>>, cursor, [], args) do
     cursor = move_cursor(cursor, ~c"<!doctype ")
 
     ignore_doctype(document, cursor, args)
@@ -148,7 +147,7 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp parse(<<"<!DOCTYPE ", document::binary>>, cursor, [], args) do
+  defp parse(<<"<!DOCTYPE "::utf8, document::binary>>, cursor, [], args) do
     cursor = move_cursor(cursor, ~c"<!DOCTYPE ")
 
     ignore_doctype(document, cursor, args)
@@ -158,7 +157,7 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp parse(<<"<", document::binary>>, cursor, nodes, args) do
+  defp parse(<<"<"::utf8, document::binary>>, cursor, nodes, args) do
     cursor = move_cursor(cursor, ?<)
 
     parse_node(document, cursor, args)
@@ -179,17 +178,17 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp ignore_doctype(<<">", document::binary>>, cursor, args) do
+  defp ignore_doctype(<<">"::utf8, document::binary>>, cursor, args) do
     cursor = move_cursor(cursor, ?>)
     {:ok, {document, cursor, args}}
   end
 
-  defp ignore_doctype(<<char::utf8, document::binary>>, cursor, args) when char in @chars do
+  defp ignore_doctype(<<char::utf8, document::binary>>, cursor, args) do
     cursor = move_cursor(cursor, char)
     ignore_doctype(document, cursor, args)
   end
 
-  defp parse_text_node(<<"<", _document::binary>> = document, cursor, buffer, args) do
+  defp parse_text_node(<<"<"::utf8, _document::binary>> = document, cursor, buffer, args) do
     return_text_node(document, cursor, buffer, args)
   end
 
@@ -198,7 +197,7 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   for {char, entity} <- @entities do
-    defp parse_text_node(<<unquote(entity), document::binary>>, cursor, buffer, args) do
+    defp parse_text_node(<<unquote(entity)::utf8, document::binary>>, cursor, buffer, args) do
       parse_text_node(document, move_cursor(cursor, unquote(entity)), [buffer, unquote(char)], args)
     end
   end
@@ -231,7 +230,7 @@ defmodule LiveViewNative.Template.Parser do
     {:error, "unexpected end of file within comment", [start: cursor, end: cursor]}
   end
 
-  defp parse_comment_node(<<"-->", document::binary>>, cursor, buffer, args) do
+  defp parse_comment_node(<<"-->"::utf8, document::binary>>, cursor, buffer, args) do
     cursor = move_cursor(cursor, ~c"-->")
 
     if args[:strip_comments] do
@@ -243,7 +242,7 @@ defmodule LiveViewNative.Template.Parser do
 
   end
 
-  defp parse_comment_node(<<char, document::binary>>, cursor, buffer, args) do
+  defp parse_comment_node(<<char::utf8, document::binary>>, cursor, buffer, args) do
     parse_comment_node(document, cursor, [buffer, char], args)
   end
 
@@ -260,28 +259,28 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   defp parse_tag_name(<<>>, cursor, _buffer, _args) do
-    {:error, "unexpected end of file while parsing attribute key", [start: cursor, end: cursor]}
+    {:error, "unexpected end of file while parsing attribute name", [start: cursor, end: cursor]}
   end
 
-  defp parse_tag_name(<<char::utf8, document::binary>>, cursor, [], args) when char in @first_chars do
+  defp parse_tag_name(<<char::utf8, document::binary>>, cursor, [], args) when is_valid_tag_name_first_char(char) do
     cursor = move_cursor(cursor, char)
     parse_tag_name(document, cursor, [char], args)
   end
 
-  defp parse_tag_name(<<char::utf8, document::binary>>, cursor, buffer, args) when char in @chars do
+  defp parse_tag_name(<<char::utf8, document::binary>>, cursor, buffer, args) when is_valid_tag_name_subsequent_char(char) do
     cursor = move_cursor(cursor, char)
     parse_tag_name(document, cursor, [buffer, char], args)
   end
 
-  defp parse_tag_name(<<"/>", _document::binary>> = document, cursor, buffer, args),
+  defp parse_tag_name(<<"/>"::utf8, _document::binary>> = document, cursor, buffer, args),
     do: return_tag_name(document, buffer, cursor, args)
-  defp parse_tag_name(<<">", _document::binary>> = document, cursor, buffer, args),
+  defp parse_tag_name(<<">"::utf8, _document::binary>> = document, cursor, buffer, args),
     do: return_tag_name(document, buffer, cursor, args)
-  defp parse_tag_name(<<char, _document::binary>> = document, cursor, buffer, args) when char in @whitespace do
+  defp parse_tag_name(<<char::utf8, _document::binary>> = document, cursor, buffer, args) when char in @whitespace do
     return_tag_name(document, buffer, cursor, args)
   end
 
-  defp parse_tag_name(<<char, _document::binary>>, cursor, _buffer, _args) do
+  defp parse_tag_name(<<char::utf8, _document::binary>>, cursor, _buffer, _args) do
     {:error, "invalid character in tag name: #{[char]}", [start: cursor, end: cursor]}
   end
 
@@ -291,16 +290,16 @@ defmodule LiveViewNative.Template.Parser do
     {:ok, {document, tag_name, cursor}}
   end
 
-  defp parse_attributes(<<char, document::binary>>, cursor, buffer, args) when char in @whitespace do
+  defp parse_attributes(<<char::utf8, document::binary>>, cursor, buffer, args) when char in @whitespace do
     cursor = move_cursor(cursor, char)
     parse_attributes(document, cursor, buffer, args)
   end
 
-  defp parse_attributes(<<"/>", _document::binary>> = document, cursor, buffer, args) do
+  defp parse_attributes(<<"/>"::utf8, _document::binary>> = document, cursor, buffer, args) do
     return_attributes(document, buffer, cursor, args)
   end
 
-  defp parse_attributes(<<">", _document::binary>> = document, cursor, buffer, args) do
+  defp parse_attributes(<<">"::utf8, _document::binary>> = document, cursor, buffer, args) do
     return_attributes(document, buffer, cursor, args)
   end
 
@@ -312,12 +311,12 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   defp parse_attribute(document, cursor, args) do
-    with {:ok, {document, key, cursor}} <- parse_attribute_key(document, cursor, [], args),
-      {:ok, {document, cursor}} <- parse_attribute_assignment(document, cursor, key, args),
+    with {:ok, {document, name, cursor}} <- parse_attribute_name(document, cursor, [], args),
+      {:ok, {document, cursor}} <- parse_attribute_assignment(document, cursor, name, args),
       {:ok, {document, value, cursor}} <- parse_attribute_value(document, cursor, nil, nil, args) do
-        {:ok, {document, {key, value}, cursor}}
+        {:ok, {document, {name, value}, cursor}}
     else
-      {:boolean, {document, key, cursor}} -> {:ok, {document, {key, key}, cursor}}
+      {:boolean, {document, name, cursor}} -> {:ok, {document, {name, name}, cursor}}
       error -> error
     end
   end
@@ -342,69 +341,69 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp parse_attribute_key(<<char, document::binary>>, cursor, [], args) when char in @whitespace do
-    parse_attribute_key(document, move_cursor(cursor, char), [], args)
+  defp parse_attribute_name(<<char::utf8, document::binary>>, cursor, [], args) when char in @whitespace do
+    parse_attribute_name(document, move_cursor(cursor, char), [], args)
   end
 
-  defp parse_attribute_key(<<char, document::binary>>, cursor, [], args) when char in @first_chars do
-    parse_attribute_key(document, move_cursor(cursor, char), [char], args)
+  defp parse_attribute_name(<<char::utf8, document::binary>>, cursor, [], args) when is_valid_attribute_name_char(char) do
+    parse_attribute_name(document, move_cursor(cursor, char), [char], args)
   end
 
-  defp parse_attribute_key(<<char, _document::binary>> = document, cursor, key_buffer, _args) when char not in @attribute_key do
-    key = List.to_string(key_buffer)
+  defp parse_attribute_name(<<char::utf8, _document::binary>> = document, cursor, name_buffer, _args) when not is_valid_attribute_name_char(char) do
+    name = List.to_string(name_buffer)
 
-    {:ok, {document, key, cursor}}
+    {:ok, {document, name, cursor}}
   end
 
-  defp parse_attribute_key(<<char, document::binary>>, cursor, key_buffer, args) when char in @attribute_key do
-    parse_attribute_key(document, move_cursor(cursor, char), [key_buffer, char], args)
+  defp parse_attribute_name(<<char::utf8, document::binary>>, cursor, name_buffer, args) when is_valid_attribute_name_char(char) do
+    parse_attribute_name(document, move_cursor(cursor, char), [name_buffer, char], args)
   end
 
-  defp parse_attribute_key(<<>>, cursor, _buffer, _args) do
-    {:error, "unexpected end of file while parsing attribute key", [start: cursor, end: cursor]}
+  defp parse_attribute_name(<<>>, cursor, _buffer, _args) do
+    {:error, "unexpected end of file while parsing attribute name", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_key(<<char, _document::binary>>, cursor, _buffer, _args) do
-    {:error, "invalid character in attribute key: #{[char]}", [start: cursor, end: cursor]}
+  defp parse_attribute_name(<<char::utf8, _document::binary>>, cursor, _buffer, _args) do
+    {:error, "invalid character in attribute name: #{[char]}", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_assignment(<<char, document::binary>>, cursor, key, args) when char in @whitespace do
-    parse_attribute_assignment(document, move_cursor(cursor, char), key, args)
+  defp parse_attribute_assignment(<<char::utf8, document::binary>>, cursor, name, args) when char in @whitespace do
+    parse_attribute_assignment(document, move_cursor(cursor, char), name, args)
   end
 
-  defp parse_attribute_assignment(<<"=", document::binary>>, cursor, _key, _args) do
+  defp parse_attribute_assignment(<<"="::utf8, document::binary>>, cursor, _name, _args) do
     {:ok, {document, move_cursor(cursor, ?=)}}
   end
 
-  defp parse_attribute_assignment(<<char, _document::binary>> = document, cursor, key, _args) when char in @first_chars do
-    {:boolean, {document, key, cursor}}
+  defp parse_attribute_assignment(<<char::utf8, _document::binary>> = document, cursor, name, _args) when is_valid_attribute_name_char(char) do
+    {:boolean, {document, name, cursor}}
   end
 
-  defp parse_attribute_assignment(<<char, _document::binary>>, cursor, key, _args) do
-    {:error, "invalid character: #{[char]} in attribute key: #{key}", [start: cursor, end: cursor]}
+  defp parse_attribute_assignment(<<char::utf8, _document::binary>>, cursor, name, _args) do
+    {:error, "invalid character: #{<<char::utf8>>} in attribute name: #{name}", [start: cursor, end: cursor]}
   end
 
   defp parse_attribute_value(<<>>, cursor, _buffer, _closing_char, _args) do
     {:error, "unexpected end of file while parsing attribute value", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_value(<<"\"\"", document::binary>>, cursor, nil, nil, _args) do
+  defp parse_attribute_value(<<"\"\""::utf8, document::binary>>, cursor, nil, nil, _args) do
     {:ok, {document, "", move_cursor(cursor, ~c'""')}}
   end
 
-  defp parse_attribute_value(<<"''", document::binary>>, cursor, nil, nil, _args) do
+  defp parse_attribute_value(<<"''"::utf8, document::binary>>, cursor, nil, nil, _args) do
     {:ok, {document, "", move_cursor(cursor, ~c'""')}}
   end
 
-  defp parse_attribute_value(<<"\"", char, document::binary>>, cursor, nil, nil, args) do
-    parse_attribute_value(to_string([char]) <> document, move_cursor(cursor, ?"), [], ?", args)
+  defp parse_attribute_value(<<"\""::utf8, char::utf8, document::binary>>, cursor, nil, nil, args) do
+    parse_attribute_value(<<char::utf8>> <> document, move_cursor(cursor, ?"), [], ?", args)
   end
 
-  defp parse_attribute_value(<<"'", char, document::binary>>, cursor, nil, nil, args) do
-    parse_attribute_value(to_string([char]) <> document, move_cursor(cursor, ?"), [], ?', args)
+  defp parse_attribute_value(<<"'"::utf8, char::utf8, document::binary>>, cursor, nil, nil, args) do
+    parse_attribute_value(<<char::utf8>> <> document, move_cursor(cursor, ?"), [], ?', args)
   end
 
-  defp parse_attribute_value(<<char, document::binary>>, cursor, nil, nil, args) when char in @whitespace do
+  defp parse_attribute_value(<<char::utf8, document::binary>>, cursor, nil, nil, args) when char in @whitespace do
     parse_attribute_value(document, move_cursor(cursor, char), nil, nil, args)
   end
 
@@ -412,13 +411,13 @@ defmodule LiveViewNative.Template.Parser do
     {:error, "value must be wrapped by \" quotes", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_value(<<"\"", document::binary>>, cursor, buffer, ?", _args) do
+  defp parse_attribute_value(<<"\""::utf8, document::binary>>, cursor, buffer, ?", _args) do
     value = List.to_string(buffer)
 
     {:ok, {document, value, move_cursor(cursor, ?")}}
   end
 
-  defp parse_attribute_value(<<"'", document::binary>>, cursor, buffer, ?', _args) do
+  defp parse_attribute_value(<<"'"::utf8, document::binary>>, cursor, buffer, ?', _args) do
     value = List.to_string(buffer)
 
     {:ok, {document, value, move_cursor(cursor, ?')}}
@@ -429,20 +428,24 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   for {char, entity} <- @entities do
-    defp parse_attribute_value(<<unquote(entity), document::binary>>, cursor, buffer, closing_char, args) do
+    defp parse_attribute_value(<<unquote(entity)::utf8, document::binary>>, cursor, buffer, closing_char, args) do
       parse_attribute_value(document, move_cursor(cursor, unquote(entity)), [buffer, unquote(char)], closing_char, args)
     end
   end
 
-  defp parse_attribute_value(<<char::utf8, document::binary>>, cursor, buffer, closing_char, args) do
+  defp parse_attribute_value(<<char::utf8, document::binary>>, cursor, buffer, closing_char, args) when is_valid_attribute_value_char(char) do
     parse_attribute_value(document, move_cursor(cursor, char), [buffer, char], closing_char, args)
   end
 
-  defp parse_tag_close(<<">", document::binary>>, cursor, _start_cursor, _args) do
+  defp parse_attribute_value(_document, cursor, _buffer, _closing_char, _args) do
+    {:error, "invalid character", [start: cursor, end: cursor]}
+  end
+
+  defp parse_tag_close(<<">"::utf8, document::binary>>, cursor, _start_cursor, _args) do
     {:ok, {document, move_cursor(cursor, ?>)}}
   end
 
-  defp parse_tag_close(<<"/>", _document::binary>> = document, cursor, _start_cursor, _args) do
+  defp parse_tag_close(<<"/>"::utf8, _document::binary>> = document, cursor, _start_cursor, _args) do
     {:ok, {document, cursor}}
   end
 
@@ -457,24 +460,24 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp parse_end_tag(<<"</", document::binary>>, cursor, buffer, tag_name, start_cursor, args) do
+  defp parse_end_tag(<<"</"::utf8, document::binary>>, cursor, buffer, tag_name, start_cursor, args) do
     cursor = move_cursor(cursor, ~c"</")
     {document, cursor} = drain_whitespace(document, cursor)
     parse_end_tag(document, cursor, buffer, tag_name, start_cursor, args)
   end
 
-  defp parse_end_tag(<<char, document::binary>>, cursor, [], tag_name, start_cursor, args) when char in @first_chars do
+  defp parse_end_tag(<<char::utf8, document::binary>>, cursor, [], tag_name, start_cursor, args) when is_valid_tag_name_first_char(char) do
     parse_end_tag(document, move_cursor(cursor, char), [char], tag_name, start_cursor, args)
   end
 
-  defp parse_end_tag(<<char, document::binary>>, cursor, buffer, tag_name, start_cursor, args) when char in @chars do
+  defp parse_end_tag(<<char::utf8, document::binary>>, cursor, buffer, tag_name, start_cursor, args) when is_valid_tag_name_subsequent_char(char) do
     parse_end_tag(document, move_cursor(cursor, char), [buffer, char], tag_name, start_cursor, args)
   end
 
   defp parse_end_tag(document, cursor, [], _tag_name, _start_cursor, _args) do
     case document do
-      <<">", document::binary>> -> {:ok, {document, move_cursor(cursor, ?>)}}
-      <<"/>", document::binary>> -> {:ok, {document, move_cursor(cursor, ~c"/>")}}
+      <<">"::utf8, document::binary>> -> {:ok, {document, move_cursor(cursor, ?>)}}
+      <<"/>"::utf8, document::binary>> -> {:ok, {document, move_cursor(cursor, ~c"/>")}}
       _document -> {:error, "invalid character for end tag", [start: cursor, end: cursor]}
     end
   end
@@ -491,7 +494,7 @@ defmodule LiveViewNative.Template.Parser do
     end
   end
 
-  defp drain_whitespace(<<char, document::binary>>, cursor) when char in @whitespace do
+  defp drain_whitespace(<<char::utf8, document::binary>>, cursor) when char in @whitespace do
     drain_whitespace(document, move_cursor(cursor, char))
   end
 

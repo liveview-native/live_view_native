@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Template parser supports namespaced attribute keys
 - Template parser ignores doctype tags at top of document
 - Template parser raw_string converts nodes to string
+- Enable UTF-8 template parsing
 
 ### Changed
 

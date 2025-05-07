@@ -234,7 +234,7 @@ defmodule LiveViewNative.Template.ParserTest do
     test "invalid attribute key name" do
       doc = """
         <FooBar
-          a-*b="123"></FooBar>
+          a-"b="123"></FooBar>
         """
       {:error, _message, [start: start_pos, end: end_pos]} = parse_document(doc)
 
@@ -427,6 +427,28 @@ defmodule LiveViewNative.Template.ParserTest do
       assert Parser.raw_string(nodes, pretty: true) == """
         <FooBar a="b">
           Baz!
+        </FooBar>
+        <FooBar>
+        </FooBar>
+        <!-- <FooBar></FooBar> -->
+        """
+    end
+  end
+
+  describe "utf-chars" do
+    test "will allow utf-chars in parts of the document" do
+      {:ok, nodes} = """
+      <FooBar a="🍏">
+        🍎
+      </FooBar>
+      <FooBar></FooBar>
+      <!-- <FooBar></FooBar> -->
+      """
+      |> parse_document()
+
+      assert Parser.raw_string(nodes, pretty: true) == """
+        <FooBar a="🍏">
+          🍎
         </FooBar>
         <FooBar>
         </FooBar>
