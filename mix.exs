@@ -43,7 +43,7 @@ defmodule LiveViewNative.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:makeup_eex, ">= 0.1.1", only: :dev, runtime: false},
-      {:sourceror, "~> 1.5"},
+      {:sourceror, "~> 1.5", only: [:dev, :test]},
       {:text_diff, "~> 0.1"},
       {:live_view_native_test_endpoint, github: "liveview-native/live_view_native_test_endpoint", branch: "main", only: :test}
     ]
