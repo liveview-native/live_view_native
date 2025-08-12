@@ -363,8 +363,9 @@ defmodule LiveViewNative.Template.Parser do
     {:error, "unexpected end of file while parsing attribute name", [start: cursor, end: cursor]}
   end
 
-  defp parse_attribute_name(<<char::utf8, _document::binary>>, cursor, _buffer, _args) do
-    {:error, "invalid character in attribute name: #{[char]}", [start: cursor, end: cursor]}
+  defp parse_attribute_name(<<char::utf8, _document::binary>>, cursor, name_buffer, _args) do
+    name = List.to_string(name_buffer)
+    {:error, "invalid character: #{<<char::utf8>>} in attribute name: #{name}", [start: cursor, end: cursor]}
   end
 
   defp parse_attribute_assignment(<<char::utf8, document::binary>>, cursor, name, args) when char in @whitespace do
@@ -376,6 +377,14 @@ defmodule LiveViewNative.Template.Parser do
   end
 
   defp parse_attribute_assignment(<<char::utf8, _document::binary>> = document, cursor, name, _args) when is_valid_attribute_name_char(char) do
+    {:boolean, {document, name, cursor}}
+  end
+
+  defp parse_attribute_assignment(<<"/>"::utf8, _document::binary>> = document, cursor, name, _args) do
+    {:boolean, {document, name, cursor}}
+  end
+
+  defp parse_attribute_assignment(<<">"::utf8, _document::binary>> = document, cursor, name, _args) do
     {:boolean, {document, name, cursor}}
   end
 
