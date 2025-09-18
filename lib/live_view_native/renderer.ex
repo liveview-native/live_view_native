@@ -35,7 +35,7 @@ defmodule LiveViewNative.Renderer do
       @doc false
       def __mix_recompile__? do
         files =
-          @embeded_templates_opts
+          @embedded_templates_opts
           |> Enum.reduce([], fn({root, pattern, name}, templates_acc) ->
             root
             |> LiveViewNative.Renderer.find_templates(pattern, __MODULE__, name)
@@ -59,7 +59,7 @@ defmodule LiveViewNative.Renderer do
   defmacro delegate_to_target(name, opts \\ []) do
     %{module: module} = env = __CALLER__
     render? = Module.defines?(module, {name, 1})
-    suppress_render_warning? = opts[:supress_warning] || Application.get_env(:live_view_native, :suppress_render_warning, false)
+    suppress_render_warning? = opts[:suppress_warning] || Application.get_env(:live_view_native, :suppress_render_warning, false)
 
     if render? and !suppress_render_warning? do
       IO.warn(
@@ -95,7 +95,7 @@ defmodule LiveViewNative.Renderer do
     targets for the same name: `['home_live.swiftui+watchos.neex', 'home_live.swiftui+tvos.neex', 'home_live.swiftui.neex']`
     if `name: :render` this will result:
 
-      def render(assings, %{"target" => "watchos"} = interface)
+      def render(assigns, %{"target" => "watchos"} = interface)
       def render(assigns, %{"target" => "tvos"} = interface)
       def render(assigns, interface)
 
@@ -114,7 +114,7 @@ defmodule LiveViewNative.Renderer do
     name = opts[:name]
 
     attr_ast = quote do
-      Module.put_attribute(__MODULE__, :embeded_templates_opts, {
+      Module.put_attribute(__MODULE__, :embedded_templates_opts, {
         unquote(root),
         unquote(pattern),
         unquote(name)

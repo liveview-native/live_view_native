@@ -214,7 +214,7 @@ defmodule LiveViewNativeTest do
 
   ## Examples
 
-      {:ok, view, markup} = live(conn, "/path", _fromat: :gameboy)
+      {:ok, view, markup} = live(conn, "/path", _format: :gameboy)
       assert view.module == MyLive
       assert markup =~ "the count is 3"
 
