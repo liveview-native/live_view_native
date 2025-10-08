@@ -39,6 +39,10 @@ defmodule LiveViewNative.Template.Engine do
 
   @doc false
   @impl true
+  defdelegate annotate_slot(name, tag_meta, close_meta, caller), to: Phoenix.LiveView.HTMLEngine
+
+  @doc false
+  @impl true
   def classify_type(":inner_block"), do: {:error, "the slot name :inner_block is reserved"}
   def classify_type(":" <> name), do: {:slot, name}
 
