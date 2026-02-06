@@ -30,7 +30,7 @@ defmodule LiveViewNative.MixProject do
 
   defp deps do
     [
-      {:phoenix, "~> 1.7.21"},
+      {:phoenix, "~> 1.8.0"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_view, "~> 1.1.0"},
       {:phoenix_live_reload, "~> 1.4", only: :test},
